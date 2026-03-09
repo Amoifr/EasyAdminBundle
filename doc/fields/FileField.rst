@@ -1,20 +1,22 @@
-EasyAdmin Image Field
-=====================
+EasyAdmin File Field
+====================
 
-This field is used to manage the uploading of images to the backend. The entity
-property only stores the path to the image (relative to the upload directory).
-The actual image contents are stored on the server filesystem or on any remote
-system configured via the `league/flysystem-bundle`_.
+This field is used to manage the uploading of files (PDFs, documents, etc.) to the
+backend. The entity property only stores the path to the file (relative to the
+upload directory). The actual file contents are stored on the server filesystem
+or on any remote system configured via the `league/flysystem-bundle`_.
 
 In :ref:`form pages (edit and new) <crud-pages>` it looks like this:
 
-.. image:: ../images/fields/field-image.png
-   :alt: Default style of EasyAdmin image field
+.. code-block:: html
+
+    <!-- when loading the page this is transformed into a dynamic widget via JavaScript -->
+    <input type="file">
 
 Basic Information
 -----------------
 
-* **PHP Class**: ``EasyCorp\Bundle\EasyAdminBundle\Field\ImageField``
+* **PHP Class**: ``EasyCorp\Bundle\EasyAdminBundle\Field\FileField``
 * **Doctrine DBAL Type** used to store this value: ``string``
 * **Symfony Form Type** used to render the field: ``FileUploadType``, a custom
   form type created by EasyAdmin
@@ -31,37 +33,40 @@ Options
 setBasePath
 ~~~~~~~~~~~
 
-By default, images are loaded in read-only pages (``index`` and ``detail``) "as is",
-without changing their path. If you serve your images under some path (e.g.
-``uploads/images/``) use this option to configure that::
+By default, files are linked in read-only pages (``index`` and ``detail``) "as is",
+without changing their path. If you serve your files under some path (e.g.
+``uploads/files/``) use this option to configure that::
 
-    yield ImageField::new('...')->setBasePath('uploads/images/');
+    yield FileField::new('...')->setBasePath('uploads/files/');
 
 setUploadDir
 ~~~~~~~~~~~~
 
-By default, the contents of uploaded images are stored into files inside the
-``<your-project-dir>/public/uploads/images/`` directory. Use this option to
-change that location. The argument is the directory relative to your project root::
+**This option is required.** Use it to set the directory where uploaded files are
+stored. The argument is the directory relative to your project root::
 
-    yield ImageField::new('...')->setUploadDir('assets/images/');
+    yield FileField::new('...')->setUploadDir('public/uploads/files/');
     // the property will only store the file path relative to this dir
-    // (e.g. 'logo.png', 'venue/layout.jpg')
+    // (e.g. 'catalog.pdf', 'venue/contract.docx')
+
+``FileField`` does not define a default upload directory. If you don't call this
+method, an exception will be thrown.
 
 setFileConstraints
 ~~~~~~~~~~~~~~~~~~
 
-By default, the uploaded file is validated using an empty `Image constraint`_
-(which means it only validates that the uploaded file is of type image). Use this
+By default, no validation constraints are applied to the uploaded file. Use this
 option to define the constraints applied to the uploaded file::
 
-    yield ImageField::new('...')->setFileConstraints(new Image(filenameCharset: 'ASCII'));
+    use Symfony\Component\Validator\Constraints\File;
+
+    yield FileField::new('...')->setFileConstraints(new File(filenameCharset: 'ASCII'));
 
 setUploadedFileNamePattern
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By default, uploaded images are stored with the same file name and extension as
-the original files. Use this option to rename the image files after uploading.
+By default, uploaded files are stored with the same file name and extension as
+the original files. Use this option to rename the files after uploading.
 The string pattern passed as argument can include the following special values:
 
 * ``[DD]``, the day part of the current date (with leading zeros, obtained as ``date('d')``)
@@ -76,6 +81,7 @@ The string pattern passed as argument can include the following special values:
 * ``[slug]``, the slug of the original name of the uploaded file generated with Symfony's
   String component (all lowercase and using ``-`` as the separator)
 * ``[extension]``, the original extension of the uploaded file (without the leading dot, e.g. ``png``)
+  (if the file has multiple extensions, only the last one is returned)
 * ``[contenthash]``, a SHA1 hash of the original file contents (40-char hexadecimal
   string, e.g. ``3dfd6a9fbb83413b7f47c913ce2a95416dc6da88``)
 * ``[randomhash]``, a random hash not related in any way to the original file contents
@@ -89,61 +95,64 @@ The string pattern passed as argument can include the following special values:
 * ``[ulid]``, a random ULID value (26-char string, e.g. ``01AN4Z07BY79KA1307SR9X4MV3``)
   (generated with Symfony's Uid component)
 
-.. deprecated:: 5.1
-
-    The ``[day]``, ``[month]`` and ``[year]`` placeholders are deprecated. Use
-    ``[DD]``, ``[MM]`` and ``[YYYY]`` instead. The old placeholders will be
-    removed in EasyAdmin 6.0.
-
 You can combine them in any way::
 
-    yield ImageField::new('...')
+    yield FileField::new('...')
         ->setUploadedFileNamePattern('[YYYY]/[MM]/[DD]/[slug]-[contenthash].[extension]');
 
-The argument of this method also accepts a closure that receives as its first
-argument the Symfony's UploadedFile instance::
+The argument of this method also accepts a closure that receives the Symfony's
+``UploadedFile`` instance and the **current entity instance** as arguments::
 
-    yield ImageField::new('...')->setUploadedFileNamePattern(
+    yield FileField::new('...')->setUploadedFileNamePattern(
         fn (UploadedFile $file): string => sprintf('upload_%d_%s.%s', random_int(1, 999), $file->getFilename(), $file->guessExtension()))
+    );
+
+The ``FileField`` closure also receives the entity as a second argument. This
+allows naming files based on entity data. On the ``new`` page, the entity is a
+fresh instance (possibly without an ID); on the ``edit`` page, it has its
+current database values::
+
+    yield FileField::new('...')->setUploadedFileNamePattern(
+        static fn (UploadedFile $file, MyEntity $entity): string => sprintf('%s/[name].[extension]', $entity->getSlug()))
     );
 
 isDeletable
 ~~~~~~~~~~~
 
-By default, the image upload widget shows a "delete" checkbox that allows users
-to remove the uploaded image. Use this option to hide that checkbox::
+By default, the file upload widget shows a "delete" checkbox that allows users
+to remove the uploaded file. Use this option to hide that checkbox::
 
-    yield ImageField::new('...')->isDeletable(false);
+    yield FileField::new('...')->isDeletable(false);
 
 isDownloadable
 ~~~~~~~~~~~~~~
 
-By default, a link to download the uploaded image is displayed next to the form
+By default, a link to download the uploaded file is displayed next to the form
 field. Use this option to hide that link::
 
-    yield ImageField::new('...')->isDownloadable(false);
+    yield FileField::new('...')->isDownloadable(false);
 
 isViewable
 ~~~~~~~~~~
 
-By default, a link to view the uploaded image is displayed next to the form field.
+By default, a link to view the uploaded file is displayed next to the form field.
 Use this option to hide that link::
 
-    yield ImageField::new('...')->isViewable(false);
+    yield FileField::new('...')->isViewable(false);
 
 maxSize
 ~~~~~~~
 
-Use this option to set the maximum allowed image size. The value can be an integer
+Use this option to set the maximum allowed file size. The value can be an integer
 (number of bytes) or a suffixed string (e.g. ``'200k'``, ``'2M'``, ``'1G'`` for
 SI units or ``'1Ki'``, ``'1Mi'`` for binary units)::
 
-    yield ImageField::new('...')->maxSize('5M');
-    yield ImageField::new('...')->maxSize(1048576); // 1 MB in bytes
+    yield FileField::new('...')->maxSize('10M');
+    yield FileField::new('...')->maxSize(1048576); // 1 MB in bytes
 
 You can customize the error message by passing a second argument::
 
-    yield ImageField::new('...')->maxSize('2M', 'The image "{{ name }}" is too large ({{ size }} {{ suffix }}). Maximum allowed: {{ limit }} {{ suffix }}.');
+    yield FileField::new('...')->maxSize('5M', 'The file "{{ name }}" is too large ({{ size }} {{ suffix }}). Maximum allowed: {{ limit }} {{ suffix }}.');
 
 The available placeholders for the error message are: ``{{ file }}`` (the absolute
 file path), ``{{ name }}`` (the base file name), ``{{ size }}`` (the file size),
@@ -153,19 +162,20 @@ e.g. ``kB``, ``MB``).
 mimeTypes
 ~~~~~~~~~
 
-By default, the accepted MIME types are set to ``image/*``, which restricts the
-browser's file dialog to image files. Use this option to customize the accepted
-file types. The value is a string with a comma-separated list of file extensions
+By default, all file types are accepted. Use this option to restrict the allowed
+MIME types. The value is a string with a comma-separated list of file extensions
 or MIME types. You can use any value valid in the `HTML "accept" attribute`_::
 
-    yield ImageField::new('...')->mimeTypes('.png,.jpg,.webp');
-    yield ImageField::new('...')->mimeTypes('image/png,image/jpeg');
+    yield FileField::new('...')->mimeTypes('.pdf,.doc,.docx');
+    yield FileField::new('...')->mimeTypes('video/*');
+    yield FileField::new('...')->mimeTypes('image/*');
+    yield FileField::new('...')->mimeTypes('.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 
 When this option is set, the corresponding MIME types are also added
 automatically as validation constraints. You can customize the error message
 shown when the validation fails by passing a second argument::
 
-    yield ImageField::new('...')->mimeTypes('.png,.jpg', 'The image "{{ name }}" has MIME type "{{ type }}" but only "{{ types }}" are allowed.');
+    yield FileField::new('...')->mimeTypes('.pdf', 'The file "{{ name }}" has MIME type "{{ type }}" but only "{{ types }}" are allowed.');
 
 The available placeholders for the error message are: ``{{ file }}`` (the absolute
 file path), ``{{ name }}`` (the base file name), ``{{ type }}`` (the MIME type of
@@ -174,7 +184,7 @@ the uploaded file) and ``{{ types }}`` (the list of allowed MIME types).
 Replaced File Behavior
 ~~~~~~~~~~~~~~~~~~~~~~
 
-When a user uploads a new image to replace an existing one, ``ImageField``
+When a user uploads a new file to replace an existing one, ``FileField``
 controls what happens to the old file on disk. There are three behaviors:
 
 ``deleteReplacedFile``
@@ -182,30 +192,55 @@ controls what happens to the old file on disk. There are three behaviors:
     new file has the same name as an existing file, a numeric suffix (``_1``,
     ``_2``, etc.) is appended to avoid conflicts::
 
-        yield ImageField::new('...')->deleteReplacedFile();
+        yield FileField::new('...')->deleteReplacedFile();
 
 ``keepReplacedFile``
     The old file is kept on disk. If you upload a new file with the same name,
     the contents are silently overwritten::
 
-        yield ImageField::new('...')->keepReplacedFile();
+        yield FileField::new('...')->keepReplacedFile();
 
 ``keepReplacedFileOrFail``
     The old file is kept on disk. If the new file's name conflicts with an
     existing file, an error is thrown::
 
-        yield ImageField::new('...')->keepReplacedFileOrFail();
+        yield FileField::new('...')->keepReplacedFileOrFail();
 
 Flysystem Integration (Remote Storage)
 --------------------------------------
 
-By default, ``ImageField`` stores uploaded images on the local filesystem. If you
-need to store images in a remote storage service (Amazon S3, Google Cloud Storage,
+By default, ``FileField`` stores uploaded files on the local filesystem. If you
+need to store files in a remote storage service (Amazon S3, Google Cloud Storage,
 Azure Blob Storage, etc.) you can integrate with `Flysystem`_ via the
 `league/flysystem-bundle`_.
 
-Refer to the :doc:`FileField documentation </fields/FileField>` for the
-installation and Flysystem configuration steps.
+Installation
+~~~~~~~~~~~~
+
+Install the Flysystem bundle and the adapter for your storage service:
+
+.. code-block:: terminal
+
+    $ composer require league/flysystem-bundle
+
+Then install the adapter you need (e.g. for Amazon S3):
+
+.. code-block:: terminal
+
+    $ composer require league/flysystem-aws-s3-v3
+
+Configure Flysystem in your application:
+
+.. code-block:: yaml
+
+    # config/packages/flysystem.yaml
+    flysystem:
+        storages:
+            default.storage:
+                adapter: 'aws'
+                options:
+                    client: 'Aws\S3\S3Client'
+                    bucket: 'my-bucket'
 
 Usage
 ~~~~~
@@ -214,20 +249,20 @@ Use the ``setFlysystemStorage()`` method to tell EasyAdmin which Flysystem stora
 to use. The argument is the service ID of the storage as defined in your Flysystem
 configuration (e.g. ``default.storage``)::
 
-    yield ImageField::new('photo')
+    yield FileField::new('attachment')
         ->setFlysystemStorage('default.storage')
         ->setFlysystemUrlPrefix('https://cdn.example.com/uploads')
-        ->setUploadDir('images/')
+        ->setUploadDir('files/')
         ->setUploadedFileNamePattern('[uuid].[extension]');
 
 setFlysystemStorage
 ~~~~~~~~~~~~~~~~~~~
 
-Sets the Flysystem storage service ID to use for uploading and deleting images.
+Sets the Flysystem storage service ID to use for uploading and deleting files.
 This is the key you defined under ``flysystem.storages`` in your Flysystem
 configuration::
 
-    yield ImageField::new('...')->setFlysystemStorage('default.storage');
+    yield FileField::new('...')->setFlysystemStorage('default.storage');
 
 When this option is set, EasyAdmin automatically replaces the local upload,
 delete, and validation callables with Flysystem equivalents. The upload directory
@@ -237,12 +272,12 @@ storage (not as a local directory).
 setFlysystemUrlPrefix
 ~~~~~~~~~~~~~~~~~~~~~
 
-Sets the URL prefix used to build the public URLs for images stored in Flysystem.
+Sets the URL prefix used to build the public URLs for files stored in Flysystem.
 This is typically a CDN URL or a public URL pointing to your storage bucket::
 
-    yield ImageField::new('...')->setFlysystemUrlPrefix('https://cdn.example.com/uploads');
+    yield FileField::new('...')->setFlysystemUrlPrefix('https://cdn.example.com/uploads');
 
-This prefix is combined with the image path to generate the full URL shown in the
+This prefix is combined with the file path to generate the full URL shown in the
 ``index`` and ``detail`` pages.
 
 .. note::
@@ -250,13 +285,24 @@ This prefix is combined with the image path to generate the full URL shown in th
     When using Flysystem, the ``setBasePath()`` option is ignored. Use
     ``setFlysystemUrlPrefix()`` instead.
 
+How It Works
+~~~~~~~~~~~~
+
+When Flysystem is configured for a field:
+
+* **Upload**: new files are written to the Flysystem storage using
+  ``writeStream()`` instead of being moved to a local directory.
+* **Delete**: files are removed from the Flysystem storage using ``delete()``
+  instead of ``unlink()``.
+* **Validation**: file existence is checked using ``fileExists()`` instead of
+  the local filesystem.
+* **Display**: file URLs are built from the configured URL prefix instead of
+  using the Symfony ``asset()`` function.
+
 All existing options (``setUploadedFileNamePattern()``, ``setFileConstraints()``,
 ``mimeTypes()``, ``maxSize()``, replaced file behaviors, ``isDeletable()``) continue
-to work exactly the same way with Flysystem. See the
-:doc:`FileField documentation </fields/FileField>` for details about how
-Flysystem integration works internally.
+to work exactly the same way with Flysystem.
 
 .. _`HTML "accept" attribute`: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/accept
-.. _`Image constraint`: https://symfony.com/doc/current/reference/constraints/Image.html
 .. _`Flysystem`: https://flysystem.thephpleague.com
 .. _`league/flysystem-bundle`: https://github.com/thephpleague/flysystem-bundle

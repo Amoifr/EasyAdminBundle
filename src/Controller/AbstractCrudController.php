@@ -15,6 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ReplacedFileBehavior;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Controller\CrudControllerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\EntityRepositoryInterface;
@@ -687,10 +688,13 @@ abstract class AbstractCrudController extends AbstractController implements Crud
             }
 
             $uploadDelete = $config->getOption('upload_delete');
+            $replacedFileBehavior = $config->getOption('replaced_file_behavior');
 
             if ($state->hasCurrentFiles() && ($state->isDelete() || (!$state->isAddAllowed() && $state->hasUploadedFiles()))) {
-                foreach ($state->getCurrentFiles() as $file) {
-                    $uploadDelete($file);
+                if ($state->isDelete() || ReplacedFileBehavior::DELETE === $replacedFileBehavior) {
+                    foreach ($state->getCurrentFiles() as $file) {
+                        $uploadDelete($file);
+                    }
                 }
                 $state->setCurrentFiles([]);
             }

@@ -4,18 +4,16 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Field;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ReplacedFileBehavior;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Option\TextAlign;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\FileUploadType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Contracts\Translation\TranslatableInterface;
 
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
-final class ImageField implements FieldInterface
+final class FileField implements FieldInterface
 {
     use FieldTrait;
 
@@ -39,17 +37,16 @@ final class ImageField implements FieldInterface
         return (new self())
             ->setProperty($propertyName)
             ->setLabel($label)
-            ->setTemplateName('crud/field/image')
+            ->setTemplateName('crud/field/file')
             ->setFormType(FileUploadType::class)
-            ->addCssClass('field-image')
-            ->addJsFiles(Asset::fromEasyAdminAssetPackage('field-image.js'), Asset::fromEasyAdminAssetPackage('field-file-upload.js'))
+            ->addCssClass('field-file')
+            ->addJsFiles(Asset::fromEasyAdminAssetPackage('field-file-upload.js'))
             ->setDefaultColumns('col-md-7 col-xxl-5')
-            ->setTextAlign(TextAlign::CENTER)
             ->setCustomOption(self::OPTION_BASE_PATH, null)
             ->setCustomOption(self::OPTION_UPLOAD_DIR, null)
             ->setCustomOption(self::OPTION_UPLOADED_FILE_NAME_PATTERN, '[name].[extension]')
-            ->setCustomOption(self::OPTION_FILE_CONSTRAINTS, [new Image()])
-            ->setCustomOption(self::OPTION_MIME_TYPES, 'image/*')
+            ->setCustomOption(self::OPTION_FILE_CONSTRAINTS, [])
+            ->setCustomOption(self::OPTION_MIME_TYPES, null)
             ->setCustomOption(self::OPTION_REPLACED_FILE_BEHAVIOR, ReplacedFileBehavior::DELETE)
             ->setCustomOption(self::OPTION_VIEWABLE, true)
             ->setCustomOption(self::OPTION_DOWNLOADABLE, true)
@@ -62,8 +59,8 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * Sets the path prepended to the image name to build the URL used
-     * to display the image in the detail and index pages (e.g. 'uploads/images/').
+     * Sets the path prepended to the file name to build the URL used
+     * to display the file in the detail and index pages (e.g. 'uploads/files/').
      */
     public function setBasePath(string $path): self
     {
@@ -74,7 +71,7 @@ final class ImageField implements FieldInterface
 
     /**
      * Relative to project's root directory (e.g. use 'public/uploads/' for `<your-project-dir>/public/uploads/`)
-     * Default upload dir: `<your-project-dir>/public/uploads/images/`.
+     * Default upload dir: `<your-project-dir>/public/uploads/files/`.
      */
     public function setUploadDir(string $uploadDirPath): self
     {
@@ -86,7 +83,7 @@ final class ImageField implements FieldInterface
     /**
      * @param string|\Closure(UploadedFile, object): string $patternOrCallable
      *
-     * If it's a string, image files will be renamed according to the given pattern.
+     * If it's a string, uploaded files will be renamed according to the given pattern.
      * The pattern can include the following special values:
      *
      *    [DD] [MM] [YYYY] [YY] [hh] [mm] [ss] [timestamp]
@@ -95,16 +92,13 @@ final class ImageField implements FieldInterface
      *
      *    e.g. [YYYY]/[MM]/[DD]/[slug]-[contenthash].[extension]
      *
-     * Note: [day], [month] and [year] are deprecated since 5.1 (use [DD], [MM], [YYYY] instead).
-     * They will be removed in 6.0.
-     *
      * If it's a callable, you will be passed the UploadedFile instance and the
      * current entity instance, and you must return a string with the new filename
      * (which can include subdirectories). On the NEW page, the entity is a fresh
      * instance (possibly without an ID). On the EDIT page, it has its current DB values.
      * Example:
      *
-     *     fn (UploadedFile $image, MyEntity $entity) => sprintf('%s/%s.%s', $entity->getSlug(), $image->getFilename(), $image->guessExtension())
+     *     fn (UploadedFile $file, MyEntity $entity) => sprintf('%s/%s.%s', $entity->getSlug(), $file->getFilename(), $file->guessExtension())
      */
     public function setUploadedFileNamePattern(string|\Closure $patternOrCallable): self
     {
@@ -116,8 +110,7 @@ final class ImageField implements FieldInterface
     /**
      * @param Constraint|array<Constraint> $constraints
      *
-     * Define constraints to be validated on the FileType.
-     * Image constraint is set by default.
+     * Define constraints to be validated on the FileType
      */
     public function setFileConstraints($constraints): self
     {
@@ -127,16 +120,20 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * Defines the allowed MIME types for this image (by default, all image types are accepted).
+     * Defines the allowed MIME types for this file (by default, all types are accepted).
      *
      * @param string $mimeTypes a comma-separated list of one or more file types.
      *                          You can use any value considered valid in the HTML `accept` attribute
      *                          https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/accept
      *                          Examples:
      *
-     *     '.png'                  (single extension)
-     *     '.jpg,.jpeg'            (multiple extensions)
+     *     '.pdf'                  (single extension)
+     *     '.doc,.docx'            (multiple extensions)
+     *     'image/*'               (any image type)
      *     'image/png,image/jpeg'  (specific MIME types)
+     *     'video/*'               (any video type)
+     *     'audio/*'               (any audio type)
+     *     '.pdf,image/*'          (mix of extensions and MIME types)
      * @param string|null $errorMessage Custom error message shown when the MIME type is invalid.
      *                                  Available placeholders:
      *
@@ -154,10 +151,10 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * Sets the maximum allowed size for the uploaded image.
+     * Sets the maximum allowed size per uploaded file.
      *
      * @param int|string  $maxSize        an integer (bytes) or a suffixed string: `'200k'`, `'2M'`, `'1G'` (SI units) or `'1Ki'`, `'1Mi'` (binary units)
-     * @param string|null $maxSizeMessage Custom error message shown when the image exceeds the maximum size.
+     * @param string|null $maxSizeMessage Custom error message shown when the file exceeds the maximum size.
      *                                    Available placeholders:
      *
      *     {{ file }}    // absolute file path
@@ -175,7 +172,7 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * When an image is replaced by uploading a new one, the old image is deleted
+     * When a file is replaced by uploading a new one, the old file is deleted
      * from the filesystem (this is the default behavior).
      */
     public function deleteReplacedFile(): self
@@ -186,7 +183,7 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * When an image is replaced by uploading a new one, the old image is kept
+     * When a file is replaced by uploading a new one, the old file is kept
      * in the filesystem (renamed to avoid collisions).
      */
     public function keepReplacedFile(): self
@@ -197,8 +194,8 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * When an image is replaced by uploading a new one, the old image is kept
-     * and an exception is thrown if the new image name conflicts with an existing one.
+     * When a file is replaced by uploading a new one, the old file is kept
+     * and an exception is thrown if the new file name conflicts with an existing one.
      */
     public function keepReplacedFileOrFail(): self
     {
@@ -208,7 +205,7 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * If true (default), a link to view the image is displayed next to the form field.
+     * If true (default), a link to view the file is displayed next to the form field.
      */
     public function isViewable(bool $isViewable = true): self
     {
@@ -218,7 +215,7 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * If true (default), a link to download the image is displayed next to the form field.
+     * If true (default), a link to download the file is displayed next to the form field.
      */
     public function isDownloadable(bool $isDownloadable = true): self
     {
@@ -228,7 +225,7 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * If true (default), a button to delete the image is displayed next to the form field.
+     * If true (default), a button to delete the file is displayed next to the form field.
      */
     public function isDeletable(bool $isDeletable = true): self
     {
@@ -238,7 +235,7 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * Sets the Flysystem storage service ID to use for uploading/deleting images
+     * Sets the Flysystem storage service ID to use for uploading/deleting files
      * (e.g. 'default.storage' as registered by league/flysystem-bundle).
      */
     public function setFlysystemStorage(string $storageName): self
@@ -249,7 +246,7 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * Sets the URL prefix used to generate public URLs for images stored in Flysystem
+     * Sets the URL prefix used to generate public URLs for files stored in Flysystem
      * (e.g. 'https://cdn.example.com/uploads').
      */
     public function setFlysystemUrlPrefix(string $urlPrefix): self

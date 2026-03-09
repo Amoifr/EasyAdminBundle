@@ -43,6 +43,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CountryConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CurrencyConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\DateTimeConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\EmailConfigurator;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\FileConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\FormConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\IdConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\ImageConfigurator;
@@ -404,8 +405,13 @@ return static function (ContainerConfigurator $container) {
 
         ->set(IdConfigurator::class)
 
+        ->set(FileConfigurator::class)
+            ->arg(0, param('kernel.project_dir'))
+            ->arg(1, tagged_locator(EasyAdminExtension::TAG_FLYSYSTEM_STORAGE))
+
         ->set(ImageConfigurator::class)
             ->arg(0, param('kernel.project_dir'))
+            ->arg(1, tagged_locator(EasyAdminExtension::TAG_FLYSYSTEM_STORAGE))
 
         ->set(IntegerConfigurator::class)
 

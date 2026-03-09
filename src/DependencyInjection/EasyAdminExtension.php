@@ -26,6 +26,7 @@ class EasyAdminExtension extends Extension implements PrependExtensionInterface
     public const TAG_FIELD_CONFIGURATOR = 'ea.field_configurator';
     public const TAG_FILTER_CONFIGURATOR = 'ea.filter_configurator';
     public const TAG_ACTIONS_EXTENSION = 'ea.actions_extension';
+    public const TAG_FLYSYSTEM_STORAGE = 'ea.flysystem_storage';
 
     public function load(array $configs, ContainerBuilder $container): void
     {
@@ -49,6 +50,11 @@ class EasyAdminExtension extends Extension implements PrependExtensionInterface
 
         $container->registerForAutoconfiguration(ActionsExtensionInterface::class)
             ->addTag(self::TAG_ACTIONS_EXTENSION);
+
+        if (interface_exists('League\Flysystem\FilesystemOperator')) {
+            $container->registerForAutoconfiguration(\League\Flysystem\FilesystemOperator::class)
+                ->addTag(self::TAG_FLYSYSTEM_STORAGE);
+        }
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../../config'));
         $loader->load('services.php');

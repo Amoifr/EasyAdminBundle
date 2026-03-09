@@ -61,6 +61,7 @@
         "symfony/process": "^6.4.33|^7.0|^8.0",
         "symfony/web-link": "^6.4.32|^7.0|^8.0",
         "vincentlanglet/twig-cs-fixer": "^3.10",
+        "league/flysystem": "^3.0",
         "zenstruck/foundry": "^2.3"
     },
     "config": {
