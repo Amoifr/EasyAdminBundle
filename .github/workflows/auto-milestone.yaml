@@ -5,7 +5,7 @@ on:
         types: [opened]
 
 env:
-    MILESTONE_NAME: '4.x'
+    MILESTONE_NAME: '5.x'
 
 jobs:
     assign-milestone:
