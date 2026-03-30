@@ -19,7 +19,7 @@ final class EntityDto implements \Stringable
     private bool $isAccessible = true;
     private mixed $primaryKeyValue = null;
     private ?FieldCollection $fields = null;
-    private ?ActionCollection $actions = null;
+    private ActionCollection $actions;
     private ?string $defaultActionUrl = null;
 
     /**
@@ -33,6 +33,7 @@ final class EntityDto implements \Stringable
         private readonly string|Expression|null $permission = null,
         private ?object $entityInstance = null,
     ) {
+        $this->actions = new ActionCollection();
     }
 
     public function __toString(): string
