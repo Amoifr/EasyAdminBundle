@@ -48,11 +48,14 @@ class CrudAutocompleteType extends AbstractType implements DataMapperInterface
             // options for custom rendering of selected items (to match the rendering of the other entries in the dropdown)
             'autocomplete_callback' => null,
             'autocomplete_template' => null,
+            // allow choice_label to customize how selected items are displayed
+            'choice_label' => null,
         ]);
 
         $resolver->setRequired(['class']);
         $resolver->setAllowedTypes('autocomplete_callback', ['null', 'callable']);
         $resolver->setAllowedTypes('autocomplete_template', ['null', 'string']);
+        $resolver->setAllowedTypes('choice_label', ['null', 'string', 'callable', 'bool']);
     }
 
     public function getBlockPrefix(): string
