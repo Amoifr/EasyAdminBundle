@@ -703,13 +703,18 @@ The following example shows all kinds of actions in practice::
             ;
         }
 
-        public function renderInvoice(AdminContext $context)
+        #[AdminRoute('/{entityId:order.id}/invoice')]
+        public function renderInvoice(Order $order): Response
         {
-            $order = $context->getEntity()->getInstance();
-
-            // add your logic here...
+            // add your custom order logic here...
         }
     }
+
+Apply the ``#[AdminRoute]`` attribute to turn CRUD controller methods into custom
+CRUD actions with their own admin routes. In the above example, if the dashboard
+uses ``admin`` as the main route name, EasyAdmin generates a route named
+``admin_order_render_invoice`` with the path ``/admin/order/{entityId}/invoice``.
+You can :ref:`customize the name, path, and methods <crud_routes>` of this route.
 
 .. tip::
 
@@ -717,41 +722,6 @@ The following example shows all kinds of actions in practice::
     When actions are defined as methods of CRUD controllers, they can use any
     of the shortcuts and utilities available in regular `Symfony controllers`_,
     such as ``$this->render()``, ``$this->redirect()``, and others.
-
-It's recommended to apply the ``#[AdminRoute]`` attribute to your custom actions
-to :ref:`customize their route name, path and methods <crud_routes>`. This is
-recommended even for custom actions defined as methods in the CRUD controllers::
-
-    namespace App\Controller\Admin;
-
-    use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
-    use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-    use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-    use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-
-    class OrderCrudController extends AbstractCrudController
-    {
-        public function configureActions(Actions $actions): Actions
-        {
-            $viewInvoice = Action::new('viewInvoice', 'Invoice', 'fa fa-file-invoice')
-                ->linkToCrudAction('renderInvoice');
-
-            // ...
-        }
-
-        // ...
-
-        #[AdminRoute(path: '/invoice', name: 'view_invoice')]
-        public function renderInvoice(AdminContext $context)
-        {
-            // if the dashboard uses 'admin' as the main route name, the resulting
-            // route of this action will be:
-            //   path: /admin/order/invoice
-            //   name: admin_order_view_invoice
-
-            // ...
-        }
-    }
 
 .. _global-actions:
 

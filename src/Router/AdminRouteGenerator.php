@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Contracts\Controller\CrudControllerInterface
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Controller\DashboardControllerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Router\AdminRouteGeneratorInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Config\Resource\ReflectionClassResource;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -20,6 +21,12 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
 {
     public const CACHE_KEY_ROUTE_TO_FQCN = 'easyadmin.routes.route_to_fqcn';
     public const CACHE_KEY_FQCN_TO_ROUTE = 'easyadmin.routes.fqcn_to_route';
+
+    public const BUILT_IN_ACTION_NAMES = [
+        Action::INDEX, Action::NEW, Action::EDIT, Action::DETAIL, Action::DELETE,
+        Action::BATCH_DELETE, Action::SAVE_AND_ADD_ANOTHER, Action::SAVE_AND_CONTINUE,
+        Action::SAVE_AND_RETURN, 'autocomplete', 'renderFilters',
+    ];
 
     private const DEFAULT_ROUTES_CONFIG = [
         Action::INDEX => [
@@ -96,6 +103,18 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
 
         foreach ($adminRoutes as $routeName => $route) {
             $collection->add($routeName, $route);
+        }
+
+        // track controller files as resources so Symfony's routing cache
+        // is rebuilt automatically when adding/changing route attributes
+        foreach ($this->dashboardControllers as $dashboardController) {
+            $collection->addResource(new ReflectionClassResource(new \ReflectionClass($dashboardController)));
+        }
+        foreach ($this->crudControllers as $crudController) {
+            $collection->addResource(new ReflectionClassResource(new \ReflectionClass($crudController)));
+        }
+        foreach ($this->adminRouteControllers as $adminRouteController) {
+            $collection->addResource(new ReflectionClassResource(new \ReflectionClass($adminRouteController)));
         }
 
         // this dumps all admin routes in a performance-optimized format to later

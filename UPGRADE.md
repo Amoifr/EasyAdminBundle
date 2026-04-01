@@ -1,6 +1,76 @@
 Upgrade between EasyAdmin 4.x versions
 ======================================
 
+EasyAdmin 4.29.5
+----------------
+
+When using pretty URLs, it's deprecated to define custom CRUD actions without applying the
+`#[AdminRoute]` attribute to them. In EasyAdmin 5.x, custom actions without this attribute
+will be ignored and code like `->linkToCrudAction('foo')` will no longer work:
+
+    // Before
+
+    use App\Entity\Comment;
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+    use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+    use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+    use Symfony\Component\HttpFoundation\Response;
+
+    class CommentCrudController extends AbstractCrudController
+    {
+        // ...
+
+        public function configureActions(Actions $actions): Actions
+        {
+            return $actions
+                ->add(
+                    Crud::PAGE_INDEX,
+                    Action::new('markSpam', 'action.mark_spam')->linkToCrudAction('markCommentAsSpam')
+                )
+            ;
+        }
+
+        public function markCommentAsSpam(AdminContext $context): Response
+        {
+            /** @var Comment $comment */
+            $comment = $context->getEntity()->getInstance();
+
+            $comment->markAsSpam();
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('admin_comment_index');
+        }
+    }
+
+    // After
+    use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
+    // ...
+
+    class CommentCrudController extends AbstractCrudController
+    {
+        // ...
+
+        public function configureActions(Actions $actions): Actions
+        {
+            return $actions
+                ->add(
+                    Crud::PAGE_INDEX,
+                    Action::new('markSpam', 'action.mark_spam')->linkToCrudAction('markCommentAsSpam')
+                )
+            ;
+        }
+
+        #[AdminRoute('/{entityId:comment.id}/mark-as-spam')]
+        public function markCommentAsSpam(Comment $comment): Response
+        {
+            $comment->markAsSpam();
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('admin_comment_index');
+        }
+    }
+
 EasyAdmin 4.29.0
 ----------------
 
