@@ -658,6 +658,7 @@ The following example shows all kinds of actions in practice::
 
     use App\Entity\Invoice;
     use App\Entity\Order;
+    use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
     use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
     use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
     use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;

@@ -163,7 +163,6 @@ final class AdminUrlGenerator implements \Stringable, AdminUrlGeneratorInterface
             $this->unset(EA::ENTITY_ID);
         }
 
-        $dashboardRoutes = $this->adminRouteGenerator->getDashboardRoutes();
         // this happens when generating URLs from outside EasyAdmin (AdminContext is null) and
         // no Dashboard FQCN has been defined explicitly
         if (null === $this->dashboardRoute) {
