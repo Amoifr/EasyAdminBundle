@@ -45,6 +45,76 @@ yield MenuItem::linkTo(BlogPostCrudController::class, 'Blog Posts', 'fa fa-file-
 yield MenuItem::linkTo(CommentCrudController::class);
 ```
 
+## Custom CRUD Actions
+
+Custom CRUD actions now require to apply the `#[AdminRoute]` attribute to them.
+Otherwise, they are ignored when generating routes for the backend and code
+like `->linkToCrudAction('foo')` will no longer work:
+
+```php
+// Before (4.x)
+use App\Entity\Comment;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use Symfony\Component\HttpFoundation\Response;
+
+class CommentCrudController extends AbstractCrudController
+{
+    // ...
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->add(
+                Crud::PAGE_INDEX,
+                Action::new('markSpam', 'action.mark_spam')->linkToCrudAction('markCommentAsSpam')
+            )
+        ;
+    }
+
+    public function markCommentAsSpam(AdminContext $context): Response
+    {
+        /** @var Comment $comment */
+        $comment = $context->getEntity()->getInstance();
+
+        $comment->markAsSpam();
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('admin_comment_index');
+    }
+}
+
+// After (5.x)
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
+// ...
+
+class CommentCrudController extends AbstractCrudController
+{
+    // ...
+    
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->add(
+                Crud::PAGE_INDEX,
+                Action::new('markSpam', 'action.mark_spam')->linkToCrudAction('markCommentAsSpam')
+            )
+        ;
+    }
+
+    #[AdminRoute('/{entityId:comment.id}/mark-as-spam')]
+    public function markCommentAsSpam(Comment $comment): Response
+    {
+        $comment->markAsSpam();
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('admin_comment_index');
+    }
+}
+```
+
 ## Actions
 
 Some methods related to actions have been removed in favor of equivalent
@@ -94,6 +164,11 @@ yield FormField::addPanel('...');
 // After (5.x)
 yield FormField::addFieldset('...');
 ```
+
+## Attributes
+
+The `#[AdminCrud]` and `#[AdminAction]` attributes have been removed in favor
+of the `#[AdminRoute]` attribute.
 
 ## Contracts
 
