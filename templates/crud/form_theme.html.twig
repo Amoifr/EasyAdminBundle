@@ -115,6 +115,20 @@
     {% endif %}
 {% endblock form_row %}
 
+{% block repeated_row %}
+    {% set field = form.vars.ea_vars.field %}
+
+    <div class="{{ field.columns ?? field.defaultColumns ?? '' }}">
+        {{- block('form_rows') -}}
+    </div>
+
+    {# if a field doesn't define its columns explicitly, insert a fill element to make the field take the entire row space #}
+    {% if field.columns|default(null) is null %}
+        <div class="flex-fill"></div>
+    {% endif %}
+
+{% endblock repeated_row %}
+
 {% block choice_widget_collapsed %}
     {% if 'ea-autocomplete' == attr['data-ea-widget']|default(false) %}
         {% set attr = attr|merge({
