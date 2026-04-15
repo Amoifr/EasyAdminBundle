@@ -30,7 +30,7 @@ class FormLayoutSubscriber implements EventSubscriberInterface
      *
      * @return void
      */
-    public function handleLayoutErrors(FormEvent $event)
+    public function handleLayoutErrors(FormEvent $event): void
     {
         $this->handleTabErrors($event);
         $this->handleFieldsetErrors($event);
