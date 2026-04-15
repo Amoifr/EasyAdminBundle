@@ -703,6 +703,7 @@ These are all the built-in fields provided by EasyAdmin:
 * :doc:`DateField </fields/DateField>`
 * :doc:`DateTimeField </fields/DateTimeField>`
 * :doc:`EmailField </fields/EmailField>`
+* :doc:`FileField </fields/FileField>`
 * :doc:`HiddenField </fields/HiddenField>`
 * :doc:`IdField </fields/IdField>`
 * :doc:`ImageField </fields/ImageField>`
@@ -761,7 +762,7 @@ Doctrine Type             Recommended EasyAdmin Fields
 In addition to these, EasyAdmin includes other field types for specific values:
 
 * ``AvatarField``, ``ColorField``, ``CountryField``, ``CurrencyField``, ``EmailField``,
-  ``IdField``, ``ImageField``, ``LanguageField``, ``LocaleField``, ``SlugField``,
+  ``FileField``, ``IdField``, ``ImageField``, ``LanguageField``, ``LocaleField``, ``SlugField``,
   ``TelephoneField``, ``TimezoneField`` and ``UrlField`` work well with Doctrine's
   ``string`` type.
 * ``MoneyField`` and ``PercentField`` work well with Doctrine's ``decimal``, ``float``

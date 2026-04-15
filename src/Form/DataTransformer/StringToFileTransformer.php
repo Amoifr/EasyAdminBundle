@@ -2,6 +2,8 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Form\DataTransformer;
 
+use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Model\FlysystemFile;
+use League\Flysystem\FilesystemOperator;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\HttpFoundation\File\File;
@@ -22,6 +24,7 @@ class StringToFileTransformer implements DataTransformerInterface
         callable $uploadFilename,
         callable $uploadValidate,
         private readonly bool $multiple,
+        private readonly ?FilesystemOperator $flysystemStorage = null,
     ) {
         $this->uploadFilename = $uploadFilename;
         $this->uploadValidate = $uploadValidate;
@@ -47,7 +50,7 @@ class StringToFileTransformer implements DataTransformerInterface
     public function reverseTransform(mixed $value): mixed
     {
         if (null === $value || [] === $value) {
-            return null;
+            return $this->multiple ? [] : '';
         }
 
         if (!$this->multiple) {
@@ -61,18 +64,35 @@ class StringToFileTransformer implements DataTransformerInterface
         return array_map([$this, 'doReverseTransform'], $value);
     }
 
-    private function doTransform(mixed $value): ?File
+    private function doTransform(mixed $value): File|FlysystemFile|null
     {
         if (null === $value) {
             return null;
         }
 
-        if ($value instanceof File) {
+        if ($value instanceof File || $value instanceof FlysystemFile) {
             return $value;
         }
 
         if (!\is_string($value)) {
             throw new TransformationFailedException('Expected a string or null.');
+        }
+
+        if (null !== $this->flysystemStorage) {
+            try {
+                if ($this->flysystemStorage->fileExists($value)) {
+                    $size = null;
+                    try {
+                        $size = $this->flysystemStorage->fileSize($value);
+                    } catch (\Throwable) {
+                    }
+
+                    return new FlysystemFile($value, null, $size);
+                }
+            } catch (\Throwable) {
+            }
+
+            return null;
         }
 
         if (is_file($this->uploadDir.$value)) {
@@ -98,10 +118,16 @@ class StringToFileTransformer implements DataTransformerInterface
             return ($this->uploadValidate)($filename);
         }
 
-        if ($value instanceof File) {
-            return $value->getFilename();
+        if ($value instanceof FlysystemFile) {
+            return $value->getPathname();
         }
 
-        throw new TransformationFailedException('Expected an instance of File or null.');
+        if ($value instanceof File) {
+            return str_starts_with($value->getPathname(), $this->uploadDir)
+                ? mb_substr($value->getPathname(), mb_strlen($this->uploadDir))
+                : $value->getFilename();
+        }
+
+        throw new TransformationFailedException('Expected an instance of File, FlysystemFile, or null.');
     }
 }

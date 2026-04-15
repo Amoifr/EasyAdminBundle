@@ -31,9 +31,6 @@ class CrudAutocompleteSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @return void
-     */
     public function preSetData(FormEvent $event): void
     {
         $form = $event->getForm();
@@ -69,9 +66,6 @@ class CrudAutocompleteSubscriber implements EventSubscriberInterface
         $form->add('autocomplete', EntityType::class, $options);
     }
 
-    /**
-     * @return void
-     */
     public function preSubmit(FormEvent $event): void
     {
         $data = $event->getData();
