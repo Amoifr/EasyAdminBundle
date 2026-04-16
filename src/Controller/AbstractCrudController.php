@@ -385,7 +385,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
         $csrfToken = $context->getRequest()->request->has('token')
             ? (string) $context->getRequest()->request->get('token')
             : null;
-        if ($this->container->has('security.csrf.token_manager') && !$this->isCsrfTokenValid('ea-delete', $csrfToken)) {
+        if (!$this->isCsrfTokenValid('ea-delete', $csrfToken)) {
             return $this->redirectToRoute($context->getDashboardRouteName());
         }
 
