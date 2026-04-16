@@ -91,7 +91,7 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
-    private function addAssociationFixtures(ObjectManager $manager)
+    private function addAssociationFixtures(ObjectManager $manager): void
     {
         // customer <-Many-To-Many-> Bill
 
