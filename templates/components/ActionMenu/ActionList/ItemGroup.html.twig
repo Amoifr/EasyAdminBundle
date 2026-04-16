@@ -56,7 +56,7 @@
                 {% if subItem.type == 'divider' %}
                     <twig:ea:ActionMenu:ActionList:Divider />
                 {% elseif subItem.type == 'header' %}
-                    <twig:ea:ActionMenu:ActionList:Header label="{{ subItem.content }}" renderLabelRaw="true" />
+                    <twig:ea:ActionMenu:ActionList:Header label="{{ subItem.content|trans }}" renderLabelRaw="true" />
                 {% endif %}
             {% else %}
                 {# subItem is an ActionDto #}
