@@ -78,6 +78,10 @@ class StringToFileTransformer implements DataTransformerInterface
             throw new TransformationFailedException('Expected a string or null.');
         }
 
+        if (self::isUnsafeStoredPath($value)) {
+            return null;
+        }
+
         if (null !== $this->flysystemStorage) {
             try {
                 if ($this->flysystemStorage->fileExists($value)) {
@@ -91,8 +95,6 @@ class StringToFileTransformer implements DataTransformerInterface
                 }
             } catch (\Throwable) {
             }
-
-            return null;
         }
 
         if (is_file($this->uploadDir.$value)) {
@@ -100,6 +102,29 @@ class StringToFileTransformer implements DataTransformerInterface
         }
 
         return null;
+    }
+
+    private static function isUnsafeStoredPath(string $value): bool
+    {
+        // reject empty values or null bytes
+        if ('' === $value || str_contains($value, "\0")) {
+            return true;
+        }
+
+        // reject absolute paths (Unix, UNC, Windows drive letter)
+        $normalized = str_replace('\\', '/', $value);
+        if (str_starts_with($normalized, '/') || 1 === preg_match('#^[a-zA-Z]:/#', $normalized)) {
+            return true;
+        }
+
+        // reject any `..` segment anywhere in the path
+        foreach (explode('/', $normalized) as $segment) {
+            if ('..' === $segment) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function doReverseTransform(mixed $value): ?string
