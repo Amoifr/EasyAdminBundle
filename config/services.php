@@ -38,6 +38,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\AvatarConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\BooleanConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\ChoiceConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CollectionConfigurator;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\ColorConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CommonPostConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CommonPreConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CountryConfigurator;
@@ -442,6 +443,8 @@ return static function (ContainerConfigurator $container) {
             ->arg(0, service(IntlFormatter::class))
 
         ->set(ChoiceConfigurator::class)
+
+        ->set(ColorConfigurator::class)
 
         ->set(CollectionConfigurator::class)
             ->arg(0, service('request_stack'))
