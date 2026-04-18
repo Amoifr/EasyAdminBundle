@@ -95,6 +95,8 @@ class StringToFileTransformer implements DataTransformerInterface
                 }
             } catch (\Throwable) {
             }
+
+            return null;
         }
 
         if (is_file($this->uploadDir.$value)) {
