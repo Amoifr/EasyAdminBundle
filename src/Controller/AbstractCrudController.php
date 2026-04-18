@@ -560,6 +560,12 @@ abstract class AbstractCrudController extends AbstractController implements Crud
 
     public function renderFilters(AdminContext $context): KeyValueStore
     {
+        // not a typo; the filter form is a sub-component of the INDEX page,
+        // so we reuse the INDEX action for permission checks here
+        if (!$this->isGranted(Permission::EA_EXECUTE_ACTION, ['action' => Action::INDEX, 'entity' => null, 'entityFqcn' => $context->getEntity()->getFqcn()])) {
+            throw new ForbiddenActionException($context);
+        }
+
         $fields = new FieldCollection($this->configureFields(Crud::PAGE_INDEX));
         $this->container->get(FieldFactory::class)->processFields($context->getEntity(), $fields, Crud::PAGE_INDEX);
         $filters = $this->container->get(FilterFactory::class)->create($context->getCrud()->getFiltersConfig(), $context->getEntity()->getFields(), $context->getEntity());
