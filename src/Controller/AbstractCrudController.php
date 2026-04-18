@@ -435,8 +435,16 @@ abstract class AbstractCrudController extends AbstractController implements Crud
             return $event->getResponse();
         }
 
-        if (!$this->isCsrfTokenValid('ea-batch-action-'.Action::BATCH_DELETE, $batchActionDto->getCsrfToken())) {
+        if (!$this->isCsrfTokenValid('ea-batch-action-'.Action::BATCH_DELETE.'-'.$batchActionDto->getEntityFqcn(), $batchActionDto->getCsrfToken())) {
             return $this->redirectToRoute($context->getDashboardRouteName());
+        }
+
+        // the entity FQCN in the batch action DTO comes from the POST body and is
+        // attacker-controlled. The FQCN in the admin context comes from the URL-routed
+        // CRUD controller. If they disagree, an admin with batch-delete rights on one
+        // CRUD could delete rows of any other Doctrine entity. Reject the mismatch.
+        if ($batchActionDto->getEntityFqcn() !== $context->getEntity()->getFqcn()) {
+            throw new BadRequestHttpException();
         }
 
         /** @var EntityManagerInterface $entityManager */
