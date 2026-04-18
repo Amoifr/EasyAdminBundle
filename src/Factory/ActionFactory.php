@@ -312,7 +312,9 @@ final readonly class ActionFactory
 
         if ($actionDto->isBatchAction()) {
             $batchActionAttributes = [
-                'data-action-csrf-token' => $this->csrfTokenManager?->getToken('ea-batch-action-'.$actionDto->getName()),
+                // the token id is bound to the entity FQCN so a token minted for
+                // one CRUD cannot be replayed against another CRUD's batch action.
+                'data-action-csrf-token' => $this->csrfTokenManager?->getToken('ea-batch-action-'.$actionDto->getName().'-'.$adminContext->getCrud()->getEntityFqcn()),
                 'data-action-batch' => 'true',
                 'data-entity-fqcn' => $adminContext->getCrud()->getEntityFqcn(),
                 'data-action-url' => $actionDto->getLinkUrl(),

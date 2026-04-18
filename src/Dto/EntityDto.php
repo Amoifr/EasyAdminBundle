@@ -155,7 +155,11 @@ final class EntityDto implements \Stringable
      */
     public function setInstance(?object $newEntityInstance): void
     {
-        if (null !== $this->entityInstance && null !== $newEntityInstance && !$newEntityInstance instanceof $this->fqcn) {
+        // the instanceof guard must run even when $this->instance is null. Otherwise
+        // a caller can store an instance whose class does not match $this->fqcn, and
+        // downstream code (authorization, DB operations) that trusts either side of
+        // that pair may be redirected to the wrong entity (this is a CWE-441 (Confused Deputy) attack vector)
+        if (null !== $newEntityInstance && !$newEntityInstance instanceof $this->fqcn) {
             throw new \InvalidArgumentException(sprintf('The new entity instance must be of the same type as the previous instance (original instance: "%s", new instance: "%s").', $this->fqcn, $newEntityInstance::class));
         }
 
@@ -168,7 +172,12 @@ final class EntityDto implements \Stringable
      */
     public function newWithInstance(object $newEntityInstance): self
     {
-        if (null !== $this->entityInstance && !$newEntityInstance instanceof $this->fqcn) {
+        // the instanceof guard must run even when $this->instance is null. Otherwise
+        // a caller that wraps an entity into a DTO whose $fqcn was set from a different
+        // source (e.g. batch actions, where the FQCN comes from the admin context but
+        // the instance comes from a repository lookup) can silently produce a DTO
+        // whose $fqcn does not match its $instance (this is a CWE-441 (Confused Deputy) attack vector).
+        if (!$newEntityInstance instanceof $this->fqcn) {
             throw new \InvalidArgumentException(sprintf('The new entity instance must be of the same type as the previous instance (original instance: "%s", new instance: "%s").', $this->fqcn, $newEntityInstance::class));
         }
 
