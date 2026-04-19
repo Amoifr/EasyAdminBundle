@@ -6,6 +6,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\UrlConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Url;
 
 class UrlFieldTest extends AbstractFieldTest
@@ -196,7 +197,7 @@ class UrlFieldTest extends AbstractFieldTest
     {
         $this->initializeConfigurator();
 
-        $existingConstraint = new Url();
+        $existingConstraint = new NotBlank();
         $field = UrlField::new('foo')
             ->setFormTypeOption('constraints', [$existingConstraint])
             ->allowedProtocols(['ftp', 'sftp']);
@@ -289,7 +290,7 @@ class UrlFieldTest extends AbstractFieldTest
     {
         $this->initializeConfigurator();
 
-        $existingConstraint = new Url();
+        $existingConstraint = new NotBlank();
         $field = UrlField::new('foo')
             ->setFormTypeOption('constraints', [$existingConstraint]);
         $fieldDto = $this->configure($field, actionName: Action::EDIT);
