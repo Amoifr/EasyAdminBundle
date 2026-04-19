@@ -33,20 +33,11 @@ jobs:
                     # Latest Symfony version support
                     - os: macos-latest
                       php_version: "8.4"
-                      symfony_version: "7.3"
+                      symfony_version: "8.0"
                       stability: "stable"
                     - os: windows-latest
                       php_version: "8.4"
-                      symfony_version: "7.3"
-                      stability: "stable"
-                    # LTS Symfony version support
-                    - os: macos-latest
-                      php_version: "8.4"
-                      symfony_version: "6.4"
-                      stability: "stable"
-                    - os: windows-latest
-                      php_version: "8.4"
-                      symfony_version: "6.4"
+                      symfony_version: "8.0"
                       stability: "stable"
                     # Lowest deps support
                     - os: ubuntu-latest
@@ -75,17 +66,20 @@ jobs:
                       php_version: "8.5"
                       symfony_version: "7.3"
                       stability: "stable"
-                    # Upcoming Symfony versions
                     - os: ubuntu-latest
                       php_version: "8.4"
-                      symfony_version: "7.4.x"
-                      stability: "dev"
+                      symfony_version: "7.4"
+                      stability: "stable"
                     - os: ubuntu-latest
                       php_version: "8.4"
-                      symfony_version: "8.0.x"
+                      symfony_version: "8.0"
+                      stability: "stable"
+                    # Upcoming (unreleased) Symfony version
+                    - os: ubuntu-latest
+                      php_version: "8.4"
+                      symfony_version: "8.1.x"
                       stability: "dev"
         runs-on: ${{ matrix.os }}
-        continue-on-error: ${{ matrix.stability == 'dev' }}
         steps:
             - uses: actions/checkout@v6
 
@@ -122,6 +116,9 @@ jobs:
                   composer show
 
             - name: Run tests
+              # failures in unreleased Symfony versions (dev stability) are reported but do not
+              # fail the check (step-level continue-on-error keeps the job green in the PR UI)
+              continue-on-error: ${{ matrix.stability == 'dev' }}
               env:
                   SYMFONY_DEPRECATIONS_HELPER: "max[total]=999999&ignoreFile=./tests/baseline-ignore.txt"
               run: |
