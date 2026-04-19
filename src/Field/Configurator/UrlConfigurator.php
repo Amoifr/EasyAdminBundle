@@ -38,7 +38,14 @@ final class UrlConfigurator implements FieldConfiguratorInterface
         $allowedProtocols = $field->getCustomOption(UrlField::OPTION_ALLOWED_PROTOCOLS);
         if (\is_array($allowedProtocols)) {
             $constraints = $field->getFormTypeOption('constraints') ?? [];
-            $constraints[] = new Url(protocols: $allowedProtocols);
+            // the `requireTld` option was introduced in symfony/validator 7.1 with a
+            // deprecated default of `false`; pass it explicitly to silence the
+            // deprecation while preserving the historical behavior on older versions
+            if (property_exists(Url::class, 'requireTld')) {
+                $constraints[] = new Url(protocols: $allowedProtocols, requireTld: false);
+            } else {
+                $constraints[] = new Url(protocols: $allowedProtocols);
+            }
             $field->setFormTypeOption('constraints', $constraints);
         }
 
