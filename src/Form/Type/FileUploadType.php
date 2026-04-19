@@ -7,6 +7,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Form\DataTransformer\StringToFileTransformer
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Model\FileUploadState;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Model\FlysystemFile;
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToGeneratePublicUrl;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataMapperInterface;
@@ -102,27 +103,50 @@ class FileUploadType extends AbstractType implements DataMapperInterface
         }
 
         $uploadDir = $options['upload_dir'];
+        $flysystemStorage = $options['flysystem_storage'];
         $flysystemUrlPrefix = $options['flysystem_url_prefix'];
         $currentFileNames = [];
+        $currentFileUrls = [];
         foreach ($currentFiles as $file) {
             if ($file instanceof FlysystemFile) {
-                $currentFileNames[] = $file->getPathname();
+                $fileName = $file->getPathname();
+                $currentFileNames[] = $fileName;
+                $currentFileUrls[] = $this->resolveFlysystemFileUrl($flysystemStorage, $flysystemUrlPrefix, $fileName);
             } elseif ($file instanceof File) {
-                $currentFileNames[] = str_starts_with($file->getPathname(), $uploadDir)
+                $fileName = str_starts_with($file->getPathname(), $uploadDir)
                     ? mb_substr($file->getPathname(), mb_strlen($uploadDir))
                     : $file->getFilename();
+                $currentFileNames[] = $fileName;
+                $currentFileUrls[] = null;
             }
         }
 
         $view->vars['currentFiles'] = $currentFiles;
         $view->vars['currentFileNames'] = $currentFileNames;
+        $view->vars['currentFileUrls'] = $currentFileUrls;
         $view->vars['multiple'] = $options['multiple'];
         $view->vars['allow_add'] = $options['allow_add'];
         $view->vars['allow_delete'] = $options['allow_delete'];
         $view->vars['allow_view'] = $options['allow_view'];
         $view->vars['allow_download'] = $options['allow_download'];
         $view->vars['download_path'] = $options['download_path'];
-        $view->vars['flysystem_url_prefix'] = $flysystemUrlPrefix;
+    }
+
+    private function resolveFlysystemFileUrl(?FilesystemOperator $filesystem, ?string $urlPrefix, string $fileName): ?string
+    {
+        if (null !== $urlPrefix) {
+            return rtrim($urlPrefix, '/').'/'.ltrim($fileName, '/');
+        }
+
+        if (null === $filesystem) {
+            return null;
+        }
+
+        try {
+            return $filesystem->publicUrl(ltrim($fileName, '/'));
+        } catch (UnableToGeneratePublicUrl) {
+            return null;
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

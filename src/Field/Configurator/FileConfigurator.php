@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FileField;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Model\FlysystemFile;
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToGeneratePublicUrl;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -45,10 +46,10 @@ final readonly class FileConfigurator implements FieldConfiguratorInterface
 
         $configuredBasePath = $field->getCustomOption(FileField::OPTION_BASE_PATH);
 
-        if (null !== $filesystem && null !== $flysystemUrlPrefix) {
+        if (null !== $filesystem) {
             $formattedValue = \is_array($field->getValue())
-                ? $this->getFlysystemFilesPaths($field->getValue(), $flysystemUrlPrefix)
-                : $this->getFlysystemFilePath($field->getValue(), $flysystemUrlPrefix);
+                ? $this->getFlysystemFilesPaths($field->getValue(), $filesystem, $flysystemUrlPrefix, $field->getProperty())
+                : $this->getFlysystemFilePath($field->getValue(), $filesystem, $flysystemUrlPrefix, $field->getProperty());
         } else {
             $formattedValue = \is_array($field->getValue())
                 ? $this->getFilesPaths($field->getValue(), $configuredBasePath)
@@ -224,17 +225,17 @@ final readonly class FileConfigurator implements FieldConfiguratorInterface
      *
      * @return array<string|null>
      */
-    private function getFlysystemFilesPaths(?array $files, string $urlPrefix): array
+    private function getFlysystemFilesPaths(?array $files, FilesystemOperator $filesystem, ?string $urlPrefix, string $propertyName): array
     {
         $filesPaths = [];
         foreach ($files as $file) {
-            $filesPaths[] = $this->getFlysystemFilePath($file, $urlPrefix);
+            $filesPaths[] = $this->getFlysystemFilePath($file, $filesystem, $urlPrefix, $propertyName);
         }
 
         return $filesPaths;
     }
 
-    private function getFlysystemFilePath(?string $filePath, string $urlPrefix): ?string
+    private function getFlysystemFilePath(?string $filePath, FilesystemOperator $filesystem, ?string $urlPrefix, string $propertyName): ?string
     {
         if (null === $filePath) {
             return null;
@@ -245,6 +246,14 @@ final readonly class FileConfigurator implements FieldConfiguratorInterface
             return $filePath;
         }
 
-        return rtrim($urlPrefix, '/').'/'.ltrim($filePath, '/');
+        if (null !== $urlPrefix) {
+            return rtrim($urlPrefix, '/').'/'.ltrim($filePath, '/');
+        }
+
+        try {
+            return $filesystem->publicUrl(ltrim($filePath, '/'));
+        } catch (UnableToGeneratePublicUrl $e) {
+            throw new \LogicException(sprintf('Unable to generate the public URL for the file stored in Flysystem for the "%s" field. Either configure the "public_url" option for this storage in your Flysystem configuration, or call setFlysystemUrlPrefix() on this field.', $propertyName), 0, $e);
+        }
     }
 }
