@@ -135,7 +135,7 @@ class ImageFieldTest extends AbstractFieldTest
         $field->setFileConstraints($constraint);
         $fieldDto = $this->configure($field);
 
-        self::assertSame($constraint, $fieldDto->getCustomOption(ImageField::OPTION_FILE_CONSTRAINTS));
+        self::assertSame([$constraint], $fieldDto->getCustomOption(ImageField::OPTION_FILE_CONSTRAINTS));
     }
 
     public function testSetFileConstraintsWithMultipleConstraints(): void
@@ -167,6 +167,16 @@ class ImageFieldTest extends AbstractFieldTest
         $fieldDto = $this->configure($field);
 
         self::assertSame($constraints, $fieldDto->getCustomOption(ImageField::OPTION_FILE_CONSTRAINTS));
+    }
+
+    public function testSetFileConstraintsRejectsNonConstraintArrayItems(): void
+    {
+        $field = ImageField::new('image');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('expects a "Symfony\Component\Validator\Constraint" instance or an array of them');
+
+        $field->setFileConstraints([new Image(), 'not-a-constraint']);
     }
 
     public function testUploadPatternPlaceholders(): void

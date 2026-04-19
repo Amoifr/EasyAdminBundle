@@ -118,7 +118,7 @@ class FileFieldTest extends AbstractFieldTest
         $field->setFileConstraints($constraint);
         $fieldDto = $this->configure($field);
 
-        self::assertSame($constraint, $fieldDto->getCustomOption(FileField::OPTION_FILE_CONSTRAINTS));
+        self::assertSame([$constraint], $fieldDto->getCustomOption(FileField::OPTION_FILE_CONSTRAINTS));
     }
 
     public function testSetFileConstraintsWithMultipleConstraints(): void
@@ -132,6 +132,16 @@ class FileFieldTest extends AbstractFieldTest
         $fieldDto = $this->configure($field);
 
         self::assertSame($constraints, $fieldDto->getCustomOption(FileField::OPTION_FILE_CONSTRAINTS));
+    }
+
+    public function testSetFileConstraintsRejectsNonConstraintArrayItems(): void
+    {
+        $field = FileField::new('document');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('expects a "Symfony\Component\Validator\Constraint" instance or an array of them');
+
+        $field->setFileConstraints([new File(maxSize: '10M'), 'not-a-constraint']);
     }
 
     public function testUploadPatternPlaceholders(): void

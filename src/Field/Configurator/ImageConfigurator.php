@@ -144,7 +144,10 @@ final readonly class ImageConfigurator implements FieldConfiguratorInterface
             }
 
             if ([] !== $processedMimeTypes) {
-                $constraints = $field->getCustomOption(ImageField::OPTION_FILE_CONSTRAINTS);
+                $constraints = $field->getCustomOption(ImageField::OPTION_FILE_CONSTRAINTS) ?? [];
+                if (!\is_array($constraints)) {
+                    $constraints = [$constraints];
+                }
                 $mimeTypesMessage = $field->getCustomOption(ImageField::OPTION_MIME_TYPES_MESSAGE);
                 $constraints[] = new FileConstraint(mimeTypes: $processedMimeTypes, mimeTypesMessage: $mimeTypesMessage);
                 $field->setCustomOption(ImageField::OPTION_FILE_CONSTRAINTS, $constraints);
@@ -153,7 +156,10 @@ final readonly class ImageConfigurator implements FieldConfiguratorInterface
 
         $maxSize = $field->getCustomOption(ImageField::OPTION_MAX_SIZE);
         if (null !== $maxSize) {
-            $constraints = $field->getCustomOption(ImageField::OPTION_FILE_CONSTRAINTS);
+            $constraints = $field->getCustomOption(ImageField::OPTION_FILE_CONSTRAINTS) ?? [];
+            if (!\is_array($constraints)) {
+                $constraints = [$constraints];
+            }
             $maxSizeMessage = $field->getCustomOption(ImageField::OPTION_MAX_SIZE_MESSAGE);
             $constraints[] = new FileConstraint(maxSize: $maxSize, maxSizeMessage: $maxSizeMessage);
             $field->setCustomOption(ImageField::OPTION_FILE_CONSTRAINTS, $constraints);
