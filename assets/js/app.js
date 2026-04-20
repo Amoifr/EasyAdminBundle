@@ -532,10 +532,30 @@ class App {
             }
         };
 
+        // when the single-click trigger is active, a drag-to-select gesture ends with a `click`
+        // event at the release point. Skip navigation in that case so users can highlight and
+        // copy text from a cell without being navigated away.
+        const userIsSelectingTextInRow = (row) => {
+            if ('double' === clickTrigger) {
+                return false;
+            }
+
+            const selection = window.getSelection();
+            if (null === selection || 0 === selection.toString().length || 0 === selection.rangeCount) {
+                return false;
+            }
+
+            return row.contains(selection.getRangeAt(0).commonAncestorContainer);
+        };
+
         clickableRows.forEach((row) => {
             // handle mouse clicks
             row.addEventListener(clickTrigger === 'double' ? 'dblclick' : 'click', (event) => {
                 if (isInteractiveElement(event.target)) {
+                    return;
+                }
+
+                if (userIsSelectingTextInRow(row)) {
                     return;
                 }
 
