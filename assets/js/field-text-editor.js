@@ -39,8 +39,22 @@ class TextEditorField {
                 const editor = document.querySelector(`trix-editor[input=${trixContentElement.id}].trix-content`);
 
                 if (editor !== null) {
-                    // Here we consider 21px as the average line height
-                    editor.style.setProperty('min-block-size', `${21 * trixContentElement.dataset.numberOfRows}px`);
+                    // Apply the min-height via a dedicated <style> element instead of an
+                    // inline style attribute so strict CSPs (that disallow
+                    // `style-src-attr 'unsafe-inline'`) don't strip it.
+                    // Here we consider 21px as the average line height.
+                    const styleElementId = `ea-trix-editor-size-${trixContentElement.id}`;
+                    const styleElement = document.getElementById(styleElementId) ?? document.createElement('style');
+                    styleElement.id = styleElementId;
+                    const nonce = document.querySelector('meta[name="csp-nonce"]')?.getAttribute('content');
+                    if (nonce) {
+                        styleElement.setAttribute('nonce', nonce);
+                    }
+                    const escapedId = CSS.escape(trixContentElement.id);
+                    styleElement.textContent = `trix-editor[input="${escapedId}"] { min-block-size: ${21 * trixContentElement.dataset.numberOfRows}px; }`;
+                    if (!styleElement.isConnected) {
+                        document.head.appendChild(styleElement);
+                    }
                 }
             }
         });
