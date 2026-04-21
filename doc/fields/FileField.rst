@@ -237,8 +237,7 @@ Configure Flysystem in your application:
     flysystem:
         storages:
             default.storage:
-                adapter: 'aws'
-                options:
+                aws:
                     client: 'Aws\S3\S3Client'
                     bucket: 'my-bucket'
 
