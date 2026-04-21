@@ -11,6 +11,11 @@
         <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noodp, noimageindex, notranslate, nocache" />
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <meta name="generator" content="EasyAdmin" />
+        {% guard function csp_nonce %}
+            {# this is used by Trix + TextEditorField to inject styles dynamically;
+               'style' returns the nonce bound to the 'style-src' directive #}
+            <meta name="csp-nonce" content="{{ csp_nonce('style') }}">
+        {% endguard %}
     {% endblock head_metas %}
 
     {% set page_title_block_output %}{% block page_title %}{{ block('content_title') }}{% endblock %}{% endset %}
