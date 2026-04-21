@@ -686,8 +686,6 @@
 {% endblock ea_datetime_filter_widget %}
 
 {% block ea_fileupload_widget %}
-    {% set isFlysystem = flysystem_url_prefix is defined and flysystem_url_prefix is not null %}
-
     <div class="ea-fileupload"
         data-ea-fileupload-field
         {% if allow_view %}data-allow-view{% endif %}
@@ -726,10 +724,8 @@
                 {% set fileSize = file.size ? file.size|ea_filesize : '' %}
                 {% set filetypeIcon = fileName|ea_filetype_icon %}
                 {% set isImage = filetypeIcon == 'image' %}
-                {% set fileUrl = null %}
-                {% if isFlysystem %}
-                    {% set fileUrl = flysystem_url_prefix|trim('/') ~ '/' ~ currentFileNames[i] %}
-                {% elseif download_path %}
+                {% set fileUrl = currentFileUrls[i]|default(null) %}
+                {% if fileUrl is null and download_path %}
                     {% set fileUrl = asset(download_path ~ currentFileNames[i]) %}
                 {% endif %}
 

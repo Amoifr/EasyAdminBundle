@@ -408,11 +408,11 @@ return static function (ContainerConfigurator $container) {
 
         ->set(FileConfigurator::class)
             ->arg(0, param('kernel.project_dir'))
-            ->arg(1, tagged_locator(EasyAdminExtension::TAG_FLYSYSTEM_STORAGE))
+            ->arg(1, tagged_locator('flysystem.storage', 'storage'))
 
         ->set(ImageConfigurator::class)
             ->arg(0, param('kernel.project_dir'))
-            ->arg(1, tagged_locator(EasyAdminExtension::TAG_FLYSYSTEM_STORAGE))
+            ->arg(1, tagged_locator('flysystem.storage', 'storage'))
 
         ->set(IntegerConfigurator::class)
 

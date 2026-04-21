@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Model\FlysystemFile;
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToGeneratePublicUrl;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -45,10 +46,10 @@ final readonly class ImageConfigurator implements FieldConfiguratorInterface
 
         $configuredBasePath = $field->getCustomOption(ImageField::OPTION_BASE_PATH);
 
-        if (null !== $filesystem && null !== $flysystemUrlPrefix) {
+        if (null !== $filesystem) {
             $formattedValue = \is_array($field->getValue())
-                ? $this->getFlysystemImagesPaths($field->getValue(), $flysystemUrlPrefix)
-                : $this->getFlysystemImagePath($field->getValue(), $flysystemUrlPrefix);
+                ? $this->getFlysystemImagesPaths($field->getValue(), $filesystem, $flysystemUrlPrefix, $field->getProperty())
+                : $this->getFlysystemImagePath($field->getValue(), $filesystem, $flysystemUrlPrefix, $field->getProperty());
         } else {
             $formattedValue = \is_array($field->getValue())
                 ? $this->getImagesPaths($field->getValue(), $configuredBasePath)
@@ -220,17 +221,17 @@ final readonly class ImageConfigurator implements FieldConfiguratorInterface
      *
      * @return array<string|null>
      */
-    private function getFlysystemImagesPaths(?array $images, string $urlPrefix): array
+    private function getFlysystemImagesPaths(?array $images, FilesystemOperator $filesystem, ?string $urlPrefix, string $propertyName): array
     {
         $imagesPaths = [];
         foreach ($images as $image) {
-            $imagesPaths[] = $this->getFlysystemImagePath($image, $urlPrefix);
+            $imagesPaths[] = $this->getFlysystemImagePath($image, $filesystem, $urlPrefix, $propertyName);
         }
 
         return $imagesPaths;
     }
 
-    private function getFlysystemImagePath(?string $imagePath, string $urlPrefix): ?string
+    private function getFlysystemImagePath(?string $imagePath, FilesystemOperator $filesystem, ?string $urlPrefix, string $propertyName): ?string
     {
         if (null === $imagePath) {
             return null;
@@ -241,6 +242,14 @@ final readonly class ImageConfigurator implements FieldConfiguratorInterface
             return $imagePath;
         }
 
-        return rtrim($urlPrefix, '/').'/'.ltrim($imagePath, '/');
+        if (null !== $urlPrefix) {
+            return rtrim($urlPrefix, '/').'/'.ltrim($imagePath, '/');
+        }
+
+        try {
+            return $filesystem->publicUrl(ltrim($imagePath, '/'));
+        } catch (UnableToGeneratePublicUrl $e) {
+            throw new \LogicException(sprintf('Unable to generate the public URL for the image stored in Flysystem for the "%s" field. Either configure the "public_url" option for this storage in your Flysystem configuration, or call setFlysystemUrlPrefix() on this field.', $propertyName), 0, $e);
+        }
     }
 }

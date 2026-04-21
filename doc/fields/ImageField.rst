@@ -216,7 +216,6 @@ configuration (e.g. ``default.storage``)::
 
     yield ImageField::new('photo')
         ->setFlysystemStorage('default.storage')
-        ->setFlysystemUrlPrefix('https://cdn.example.com/uploads')
         ->setUploadDir('images/')
         ->setUploadedFileNamePattern('[uuid].[extension]');
 
@@ -237,18 +236,24 @@ storage (not as a local directory).
 setFlysystemUrlPrefix
 ~~~~~~~~~~~~~~~~~~~~~
 
-Sets the URL prefix used to build the public URLs for images stored in Flysystem.
-This is typically a CDN URL or a public URL pointing to your storage bucket::
+**This method is optional.** By default, EasyAdmin generates the public URL of
+each image from the Flysystem storage itself (via the ``public_url`` or
+``public_url_generator`` option configured for that storage). Use this method
+only to override that default; for example when the admin UI needs to serve
+images from a different host than the one configured in Flysystem, or when your
+Flysystem storage has no public URL generator configured::
 
     yield ImageField::new('...')->setFlysystemUrlPrefix('https://cdn.example.com/uploads');
 
-This prefix is combined with the image path to generate the full URL shown in the
-``index`` and ``detail`` pages.
+When set, this prefix is combined with the image path to generate the full URL
+shown in the ``index`` and ``detail`` pages, and takes precedence over the
+Flysystem ``public_url`` configuration.
 
 .. note::
 
-    When using Flysystem, the ``setBasePath()`` option is ignored. Use
-    ``setFlysystemUrlPrefix()`` instead.
+    When using Flysystem, the ``setBasePath()`` option is ignored. Configure
+    ``public_url`` in your Flysystem storage, or call ``setFlysystemUrlPrefix()``
+    to override it.
 
 All existing options (``setUploadedFileNamePattern()``, ``setFileConstraints()``,
 ``mimeTypes()``, ``maxSize()``, replaced file behaviors, ``isDeletable()``) continue

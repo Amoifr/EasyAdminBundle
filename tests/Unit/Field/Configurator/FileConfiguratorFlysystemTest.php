@@ -8,18 +8,22 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FileField;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Model\FlysystemFile;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\AbstractFieldTest;
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToGeneratePublicUrl;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileConfiguratorFlysystemTest extends AbstractFieldTest
 {
-    private FilesystemOperator $filesystem;
+    private FilesystemOperator&MockObject $filesystem;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->filesystem = $this->createMock(FilesystemOperator::class);
+        $this->filesystem = $this->getMockBuilder(FilesystemOperator::class)
+            ->addMethods(['publicUrl'])
+            ->getMockForAbstractClass();
 
         $locator = $this->createMock(ContainerInterface::class);
         $locator->method('has')->willReturnCallback(static fn (string $id) => 'default.storage' === $id);
@@ -100,6 +104,53 @@ class FileConfiguratorFlysystemTest extends AbstractFieldTest
         $dto = $this->configure($field);
 
         $this->assertSame('https://cdn.example.com/photos/cat.jpg', $dto->getFormattedValue());
+    }
+
+    public function testUrlDerivedFromFlysystemPublicUrlWhenPrefixMissing(): void
+    {
+        $this->filesystem->expects($this->once())
+            ->method('publicUrl')
+            ->with('photos/cat.jpg')
+            ->willReturn('https://flysystem.example.com/photos/cat.jpg');
+
+        $field = FileField::new('photo')
+            ->setFlysystemStorage('default.storage')
+            ->setUploadDir('photos/');
+        $field->getAsDto()->setValue('photos/cat.jpg');
+
+        $dto = $this->configure($field);
+
+        $this->assertSame('https://flysystem.example.com/photos/cat.jpg', $dto->getFormattedValue());
+    }
+
+    public function testUrlPrefixOverridesFlysystemPublicUrl(): void
+    {
+        $this->filesystem->expects($this->never())->method('publicUrl');
+
+        $field = FileField::new('photo')
+            ->setFlysystemStorage('default.storage')
+            ->setFlysystemUrlPrefix('https://override.example.com')
+            ->setUploadDir('photos/');
+        $field->getAsDto()->setValue('photos/cat.jpg');
+
+        $dto = $this->configure($field);
+
+        $this->assertSame('https://override.example.com/photos/cat.jpg', $dto->getFormattedValue());
+    }
+
+    public function testMissingPrefixAndUnconfiguredPublicUrlThrows(): void
+    {
+        $this->filesystem->method('publicUrl')
+            ->willThrowException(UnableToGeneratePublicUrl::noGeneratorConfigured('photos/cat.jpg'));
+
+        $field = FileField::new('photo')
+            ->setFlysystemStorage('default.storage')
+            ->setUploadDir('photos/');
+        $field->getAsDto()->setValue('photos/cat.jpg');
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('setFlysystemUrlPrefix');
+        $this->configure($field);
     }
 
     // --- Form type options (EDIT page) ---

@@ -261,6 +261,12 @@ final class ImageField implements FieldInterface
     /**
      * Sets the URL prefix used to generate public URLs for images stored in Flysystem
      * (e.g. 'https://cdn.example.com/uploads').
+     *
+     * This is optional. When not set, EasyAdmin derives the public URL from the
+     * Flysystem storage itself (via the 'public_url' or 'public_url_generator'
+     * configured for that storage in flysystem-bundle). Use this setter to
+     * override that default, for example when the admin UI serves files from a
+     * different host than the one configured in Flysystem.
      */
     public function setFlysystemUrlPrefix(string $urlPrefix): self
     {
