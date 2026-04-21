@@ -119,8 +119,18 @@ final class ImageField implements FieldInterface
      * Define constraints to be validated on the FileType.
      * Image constraint is set by default.
      */
-    public function setFileConstraints($constraints): self
+    public function setFileConstraints(Constraint|array $constraints): self
     {
+        if (\is_array($constraints)) {
+            foreach ($constraints as $key => $constraint) {
+                if (!$constraint instanceof Constraint) {
+                    throw new \InvalidArgumentException(sprintf('The "%s" method expects a "%s" instance or an array of them; got "%s" at key "%s".', __METHOD__, Constraint::class, get_debug_type($constraint), $key));
+                }
+            }
+        } else {
+            $constraints = [$constraints];
+        }
+
         $this->setCustomOption(self::OPTION_FILE_CONSTRAINTS, $constraints);
 
         return $this;

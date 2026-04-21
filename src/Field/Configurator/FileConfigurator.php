@@ -154,7 +154,10 @@ final readonly class FileConfigurator implements FieldConfiguratorInterface
             }
 
             if ([] !== $processedMimeTypes) {
-                $constraints = $field->getCustomOption(FileField::OPTION_FILE_CONSTRAINTS);
+                $constraints = $field->getCustomOption(FileField::OPTION_FILE_CONSTRAINTS) ?? [];
+                if (!\is_array($constraints)) {
+                    $constraints = [$constraints];
+                }
                 $mimeTypesMessage = $field->getCustomOption(FileField::OPTION_MIME_TYPES_MESSAGE);
                 $constraints[] = new FileConstraint(mimeTypes: $processedMimeTypes, mimeTypesMessage: $mimeTypesMessage);
                 $field->setCustomOption(FileField::OPTION_FILE_CONSTRAINTS, $constraints);
@@ -163,7 +166,10 @@ final readonly class FileConfigurator implements FieldConfiguratorInterface
 
         $maxSize = $field->getCustomOption(FileField::OPTION_MAX_SIZE);
         if (null !== $maxSize) {
-            $constraints = $field->getCustomOption(FileField::OPTION_FILE_CONSTRAINTS);
+            $constraints = $field->getCustomOption(FileField::OPTION_FILE_CONSTRAINTS) ?? [];
+            if (!\is_array($constraints)) {
+                $constraints = [$constraints];
+            }
             $maxSizeMessage = $field->getCustomOption(FileField::OPTION_MAX_SIZE_MESSAGE);
             $constraints[] = new FileConstraint(maxSize: $maxSize, maxSizeMessage: $maxSizeMessage);
             $field->setCustomOption(FileField::OPTION_FILE_CONSTRAINTS, $constraints);
