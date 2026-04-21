@@ -34,9 +34,10 @@ class TextEditorField {
             trixContentElement.setAttribute('data-ea-trix-is-required', isTrixFieldRequired);
             trixContentElement.removeAttribute('required');
 
-            // Change number of rows
+            // change number of rows
             if (trixContentElement.dataset.numberOfRows !== '') {
-                const editor = document.querySelector(`trix-editor[input=${trixContentElement.id}].trix-content`);
+                const escapedId = CSS.escape(trixContentElement.id);
+                const editor = document.querySelector(`trix-editor[input="${escapedId}"].trix-content`);
 
                 if (editor !== null) {
                     // Apply the min-height via a dedicated <style> element instead of an
@@ -50,7 +51,7 @@ class TextEditorField {
                     if (nonce) {
                         styleElement.setAttribute('nonce', nonce);
                     }
-                    const escapedId = CSS.escape(trixContentElement.id);
+
                     styleElement.textContent = `trix-editor[input="${escapedId}"] { min-block-size: ${21 * trixContentElement.dataset.numberOfRows}px; }`;
                     if (!styleElement.isConnected) {
                         document.head.appendChild(styleElement);
@@ -86,7 +87,8 @@ class TextEditorField {
             const entityForm = formEvent.detail.form;
             entityForm.querySelectorAll('textarea.ea-text-editor-content').forEach((trixContentElement) => {
                 const isTrixFieldRequired = 'true' === trixContentElement.getAttribute('data-ea-trix-is-required');
-                const trixEditorElement = entityForm.querySelector(`trix-editor[input=${trixContentElement.id}]`);
+                const escapedId = CSS.escape(trixContentElement.id);
+                const trixEditorElement = entityForm.querySelector(`trix-editor[input="${escapedId}"]`);
                 // an empty Trix editor field is not really empty; it contains a "\n" character (%0A = HTML encoded)
                 const isTrixEditorEmpty = '%0A' === escape(trixEditorElement.editor.getDocument().toString());
 
