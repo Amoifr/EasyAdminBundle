@@ -1105,13 +1105,97 @@ define a **field configurator**, which is a class that updates the config of the
 field before rendering them.
 
 EasyAdmin defines lots of configurators for its built-in fields. You can create
-your own configurators too (either to configure your own fields and/or the
-built-in fields). Field configurators are classes that implement
-``EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface``.
+your own configurators too, either to configure your own fields or to tweak the
+built-in ones. A field configurator is a class that implements
+``EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface``::
 
-Once implemented, define a Symfony service for your configurator and tag it with
-the ``ea.field_configurator`` tag. Optionally you can define the ``priority``
-attribute of the tag to run your configurator before or after the built-in ones.
+    interface FieldConfiguratorInterface
+    {
+        public function supports(FieldDto $field, EntityDto $entityDto): bool;
+        public function configure(FieldDto $field, EntityDto $entityDto, AdminContext $context): void;
+    }
+
+``supports()`` decides whether the configurator applies to a given field (for
+example, by matching its FQCN or a custom option), and ``configure()`` mutates
+the ``FieldDto`` to change any field option (template, value, form options, CSS
+class, etc.). A configurator whose ``supports()`` method returns ``false`` is
+silently skipped, so this is the first thing to check if your configurator does
+not seem to do anything.
+
+Here is a complete example that adds a CSS class on the index and detail
+pages to every field flagged with a ``premium`` custom option::
+
+    namespace App\Admin\Configurator;
+
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+    use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+    use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
+    use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+    use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
+
+    final class PremiumFieldConfigurator implements FieldConfiguratorInterface
+    {
+        public function supports(FieldDto $field, EntityDto $entityDto): bool
+        {
+            return true === $field->getCustomOption('premium');
+        }
+
+        public function configure(FieldDto $field, EntityDto $entityDto, AdminContext $context): void
+        {
+            if (!\in_array($context->getCrud()->getCurrentPage(), [Crud::PAGE_INDEX, Crud::PAGE_DETAIL], true)) {
+                return;
+            }
+
+            $existingCssClass = $field->getCssClass();
+            $field->setCssClass('' === $existingCssClass ? 'field-premium' : $existingCssClass.' field-premium');
+        }
+    }
+
+The configurator only runs on fields that opt in via ``setCustomOption()`` in
+your CRUD controller, so nothing else in the admin is affected::
+
+    use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
+
+    public function configureFields(string $pageName): iterable
+    {
+        return [
+            MoneyField::new('price')->setCustomOption('premium', true),
+            // ...
+        ];
+    }
+
+Common alternatives for ``supports()`` are matching a field FQCN with
+``$field->getFieldFqcn() === YourField::class`` (useful when writing a
+configurator for a :ref:`custom field <custom-fields>`) or matching a
+property name with ``$field->getProperty() === 'propertyName'``.
+
+If your Symfony application uses the default services configuration (autowiring
+and autoconfiguration enabled), the configurator is picked up automatically
+thanks to the ``ea.field_configurator`` tag which EasyAdmin registers for any
+service implementing ``FieldConfiguratorInterface``. You don't need to tag the
+service yourself.
+
+If you disabled autoconfiguration, register the service manually:
+
+.. code-block:: yaml
+
+    # config/services.yaml
+    services:
+        App\Admin\Configurator\PremiumFieldConfigurator:
+            tags:
+                - { name: ea.field_configurator }
+
+The ``priority`` attribute of the tag controls when the configurator runs
+relatively to the others. The built-in ``CommonPreConfigurator`` runs first
+with priority ``9999`` (it sets the default value, label, template, and virtual
+flag of every field), and ``CommonPostConfigurator`` runs last with priority
+``-9999`` (it formats the final value for display and applies the final
+template). Your own configurator runs between them by default, alongside the
+built-in per-type configurators. Use a custom priority if you need to override
+a decision taken by another configurator::
+
+    tags:
+        - { name: ea.field_configurator, priority: -100 }
 
 .. _`PropertyAccess component`: https://symfony.com/doc/current/components/property_access.html
 .. _`PHP generators`: https://www.php.net/manual/en/language.generators.overview.php
