@@ -1090,6 +1090,29 @@ applications can rely on its default values::
         }
     }
 
+The template exposes a ``login_form_footer`` Twig block right after the form
+and before the inline login script, to render additional markup (for instance
+a disclaimer or a link to the terms of service). Create your own template
+that extends the login template and override the block:
+
+.. code-block:: twig
+
+    {# templates/security/login.html.twig #}
+    {% extends '@EasyAdmin/page/login.html.twig' %}
+
+    {% block login_form_footer %}
+        <p class="text-center mt-3">
+            <a href="{{ path('terms') }}">Terms of Service</a>
+        </p>
+    {% endblock %}
+
+Then update your security controller to render this custom template instead
+of ``@EasyAdmin/page/login.html.twig`` (or override EasyAdmin's template
+globally by placing the override at
+``templates/bundles/EasyAdminBundle/page/login.html.twig`` and extending
+``@!EasyAdmin/page/login.html.twig``, which keeps the original login
+controller untouched).
+
 .. _content_page_template:
 
 Content Page Template
