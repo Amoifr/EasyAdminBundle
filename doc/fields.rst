@@ -1099,31 +1099,28 @@ field DTO. For example, in a Twig template:
 Field Configurators
 -------------------
 
-Some default options of some fields depend on the value of the entity
-property, which is only available during runtime. That's why you can optionally
-define a **field configurator**, which is a class that updates the config of the
-field before rendering them.
+Sometimes, field options depend on the value of the entity property, which is
+only available at runtime. To handle this, you can define a **field configurator**,
+a class that updates the field configuration before it is rendered.
 
-EasyAdmin defines lots of configurators for its built-in fields. You can create
-your own configurators too, either to configure your own fields or to tweak the
-built-in ones. A field configurator is a class that implements
+EasyAdmin defines many configurators for its built-in fields. You can create
+your own configurators too, either to configure your own fields or to tweak
+the built-in ones. A field configurator is a class that implements
 ``EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface``::
 
     interface FieldConfiguratorInterface
     {
+        // return TRUE to apply this configurator; return FALSE otherwise
+        // e.g. you can match the field FQCN, its property name, or a custom option
         public function supports(FieldDto $field, EntityDto $entityDto): bool;
+
+        // use it to update the value of any option of the given $field object
         public function configure(FieldDto $field, EntityDto $entityDto, AdminContext $context): void;
     }
 
-``supports()`` decides whether the configurator applies to a given field (for
-example, by matching its FQCN or a custom option), and ``configure()`` mutates
-the ``FieldDto`` to change any field option (template, value, form options, CSS
-class, etc.). A configurator whose ``supports()`` method returns ``false`` is
-silently skipped, so this is the first thing to check if your configurator does
-not seem to do anything.
-
-Here is a complete example that adds a CSS class on the index and detail
-pages to every field flagged with a ``premium`` custom option::
+The following example masks the local part of every ``EmailField`` value on the
+index page (``jane.doe@example.com`` is rendered as ``j***@example.com``), so
+the full address is only visible on the detail and edit pages::
 
     namespace App\Admin\Configurator;
 
@@ -1132,50 +1129,42 @@ pages to every field flagged with a ``premium`` custom option::
     use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
     use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
     use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
+    use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 
-    final class PremiumFieldConfigurator implements FieldConfiguratorInterface
+    final class MaskedEmailConfigurator implements FieldConfiguratorInterface
     {
         public function supports(FieldDto $field, EntityDto $entityDto): bool
         {
-            return true === $field->getCustomOption('premium');
+            return EmailField::class === $field->getFieldFqcn();
         }
 
         public function configure(FieldDto $field, EntityDto $entityDto, AdminContext $context): void
         {
-            if (!\in_array($context->getCrud()->getCurrentPage(), [Crud::PAGE_INDEX, Crud::PAGE_DETAIL], true)) {
+            if (Crud::PAGE_INDEX !== $context->getCrud()->getCurrentPage()) {
                 return;
             }
 
-            $existingCssClass = $field->getCssClass();
-            $field->setCssClass('' === $existingCssClass ? 'field-premium' : $existingCssClass.' field-premium');
-        }
-    }
+            $email = (string) $field->getValue();
+            if (!str_contains($email, '@')) {
+                return;
+            }
 
-The configurator only runs on fields that opt in via ``setCustomOption()`` in
-your CRUD controller, so nothing else in the admin is affected::
+            [$local, $domain] = explode('@', $email, 2);
+            $field->setFormattedValue(substr($local, 0, 1).'***@'.$domain);
+         }
+     }
 
-    use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
+.. tip::
 
-    public function configureFields(string $pageName): iterable
-    {
-        return [
-            MoneyField::new('price')->setCustomOption('premium', true),
-            // ...
-        ];
-    }
+    In addition to matching the field FQCN, in ``supports()`` you can use other
+    criteria: matching a property name (``'propertyName' === $field->getProperty()``),
+    matching the value of a built-in or custom option
+    (``true === $field->getCustomOption('option-name')``), etc.
 
-Common alternatives for ``supports()`` are matching a field FQCN with
-``$field->getFieldFqcn() === YourField::class`` (useful when writing a
-configurator for a :ref:`custom field <custom-fields>`) or matching a
-property name with ``$field->getProperty() === 'propertyName'``.
-
-If your Symfony application uses the default services configuration (autowiring
-and autoconfiguration enabled), the configurator is picked up automatically
-thanks to the ``ea.field_configurator`` tag which EasyAdmin registers for any
-service implementing ``FieldConfiguratorInterface``. You don't need to tag the
-service yourself.
-
-If you disabled autoconfiguration, register the service manually:
+With the default Symfony services configuration (autowiring and autoconfiguration
+enabled), the configurator is picked up automatically: EasyAdmin applies the
+``ea.field_configurator`` tag to any service implementing ``FieldConfiguratorInterface``.
+Otherwise, tag it manually:
 
 .. code-block:: yaml
 
@@ -1185,14 +1174,9 @@ If you disabled autoconfiguration, register the service manually:
             tags:
                 - { name: ea.field_configurator }
 
-The ``priority`` attribute of the tag controls when the configurator runs
-relatively to the others. The built-in ``CommonPreConfigurator`` runs first
-with priority ``9999`` (it sets the default value, label, template, and virtual
-flag of every field), and ``CommonPostConfigurator`` runs last with priority
-``-9999`` (it formats the final value for display and applies the final
-template). Your own configurator runs between them by default, alongside the
-built-in per-type configurators. Use a custom priority if you need to override
-a decision taken by another configurator::
+Use the tag's ``priority`` attribute to run before or after other configurators.
+The built-in ``CommonPreConfigurator`` runs first (priority ``9999``) and
+``CommonPostConfigurator`` runs last (``-9999``); yours runs between them by default::
 
     tags:
         - { name: ea.field_configurator, priority: -100 }
