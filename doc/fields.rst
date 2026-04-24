@@ -1151,8 +1151,8 @@ the full address is only visible on the detail and edit pages::
 
             [$local, $domain] = explode('@', $email, 2);
             $field->setFormattedValue(substr($local, 0, 1).'***@'.$domain);
-         }
-     }
+        }
+    }
 
 .. tip::
 
