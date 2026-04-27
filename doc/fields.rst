@@ -298,7 +298,7 @@ The arguments of the ``addTab()`` method are:
   icon for the tab or users won't be able to click on it); You can also pass
   ``string`` and ``TranslatableInterface`` variables. In both cases, if they
   contain HTML tags they will be rendered instead of escaped;
-* ``$icon``: (type: ``?string``) the full CSS class of a `FontAwesome icon`_
+* ``$icon``: (type: ``?string``) the full CSS class of a `FontAwesome`_ icon
   (e.g. ``far fa-folder-open``); if you don't display a text label for the tab,
   make sure to display an icon or users won't be able to click on the tab.
 
@@ -386,7 +386,7 @@ The arguments of the ``addColumn()`` method are:
   or an empty string, no title is displayed. You can also pass ``string`` and
   ``TranslatableInterface`` variables. In both cases, if they contain HTML tags
   they will be rendered instead of escaped;
-* ``$icon``: (type: ``?string``) the full CSS class of a `FontAwesome icon`_
+* ``$icon``: (type: ``?string``) the full CSS class of a `FontAwesome`_ icon
   (e.g. ``far fa-folder-open``) that is displayed next to the column label;
 * ``$help``: (type: ``?string``) an optional content that is displayed below the
   column label; it's mostly used to describe the column contents or provide further
@@ -523,7 +523,7 @@ The arguments of the ``addFieldset()`` method are:
   or an empty string, no title is displayed. You can also pass ``string`` and
   ``TranslatableInterface`` variables. In both cases, if they contain HTML tags
   they will be rendered instead of escaped;
-* ``$icon``: (type: ``?string``) the full CSS class of a `FontAwesome icon`_
+* ``$icon``: (type: ``?string``) the full CSS class of a `FontAwesome`_ icon
   (e.g. ``far fa-folder-open``) that is displayed next to the fieldset label.
 
 .. note::
