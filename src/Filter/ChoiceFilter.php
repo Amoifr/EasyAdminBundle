@@ -43,7 +43,7 @@ final class ChoiceFilter implements FilterInterface
      */
     public function setTranslatableChoices(array $choiceGenerator): self
     {
-        // Support passing a list of enum cases (e.g. MyEnum::cases()) when the
+        // support passing a list of enum cases (e.g. MyEnum::cases()) when the
         // enum implements TranslatableInterface. In that case, the submitted
         // value must be the enum backing value (or its name for UnitEnum),
         // otherwise the keys (0, 1, 2, ...) of the list would be submitted
