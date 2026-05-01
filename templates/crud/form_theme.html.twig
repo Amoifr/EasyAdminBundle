@@ -527,7 +527,7 @@
     })}) }}
 
     <div class="ea-text-editor-wrapper {{ row_attr.class|default('') ~ (not valid ? ' has-error') }}">
-        <trix-editor input="{{ id }}" class="trix-content"></trix-editor>
+        <trix-editor input="{{ id }}" class="trix-content" {% if disabled %}disabled{% endif %}></trix-editor>
     </div>
 {% endblock ea_text_editor_widget %}
 
