@@ -147,7 +147,7 @@ class StringToFileTransformer implements DataTransformerInterface
             $validatedPath = ($this->uploadValidate)($this->uploadDir.$filename);
 
             return str_starts_with($validatedPath, $this->uploadDir)
-                ? substr($validatedPath, \strlen($this->uploadDir))
+                ? mb_substr($validatedPath, mb_strlen($this->uploadDir))
                 : $validatedPath;
         }
 
