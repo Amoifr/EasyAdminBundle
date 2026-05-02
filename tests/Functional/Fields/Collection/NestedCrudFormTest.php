@@ -87,6 +87,39 @@ class NestedCrudFormTest extends AbstractCrudTestCase
     }
 
     /**
+     * Tests that renderExpanded(true) on CollectionField renders entries with the
+     * accordion already expanded (Bootstrap "show" class on the collapse wrapper and
+     * no "collapsed" class on the toggle button).
+     */
+    public function testRenderExpandedOnCollectionField(): void
+    {
+        $project = $this->createProjectWithIssues();
+
+        $crawler = $this->client->request('GET', $this->generateEditFormUrl($project->getId()));
+
+        static::assertResponseIsSuccessful();
+
+        $collapseWrappers = $crawler->filter('.field-collection .accordion-collapse');
+        static::assertGreaterThan(0, $collapseWrappers->count(), 'At least one accordion-collapse wrapper should be rendered');
+
+        foreach ($collapseWrappers as $wrapper) {
+            static::assertStringContainsString(
+                'show',
+                $wrapper->getAttribute('class'),
+                'renderExpanded(true) should add the "show" class on .accordion-collapse',
+            );
+        }
+
+        foreach ($crawler->filter('.field-collection .accordion-button') as $button) {
+            static::assertStringNotContainsString(
+                'collapsed',
+                $button->getAttribute('class'),
+                'renderExpanded(true) should not add the "collapsed" class on .accordion-button',
+            );
+        }
+    }
+
+    /**
      * Creates a Project with ProjectIssue entities for testing.
      */
     private function createProjectWithIssues(): Project
