@@ -494,6 +494,7 @@ class App {
             '.actions',
             '[data-bs-toggle]',
             '.btn',
+            '.modal',
         ];
 
         const isInteractiveElement = (element) => {
