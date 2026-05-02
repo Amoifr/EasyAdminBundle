@@ -337,6 +337,7 @@ return static function (ContainerConfigurator $container) {
         ->set(ChoiceFilterConfigurator::class)
 
         ->set(CommonFilterConfigurator::class)
+            ->arg(0, service(EntityTranslationIdGeneratorInterface::class))
             ->tag(EasyAdminExtension::TAG_FILTER_CONFIGURATOR, ['priority' => 9999])
 
         ->set(ComparisonFilterConfigurator::class)
