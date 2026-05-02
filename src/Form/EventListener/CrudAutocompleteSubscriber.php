@@ -43,16 +43,20 @@ class CrudAutocompleteSubscriber implements EventSubscriberInterface
         // the renderAsHtml flag controls how TomSelect renders the item (via data-ea-autocomplete-render-items-as-html).
         $callback = $options['autocomplete_callback'] ?? null;
         $template = $options['autocomplete_template'] ?? null;
+        $choiceLabel = $options['choice_label'] ?? null;
 
-        if (null !== $template) {
-            $twig = $this->twig;
-            $options['choice_label'] = static function ($entity) use ($twig, $template): string {
-                return $twig->render($template, ['entity' => $entity]);
-            };
-        } elseif (null !== $callback) {
-            $options['choice_label'] = static function ($entity) use ($callback): string {
-                return (string) $callback($entity);
-            };
+        // only generate choice_label from template/callback if not already set by the user
+        if (null === $choiceLabel) {
+            if (null !== $template) {
+                $twig = $this->twig;
+                $options['choice_label'] = static function ($entity) use ($twig, $template): string {
+                    return $twig->render($template, ['entity' => $entity]);
+                };
+            } elseif (null !== $callback) {
+                $options['choice_label'] = static function ($entity) use ($callback): string {
+                    return (string) $callback($entity);
+                };
+            }
         }
 
         // remove custom options before passing to EntityType
@@ -60,6 +64,12 @@ class CrudAutocompleteSubscriber implements EventSubscriberInterface
             $options['autocomplete_callback'],
             $options['autocomplete_template']
         );
+
+        // Don't pass null choice_label to EntityType - let it use __toString() default
+        // (passing null explicitly behaves differently than omitting the option in Symfony < 8.1)
+        if (null === ($options['choice_label'] ?? null)) {
+            unset($options['choice_label']);
+        }
 
         $form->add('autocomplete', EntityType::class, $options);
     }
