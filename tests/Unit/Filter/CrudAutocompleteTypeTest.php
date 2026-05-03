@@ -218,7 +218,6 @@ class CrudAutocompleteTypeTest extends TypeTestCase
 
     public function testChoiceLabelOptionRejectsInvalidType(): void
     {
-
         $this->expectException(\Symfony\Component\OptionsResolver\Exception\InvalidOptionsException::class);
 
         $this->factory->create(CrudAutocompleteType::class, null, [

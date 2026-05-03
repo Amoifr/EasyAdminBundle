@@ -14,7 +14,7 @@ use Symfony\Component\Translation\TranslatableMessage;
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
-final readonly class CommonConfigurator implements FilterConfiguratorInterface
+final class CommonConfigurator implements FilterConfiguratorInterface
 {
     public function __construct(
         private EntityTranslationIdGeneratorInterface $entityTranslationIdGenerator,
