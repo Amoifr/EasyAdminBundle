@@ -3,6 +3,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\Configurator;
 
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
@@ -63,7 +64,7 @@ class CollectionConfiguratorTest extends AbstractFieldTest
             ProjectCrudController::class,
         ));
 
-        $this->configure($field, controllerFqcn: ProjectCrudController::class);
+        $this->configure($field, pageName: Crud::PAGE_EDIT, controllerFqcn: ProjectCrudController::class);
     }
 
     public static function failsOnOptionEntryUsesCrudFormIfPropertyIsNotAssociation(): \Generator
@@ -89,7 +90,7 @@ class CollectionConfiguratorTest extends AbstractFieldTest
             ProjectCrudController::class,
         ));
 
-        $this->configure($field, controllerFqcn: ProjectCrudController::class);
+        $this->configure($field, pageName: Crud::PAGE_EDIT, controllerFqcn: ProjectCrudController::class);
     }
 
     public static function failsOnOptionEntryUsesCrudFormIfOptionEntryTypeIsUsed(): \Generator
@@ -114,7 +115,7 @@ class CollectionConfiguratorTest extends AbstractFieldTest
             $field->getAsDto()->getDoctrineMetadata()->get('targetEntity'),
         ));
 
-        $this->configure($field, controllerFqcn: ProjectCrudController::class);
+        $this->configure($field, pageName: Crud::PAGE_EDIT, controllerFqcn: ProjectCrudController::class);
     }
 
     public static function failsOnOptionRenderAsEmbeddedCrudFormIfNoCrudControllerCanBeFound(): \Generator
