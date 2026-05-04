@@ -38,7 +38,7 @@ class CommonConfiguratorTest extends TestCase
         $this->assertTrue($configurator->supports($filterDto, null, $this->entityDto, $adminContext));
     }
 
-    public function testConfigureUsesFieldLabelWhenAvailable(): void
+    public function testConfigureUsesFieldLabelAndWrapsInTranslatable(): void
     {
         $configurator = $this->createConfigurator();
         $filter = TextFilter::new('name');
@@ -51,37 +51,61 @@ class CommonConfiguratorTest extends TestCase
 
         $configurator->configure($filterDto, $fieldDto, $this->entityDto, $adminContext);
 
-        $this->assertSame('Product Name', $filterDto->getLabel());
+        $label = $filterDto->getLabel();
+        $this->assertInstanceOf(TranslatableMessage::class, $label);
+        $this->assertSame('Product Name', $label->getMessage());
     }
 
-    public function testConfigureUsesFieldTranslatableMessageLabel(): void
+    public function testConfigurePreservesTranslatableInterfaceFromField(): void
     {
         $configurator = $this->createConfigurator();
         $filter = TextFilter::new('name');
         $filterDto = $filter->getAsDto();
 
+        $translatableLabel = new TranslatableMessage('product.name', [], 'messages');
         $field = TextField::new('name');
         $fieldDto = $field->getAsDto();
-        $fieldDto->setLabel(new TranslatableMessage('product.name'));
+        $fieldDto->setLabel($translatableLabel);
 
         $adminContext = $this->createAdminContext();
 
         $configurator->configure($filterDto, $fieldDto, $this->entityDto, $adminContext);
 
-        $this->assertSame('product.name', $filterDto->getLabel());
+        $this->assertSame($translatableLabel, $filterDto->getLabel());
     }
 
-    public function testConfigureHumanizesLabelWhenFieldIsNullAndEntityTranslationsDisabled(): void
+    public function testConfigureHumanizesLabelAndWrapsInTranslatable(): void
     {
         $configurator = $this->createConfigurator();
         $filter = TextFilter::new('productName');
         $filterDto = $filter->getAsDto();
 
-        $adminContext = $this->createAdminContext(useEntityTranslations: false);
+        $adminContext = $this->createAdminContext();
 
         $configurator->configure($filterDto, null, $this->entityDto, $adminContext);
 
-        $this->assertSame('Product Name', $filterDto->getLabel());
+        $label = $filterDto->getLabel();
+        $this->assertInstanceOf(TranslatableMessage::class, $label);
+        $this->assertSame('Product Name', $label->getMessage());
+    }
+
+    public function testConfigureUsesCorrectTranslationDomain(): void
+    {
+        $configurator = $this->createConfigurator();
+        $filter = TextFilter::new('name');
+        $filterDto = $filter->getAsDto();
+
+        $field = TextField::new('name', 'custom.translation.key');
+        $fieldDto = $field->getAsDto();
+
+        $adminContext = $this->createAdminContext(translationDomain: 'my_domain');
+
+        $configurator->configure($filterDto, $fieldDto, $this->entityDto, $adminContext);
+
+        $label = $filterDto->getLabel();
+        $this->assertInstanceOf(TranslatableMessage::class, $label);
+        $this->assertSame('custom.translation.key', $label->getMessage());
+        $this->assertSame('my_domain', $label->getDomain());
     }
 
     public function testConfigureUsesEntityTranslationWhenFieldIsNullAndEntityTranslationsEnabled(): void
@@ -125,7 +149,7 @@ class CommonConfiguratorTest extends TestCase
         return new CommonConfigurator($generator);
     }
 
-    private function createAdminContext(bool $useEntityTranslations = false): AdminContext
+    private function createAdminContext(bool $useEntityTranslations = false, string $translationDomain = 'messages'): AdminContext
     {
         $dashboardDto = Dashboard::new()->getAsDto();
         if ($useEntityTranslations) {
@@ -136,7 +160,7 @@ class CommonConfiguratorTest extends TestCase
             RequestContext::forTesting(new Request()),
             null,
             DashboardContext::forTesting($dashboardDto),
-            I18nContext::forTesting('en', 'ltr')
+            I18nContext::forTesting('en', 'ltr', $translationDomain)
         );
     }
 }
