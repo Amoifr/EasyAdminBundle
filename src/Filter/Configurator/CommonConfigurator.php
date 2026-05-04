@@ -9,7 +9,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FilterDto;
 use EasyCorp\Bundle\EasyAdminBundle\Generator\LabelGenerator;
-use Symfony\Component\Translation\TranslatableMessage;
+use Symfony\Contracts\Translation\TranslatableInterface;
+use function Symfony\Component\Translation\t;
 
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
@@ -30,16 +31,16 @@ final class CommonConfigurator implements FilterConfiguratorInterface
     {
         if (null === $filterDto->getLabel()) {
             $fieldLabel = $fieldDto?->getLabel();
-            if ($fieldLabel instanceof TranslatableMessage) {
-                $fieldLabel = $fieldLabel->getMessage();
-            }
+            $translationDomain = $context->getI18n()->getTranslationDomain();
 
-            if (null !== $fieldLabel) {
+            if ($fieldLabel instanceof TranslatableInterface) {
                 $label = $fieldLabel;
+            } elseif (null !== $fieldLabel) {
+                $label = t($fieldLabel, [], $translationDomain);
             } elseif ($context->isUseEntityTranslations()) {
                 $label = $this->entityTranslationIdGenerator->generateForProperty($entityDto->getFqcn(), $filterDto->getProperty());
             } else {
-                $label = LabelGenerator::humanize($filterDto->getProperty());
+                $label = t(LabelGenerator::humanize($filterDto->getProperty()), [], $translationDomain);
             }
 
             $filterDto->setLabel($label);
