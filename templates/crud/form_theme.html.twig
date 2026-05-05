@@ -640,7 +640,7 @@
     {% set fieldset_has_errors = form.vars.ea_vars.field.getCustomOption(fieldset_error_count_option_name)|default(0) > 0 %}
     {% set is_collapsed = form.vars.ea_vars.field.getCustomOption(collapsed_option_name)|default(false) %}
 
-    <div class="form-fieldset {{ not fieldset_has_header ? 'form-fieldset-no-header' }} {{ fieldset_has_errors ? 'has-fieldset-error' }} {{ ea_css_class }}">
+    <div class="form-fieldset {{ not fieldset_has_header ? 'form-fieldset-no-header' }} {{ fieldset_has_errors ? 'has-fieldset-error' }} {{ ea_css_class }} {{ form.vars.attr.class|default('') }}" {% for key, value in form.vars.attr %}{% if key != 'class' %}{{ key }}="{{ value|e('html') }}" {% endif %}{% endfor %}>
         <fieldset>
             {% if fieldset_has_header %}
                 {{ form_label(form) }}
