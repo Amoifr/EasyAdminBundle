@@ -701,6 +701,7 @@ These are all the built-in fields provided by EasyAdmin:
 * :doc:`CountryField </fields/CountryField>`
 * :doc:`CurrencyField </fields/CurrencyField>`
 * :doc:`DateField </fields/DateField>`
+* :doc:`DateIntervalField </fields/DateIntervalField>`
 * :doc:`DateTimeField </fields/DateTimeField>`
 * :doc:`EmailField </fields/EmailField>`
 * :doc:`FileField </fields/FileField>`
@@ -743,7 +744,7 @@ Doctrine Type             Recommended EasyAdmin Fields
 ``datetime``              ``DateTimeField``
 ``datetimetz_immutable``  ``DateTimeField``
 ``datetimetz``            ``DateTimeField``
-``dateinterval``          ``TextField``
+``dateinterval``          ``DateIntervalField``
 ``decimal``               ``NumberField``
 ``float``                 ``NumberField``
 ``guid``                  ``TextField``
