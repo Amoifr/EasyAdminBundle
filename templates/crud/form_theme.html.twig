@@ -723,7 +723,8 @@
                 {% set fileName = file.filename %}
                 {% set fileSize = file.size ? file.size|ea_filesize : '' %}
                 {% set filetypeIcon = fileName|ea_filetype_icon %}
-                {% set isImage = filetypeIcon == 'image' %}
+                {% set isImage = (filetypeIcon == 'image')
+                    or (filetypeIcon == 'vector' and (fileName|lower ends with '.svg' or fileName|lower ends with '.svgz')) %}
                 {% set isVectorImage = filetypeIcon == 'vector' and (fileName|lower ends with '.svg' or fileName|lower ends with '.svgz') %}
                 {% set fileUrl = currentFileUrls[i]|default(null) %}
                 {% if fileUrl is null and download_path %}
@@ -732,7 +733,7 @@
 
                 <div class="ea-fileupload-card" data-ea-fileupload-card data-filename="{{ currentFileNames[i] }}">
                     <div class="ea-fileupload-card-preview">
-                        {% if (isImage or isVectorImage) and fileUrl %}
+                        {% if isImage and fileUrl %}
                             <img src="{{ fileUrl }}" alt="{{ fileName }}" class="ea-fileupload-card-thumbnail" />
                         {% else %}
                             <twig:ea:Icon name="filetypes:{{ filetypeIcon }}" class="ea-fileupload-card-icon" />
