@@ -125,6 +125,16 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
 
     private function configureEntryType(FieldDto $fieldDto, EntityDto $entityDto, AdminContext $context): void
     {
+        // entry_type and prototype options are only consumed when the field is
+        // rendered as a form (NEW/EDIT). On INDEX/DETAIL the field is rendered
+        // through formatCollection(), so the entry-type setup is wasted work
+        // and, more importantly, calling configureFields(PAGE_EDIT) on the
+        // target CRUD controller can run user code that expects a real entity
+        // instance (it has none here): see #7460.
+        if (!\in_array($context->getCrud()->getCurrentPage(), [Crud::PAGE_EDIT, Crud::PAGE_NEW], true)) {
+            return;
+        }
+
         if (true === $fieldDto->getCustomOption(CollectionField::OPTION_ENTRY_USES_CRUD_FORM)) {
             if (!$entityDto->getClassMetadata()->hasAssociation($fieldDto->getProperty())) {
                 throw new \RuntimeException(sprintf('The "%s" collection field of "%s" cannot use the "useEntryCrudForm()" method because it is not a Doctrine association.', $fieldDto->getProperty(), $context->getCrud()?->getControllerFqcn()));
