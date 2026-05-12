@@ -7,7 +7,7 @@ return [
         'edit' => '%entity_label_singular%',
         'index' => '%entity_label_plural%',
         'new' => 'Dodaj %entity_label_singular%',
-        'exception' => '%count% napaka|%count% napaki|%count% napake|%count% napak',
+        'exception' => 'Napaka|Napaki|Napake|Napak',
     ],
 
     'datagrid' => [
@@ -139,7 +139,7 @@ return [
 
     'exception' => [
         'entity_not_found' => 'Ta element ni več na voljo.',
-        'entity_remove' => 'Tega elementac ni mogoče izbrisati, ker so ostali elementi odvisni od njega.',
+        'entity_remove' => 'Tega elementa ni mogoče izbrisati, ker so ostali elementi odvisni od njega.',
         'forbidden_action' => 'Zahtevanega dejanja ni mogoče izvršiti na tem elementu.',
         'insufficient_entity_permission' => 'Za dostop do tega elementa nimate ustreznih pravic.',
         'general' => 'An error occurred while processing your request.',

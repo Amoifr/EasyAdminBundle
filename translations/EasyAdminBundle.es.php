@@ -29,7 +29,7 @@ return [
         'false' => 'No',
         'empty' => 'Vacío',
         'null' => 'Nulo',
-        'object' => 'Objecto PHP',
+        'object' => 'Objeto PHP',
         'inaccessible' => 'Inaccesible',
         'inaccessible.explanation' => 'Este campo no tiene un método getter o la propiedad asociada no es pública',
         'form.empty_value' => 'Ninguno',

@@ -139,7 +139,7 @@ return [
 
     'exception' => [
         'entity_not_found' => 'Táto položka sa nenašla.',
-        'entity_remove' => 'Táto položka nemôže byť zmazaná, lebo na nanej závisia ostatné položky.',
+        'entity_remove' => 'Táto položka nemôže byť zmazaná, lebo na nej závisia ostatné položky.',
         'forbidden_action' => 'Požadovaná akcia nemôže byť vykonaná na tejto položke.',
         'insufficient_entity_permission' => 'Nemáte dostatočná oprávnenia pre prístup k tejto položke.',
         'general' => 'An error occurred while processing your request.',

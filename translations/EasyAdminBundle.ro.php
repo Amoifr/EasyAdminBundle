@@ -107,7 +107,7 @@ return [
 
     'form' => [
         'are_you_sure' => 'Nu ați salvat modificările.',
-        'tab.error_badge_title' => '1 câmp nevalid |% count% câmpuri nevalide',
+        'tab.error_badge_title' => '1 câmp nevalid|%count% câmpuri nevalide',
         'slug.confirm_text' => 'Dacă modificați slug-ul, veți strica link-urile pe alte pagini.',
     ],
 
