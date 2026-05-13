@@ -5,14 +5,18 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\Configurator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Context\AdminContextInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Factory\AdminContextFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\ControllerFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\EntityFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\FieldFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\AssociationConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\ProjectDomain\DeveloperCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\ProjectDomain\ProjectCrudController;
@@ -24,10 +28,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Entity\Proj
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\AbstractFieldTest;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class AssociationConfiguratorTest extends AbstractFieldTest
 {
     private EntityDto $projectDto;
+    private RequestStack $requestStack;
 
     protected function setUp(): void
     {
@@ -37,18 +43,32 @@ class AssociationConfiguratorTest extends AbstractFieldTest
 
         $adminUrlGenerator = $this->getMockBuilder(AdminUrlGeneratorInterface::class)->disableOriginalConstructor()->getMock();
 
+        $this->requestStack = new RequestStack();
+
         $this->configurator = new AssociationConfigurator(
             static::getContainer()->get(EntityFactory::class),
             $adminUrlGenerator,
-            static::getContainer()->get(RequestStack::class),
+            $this->requestStack,
             static::getContainer()->get(ControllerFactory::class),
             static::getContainer()->get(FieldFactory::class),
+            static::getContainer()->get(AuthorizationCheckerInterface::class),
+            new AdminContextProvider($this->requestStack),
+            static::getContainer()->get(AdminContextFactory::class),
         );
     }
 
     protected function getEntityDto(): EntityDto
     {
         return $this->projectDto;
+    }
+
+    protected function getAdminContext(string $pageName, string $requestLocale, string $actionName, ?string $controllerFqcn = null): AdminContextInterface
+    {
+        $context = parent::getAdminContext($pageName, $requestLocale, $actionName, $controllerFqcn);
+        $context->getRequest()->attributes->set(EA::CONTEXT_REQUEST_ATTRIBUTE, $context);
+        $this->requestStack->push($context->getRequest());
+
+        return $context;
     }
 
     public function testToOneAssociation(): void

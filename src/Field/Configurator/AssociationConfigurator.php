@@ -12,8 +12,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\TextAlign;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\CrudDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
+use EasyCorp\Bundle\EasyAdminBundle\Factory\AdminContextFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\ControllerFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\EntityFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\FieldFactory;
@@ -21,10 +24,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudAutocompleteType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Security\Permission;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use function Symfony\Component\Translation\t;
 
 /**
@@ -38,6 +44,9 @@ final readonly class AssociationConfigurator implements FieldConfiguratorInterfa
         private RequestStack $requestStack,
         private ControllerFactory $controllerFactory,
         private FieldFactory $fieldFactory,
+        private AuthorizationCheckerInterface $authorizationChecker,
+        private AdminContextProviderInterface $adminContextProvider,
+        private AdminContextFactory $adminContextFactory,
     ) {
     }
 
@@ -298,7 +307,12 @@ final readonly class AssociationConfigurator implements FieldConfiguratorInterfa
         // associated entity is null (e.g. admin_post_index and Post <-> User)
         $crudAction = null === $primaryKeyValue ? Action::INDEX : Action::DETAIL;
 
-        // TODO: check if user has permission to see the related entity
+        $crudDto = $this->createCrudDto($crudController, $crudAction);
+
+        if (!$this->authorizationChecker->isGranted(Permission::EA_EXECUTE_ACTION, ['crud' => $crudDto, 'action' => $crudAction, 'entity' => $entityDto])) {
+            return null;
+        }
+
         return $this->adminUrlGenerator
             ->setController($crudController)
             ->setAction($crudAction)
@@ -379,6 +393,34 @@ final readonly class AssociationConfigurator implements FieldConfiguratorInterfa
         $this->fieldFactory->processFields($entityDto, new FieldCollection($fields), $crudPageName);
 
         return $entityDto;
+    }
+
+    /**
+     * @param class-string $crudControllerFqcn
+     */
+    private function createCrudDto(string $crudControllerFqcn, string $crudControllerAction): CrudDto
+    {
+        $request = new Request();
+
+        $dashboardController = $this->controllerFactory->getDashboardControllerInstance(
+            $this->adminContextProvider->getContext()->getDashboardControllerFqcn(),
+            $request,
+        );
+
+        $crudController = $this->controllerFactory->getCrudControllerInstance(
+            $crudControllerFqcn,
+            $crudControllerAction,
+            $request,
+        );
+
+        $adminContext = $this->adminContextFactory->create(
+            $request,
+            $dashboardController,
+            $crudController,
+            $crudControllerAction,
+        );
+
+        return $adminContext->getCrud();
     }
 
     private function configurePreferredChoices(FieldDto $field): void
