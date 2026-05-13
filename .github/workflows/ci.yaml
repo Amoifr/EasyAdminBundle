@@ -90,7 +90,7 @@ jobs:
                   coverage: none
                   extensions: mbstring, intl, pdo, pdo_sqlite, sqlite3
                   ini-values: date.timezone=UTC
-                  tools: composer:2.8
+                  tools: composer:2.9.8
 
             - name: symfony/flex is required to install the correct symfony version
               if: ${{ matrix.symfony_version }}
