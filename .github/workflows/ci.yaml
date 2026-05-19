@@ -108,7 +108,7 @@ jobs:
 
             - name: Install dependencies
               run: |
-                  composer update ${{ matrix.composer_args }};
+                  composer update --no-audit ${{ matrix.composer_args }};
                   vendor/bin/simple-phpunit install
 
             - name: Show installed dependencies
