@@ -149,6 +149,13 @@ jobs:
               if: ${{ matrix.symfony_version }}
               run: composer config extra.symfony.require "${{ matrix.symfony_version }}"
 
+            - name: Disable Composer audit feature
+              # this is needed because Composer installation fails when every matched
+              # version of a dependency has an open security advisory, which is the case
+              # for packages that are no longer updated so no non-vulnerable patch exists
+              run: |
+                  composer config audit.block-insecure false
+
             - name: Install dependencies
               run: |
                   composer update --no-interaction --no-progress --prefer-dist ${{ matrix.composer_args }}
