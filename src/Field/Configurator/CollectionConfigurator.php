@@ -95,6 +95,13 @@ final class CollectionConfigurator implements FieldConfiguratorInterface
 
     private function formatCollection(FieldDto $field, AdminContext $context): int|string
     {
+        // when the field defines its own formatValue() callable, that callable runs later
+        // in CommonPostConfigurator and overwrites whatever we return here, so skip the
+        // text-joining work and avoid (string)-casting items that may not be valid UTF-8
+        if (null !== $field->getFormatValueCallable()) {
+            return $this->countNumElements($field->getValue());
+        }
+
         $doctrineMetadata = $field->getDoctrineMetadata();
         if ('array' !== $doctrineMetadata->get('type') && !$field->getValue() instanceof PersistentCollection) {
             return $this->countNumElements($field->getValue());
