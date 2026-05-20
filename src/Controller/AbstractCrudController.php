@@ -619,23 +619,37 @@ abstract class AbstractCrudController extends AbstractController implements Crud
         return $this->configureResponseParameters($responseParameters);
     }
 
+    /**
+     * @param class-string<TEntity> $entityFqcn
+     *
+     * @phpstan-return TEntity
+     */
     public function createEntity(string $entityFqcn): object
     {
         return new $entityFqcn();
     }
 
+    /**
+     * @param TEntity $entityInstance
+     */
     public function updateEntity(EntityManagerInterface $entityManager, object $entityInstance): void
     {
         $entityManager->persist($entityInstance);
         $entityManager->flush();
     }
 
+    /**
+     * @param TEntity $entityInstance
+     */
     public function persistEntity(EntityManagerInterface $entityManager, object $entityInstance): void
     {
         $entityManager->persist($entityInstance);
         $entityManager->flush();
     }
 
+    /**
+     * @param TEntity $entityInstance
+     */
     public function deleteEntity(EntityManagerInterface $entityManager, object $entityInstance): void
     {
         $entityManager->remove($entityInstance);
