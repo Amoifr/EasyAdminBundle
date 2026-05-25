@@ -122,6 +122,28 @@ class IconTest extends TestCase
         $iconComponent->getIcon();
     }
 
+    /**
+     * @dataProvider providePathTraversalInternalIconNames
+     */
+    public function testInternalIconNameRejectsPathTraversalCharacters(string $iconName): void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $iconComponent = new Icon($this->getAdminContextProvider(IconSet::Internal));
+        $iconComponent->name = $iconName;
+        $iconComponent->getIcon();
+    }
+
+    public static function providePathTraversalInternalIconNames(): iterable
+    {
+        yield 'parent-directory traversal' => ['internal:../../../../../tmp/secret'];
+        yield 'leading slash' => ['internal:/etc/passwd'];
+        yield 'plain dot-dot' => ['internal:..'];
+        yield 'subdirectory access' => ['internal:subdir/icon'];
+        yield 'backslash separator' => ['internal:..\\foo'];
+        yield 'empty icon name' => ['internal:'];
+    }
+
     private function getAdminContextProvider(string $appIconSet): AdminContextProvider
     {
         $assetsDto = new AssetsDto();
