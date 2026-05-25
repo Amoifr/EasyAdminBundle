@@ -142,6 +142,12 @@ class IconTest extends TestCase
         yield 'subdirectory access' => ['internal:subdir/icon'];
         yield 'backslash separator' => ['internal:..\\foo'];
         yield 'empty icon name' => ['internal:'];
+        yield 'filetypes parent-directory traversal' => ['filetypes:../../../../../tmp/secret'];
+        yield 'filetypes leading slash' => ['filetypes:/etc/passwd'];
+        yield 'filetypes plain dot-dot' => ['filetypes:..'];
+        yield 'filetypes subdirectory access' => ['filetypes:subdir/icon'];
+        yield 'filetypes backslash separator' => ['filetypes:..\\foo'];
+        yield 'filetypes empty icon name' => ['filetypes:'];
     }
 
     private function getAdminContextProvider(string $appIconSet): AdminContextProvider
