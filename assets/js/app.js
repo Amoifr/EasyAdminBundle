@@ -4,7 +4,7 @@ require('../css/app.css');
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle';
 import Mark from 'mark.js/src/vanilla';
 import Autocomplete from './autocomplete';
-import { toggleVisibilityClasses } from './helpers';
+import { sanitizeUrl, toggleVisibilityClasses } from './helpers';
 
 // Provide Bootstrap variable globally to allow custom backend pages to use it
 window.bootstrap = bootstrap;
@@ -198,8 +198,15 @@ class App {
 
         const filterModal = document.querySelector(filterButton.getAttribute('data-bs-target'));
 
+        // the filter URL is fetched and its response is injected into the page (see below),
+        // so it must be same-origin to prevent loading attacker-controlled remote HTML
+        const filtersUrl = sanitizeUrl(filterButton.getAttribute('data-href'), true);
+        if (null === filtersUrl) {
+            return;
+        }
+
         // this is needed to avoid errors when connection is slow
-        filterButton.setAttribute('href', filterButton.getAttribute('data-href'));
+        filterButton.setAttribute('href', filtersUrl);
         filterButton.removeAttribute('data-href');
         filterButton.classList.remove('disabled');
 
@@ -665,7 +672,10 @@ class App {
                     return;
                 }
                 event.preventDefault();
-                window.location = element.getAttribute('data-ea-action-url');
+                const actionUrl = sanitizeUrl(element.getAttribute('data-ea-action-url'));
+                if (null !== actionUrl) {
+                    window.location = actionUrl;
+                }
             });
         });
     }
