@@ -78,6 +78,8 @@ final class ChoiceConfigurator implements FieldConfiguratorInterface
         if ($areChoicesTranslatable && !$choicesSupportTranslatableInterface) {
             $field->setFormTypeOptionIfNotSet('choices', array_keys($choices));
             $field->setFormTypeOptionIfNotSet('choice_label', static fn ($value) => $choices[$value]);
+        } elseif ($choicesSupportTranslatableInterface && $allChoicesAreEnums) {
+            $field->setFormTypeOptionIfNotSet('choices', array_values($choices));
         } else {
             $field->setFormTypeOptionIfNotSet('choices', $choices);
         }
