@@ -934,7 +934,6 @@ for the actions using the ``#[AdminRoute]`` attribute::
     use App\Stats\BusinessStatsCalculator;
     use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
     use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-    use Symfony\Component\Routing\Attribute\Route;
     use Symfony\Component\Security\Http\Attribute\IsGranted;
 
     #[IsGranted('ROLE_ADMIN')]
