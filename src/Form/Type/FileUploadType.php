@@ -72,7 +72,7 @@ class FileUploadType extends AbstractType implements DataMapperInterface
         }
 
         $options['constraints'] = (bool) $options['multiple'] ? new All($options['file_constraints']) : $options['file_constraints'];
-        unset($options['upload_dir'], $options['upload_new'], $options['upload_delete'], $options['upload_filename'], $options['upload_validate'], $options['download_path'], $options['allow_add'], $options['allow_delete'], $options['allow_view'], $options['allow_download'], $options['compound'], $options['file_constraints'], $options['replaced_file_behavior'], $options['flysystem_storage'], $options['flysystem_url_prefix']);
+        unset($options['upload_dir'], $options['upload_new'], $options['upload_delete'], $options['upload_filename'], $options['upload_validate'], $options['download_path'], $options['allow_add'], $options['allow_delete'], $options['allow_view'], $options['allow_download'], $options['compound'], $options['file_constraints'], $options['replaced_file_behavior'], $options['flysystem_storage'], $options['flysystem_url_prefix'], $options['risky_inline_render']);
 
         $builder->add('file', FileType::class, $options);
         $builder->add('delete', CheckboxType::class, ['required' => false]);
@@ -130,6 +130,7 @@ class FileUploadType extends AbstractType implements DataMapperInterface
         $view->vars['allow_view'] = $options['allow_view'];
         $view->vars['allow_download'] = $options['allow_download'];
         $view->vars['download_path'] = $options['download_path'];
+        $view->vars['risky_inline_render'] = $options['risky_inline_render'];
     }
 
     private function resolveFlysystemFileUrl(?FilesystemOperator $filesystem, ?string $urlPrefix, string $fileName): ?string
@@ -224,6 +225,7 @@ class FileUploadType extends AbstractType implements DataMapperInterface
             'file_constraints' => [],
             'flysystem_storage' => null,
             'flysystem_url_prefix' => null,
+            'risky_inline_render' => false,
         ]);
 
         $resolver->setAllowedTypes('upload_dir', 'string');
@@ -240,6 +242,7 @@ class FileUploadType extends AbstractType implements DataMapperInterface
         $resolver->setAllowedTypes('file_constraints', [Constraint::class, Constraint::class.'[]']);
         $resolver->setAllowedTypes('flysystem_storage', ['null', FilesystemOperator::class]);
         $resolver->setAllowedTypes('flysystem_url_prefix', ['null', 'string']);
+        $resolver->setAllowedTypes('risky_inline_render', 'bool');
 
         $resolver->setNormalizer('upload_dir', function (Options $options, string $value): string {
             if (null !== $options['flysystem_storage']) {

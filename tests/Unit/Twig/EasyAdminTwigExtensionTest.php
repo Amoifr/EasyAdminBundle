@@ -66,6 +66,56 @@ class EasyAdminTwigExtensionTest extends KernelTestCase
         $this->assertSame($expected, $result);
     }
 
+    /**
+     * @dataProvider provideValuesForForceFileDownload
+     */
+    public function testForceFileDownload(string $filename, bool $expected): void
+    {
+        $reflectedClass = new \ReflectionClass(EasyAdminTwigExtension::class);
+        $twigExtensionInstance = $reflectedClass->newInstanceWithoutConstructor();
+
+        $this->assertSame($expected, $twigExtensionInstance->forceFileDownload($filename));
+    }
+
+    public static function provideValuesForForceFileDownload(): iterable
+    {
+        // files the browser renders inline and can execute scripts from
+        yield ['document.html', true];
+        yield ['document.htm', true];
+        yield ['document.xhtml', true];
+        yield ['document.shtml', true];
+        yield ['document.mhtml', true];
+        yield ['image.svg', true];
+        yield ['image.svgz', true];
+        yield ['data.xml', true];
+        yield ['transform.xsl', true];
+        yield ['transform.xslt', true];
+
+        // the check is case-insensitive
+        yield ['DOCUMENT.HTML', true];
+        yield ['IMAGE.SVG', true];
+
+        // the check uses the (last) extension, regardless of the path
+        yield ['uploads/files/payload.html', true];
+        yield ['uploads/images/avatar.png', false];
+        yield ['archive.tar.svg', true];
+        yield ['archive.svg.zip', false];
+
+        // safe types keep opening inline
+        yield ['document.pdf', false];
+        yield ['photo.jpg', false];
+        yield ['photo.jpeg', false];
+        yield ['photo.png', false];
+        yield ['photo.gif', false];
+        yield ['photo.webp', false];
+        yield ['report.docx', false];
+        yield ['notes.txt', false];
+
+        // files without an extension are not forced to download
+        yield ['README', false];
+        yield ['', false];
+    }
+
     public static function provideValuesForFileSize(): iterable
     {
         yield [0, '0 B'];

@@ -206,6 +206,44 @@ controls what happens to the old file on disk. There are three behaviors:
 
         yield FileField::new('...')->keepReplacedFileOrFail();
 
+Serving Uploaded Files Safely
+-----------------------------
+
+Uploaded files are typically stored under the public web root, so they are
+served by the web server with the ``Content-Type`` that matches their
+extension. Some file types (e.g. ``.html`` and ``.svg``) are rendered *inline*
+by browsers and can run embedded JavaScript. If such a file is opened from the
+same origin as the backend, that script executes in the session of the user who
+opens it (a stored `XSS`_ attack).
+
+To prevent this, EasyAdmin **forces a download** (instead of opening the file
+inline) for uploaded files whose type the browser would render and could
+execute scripts from, such as ``.html``, ``.svg``, ``.xhtml`` and ``.xml``.
+Safe types (images, PDFs, office documents, etc.) keep opening inline as usual.
+You can change this default behavior with the following option.
+
+allowRiskyInlineRender
+~~~~~~~~~~~~~~~~~~~~~~
+
+If you fully trust the uploaded contents, use this option to disable the
+protection above and render those files inline again::
+
+    yield FileField::new('...')->allowRiskyInlineRender();
+
+.. caution::
+
+    Only enable this when uploads are restricted to trusted users, sanitized, or
+    served from a separate domain. Otherwise a malicious ``.html`` or ``.svg``
+    upload can run JavaScript in the backend user's session.
+
+.. note::
+
+    Forcing a download in the backend only protects EasyAdmin's own links. The
+    files are still served as static assets, so a user who opens the file URL
+    directly is not affected by this setting. For full protection, serve the
+    upload directory with the ``Content-Disposition: attachment`` header (via your
+    web server configuration) or store uploads outside the public web root.
+
 Flysystem Integration (Remote Storage)
 --------------------------------------
 
@@ -310,3 +348,4 @@ to work exactly the same way with Flysystem.
 .. _`HTML "accept" attribute`: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/accept
 .. _`Flysystem`: https://flysystem.thephpleague.com
 .. _`league/flysystem-bundle`: https://github.com/thephpleague/flysystem-bundle
+.. _`XSS`: https://owasp.org/www-community/attacks/xss/

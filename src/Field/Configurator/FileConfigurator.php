@@ -181,6 +181,7 @@ final readonly class FileConfigurator implements FieldConfiguratorInterface
         $field->setFormTypeOption('allow_delete', $field->getCustomOption(FileField::OPTION_DELETABLE));
         $field->setFormTypeOption('allow_view', $field->getCustomOption(FileField::OPTION_VIEWABLE));
         $field->setFormTypeOption('allow_download', $field->getCustomOption(FileField::OPTION_DOWNLOADABLE));
+        $field->setFormTypeOption('risky_inline_render', $field->getCustomOption(FileField::OPTION_RISKY_INLINE_RENDER));
     }
 
     private function resolveFlysystemStorage(string $storageName): FilesystemOperator

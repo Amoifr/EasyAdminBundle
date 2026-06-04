@@ -383,4 +383,30 @@ class ImageFieldTest extends AbstractFieldTest
 
         self::assertTrue($fieldDto->getCustomOption(ImageField::OPTION_DELETABLE));
     }
+
+    public function testRiskyInlineRenderIsDisabledByDefault(): void
+    {
+        $field = ImageField::new('image');
+        $fieldDto = $this->configure($field);
+
+        self::assertFalse($fieldDto->getCustomOption(ImageField::OPTION_RISKY_INLINE_RENDER));
+    }
+
+    public function testAllowRiskyInlineRender(): void
+    {
+        $field = ImageField::new('image');
+        $field->allowRiskyInlineRender();
+        $fieldDto = $this->configure($field);
+
+        self::assertTrue($fieldDto->getCustomOption(ImageField::OPTION_RISKY_INLINE_RENDER));
+    }
+
+    public function testAllowRiskyInlineRenderFalse(): void
+    {
+        $field = ImageField::new('image');
+        $field->allowRiskyInlineRender(false);
+        $fieldDto = $this->configure($field);
+
+        self::assertFalse($fieldDto->getCustomOption(ImageField::OPTION_RISKY_INLINE_RENDER));
+    }
 }

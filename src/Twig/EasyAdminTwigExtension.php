@@ -47,6 +47,7 @@ class EasyAdminTwigExtension extends AbstractExtension implements GlobalsInterfa
             new TwigFilter('ea_as_string', [$this, 'representAsString']),
             new TwigFilter('ea_html_attrs', [$this, 'processHtmlAttributes']),
             new TwigFilter('ea_filetype_icon', [$this, 'getFiletypeIcon']),
+            new TwigFilter('ea_force_download', [$this, 'forceFileDownload']),
         ];
     }
 
@@ -122,6 +123,30 @@ class EasyAdminTwigExtension extends AbstractExtension implements GlobalsInterfa
             'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'tgz' => 'zip',
             default => 'generic',
         };
+    }
+
+    /**
+     * Returns true for uploaded files that browsers render inline and that can
+     * execute embedded scripts (e.g. HTML or SVG documents). EasyAdmin forces a
+     * download for these types instead of linking to them inline, to prevent a
+     * stored XSS when uploads are served from the same origin as the backend.
+     */
+    public function forceFileDownload(string $filename): bool
+    {
+        // checking the extension (and not the real MIME type) is enough and correct here:
+        // browsers and web servers decide whether to render a file inline based on the
+        // Content-Type derived from its extension, not from its actual contents. So the
+        // stored extension is exactly what determines the risk. Besides, the real MIME
+        // type was already resolved from the contents at upload time (via guessExtension())
+        // and reading the file again at render time would be costly and impossible for
+        // remote storage (e.g. Flysystem URLs).
+        $extension = strtolower(pathinfo($filename, \PATHINFO_EXTENSION));
+
+        return \in_array($extension, [
+            'htm', 'html', 'xhtml', 'xht', 'shtml', 'shtm', 'mhtml', 'mht',
+            'svg', 'svgz',
+            'xml', 'xsl', 'xslt',
+        ], true);
     }
 
     public function fileSize(int $bytes): string

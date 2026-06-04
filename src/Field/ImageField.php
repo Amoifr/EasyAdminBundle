@@ -33,6 +33,7 @@ final class ImageField implements FieldInterface
     public const OPTION_MAX_SIZE_MESSAGE = 'maxSizeMessage';
     public const OPTION_FLYSYSTEM_STORAGE = 'flysystemStorage';
     public const OPTION_FLYSYSTEM_URL_PREFIX = 'flysystemUrlPrefix';
+    public const OPTION_RISKY_INLINE_RENDER = 'riskyInlineRender';
 
     public static function new(string $propertyName, TranslatableInterface|string|bool|null $label = null): self
     {
@@ -58,7 +59,8 @@ final class ImageField implements FieldInterface
             ->setCustomOption(self::OPTION_MAX_SIZE, null)
             ->setCustomOption(self::OPTION_MAX_SIZE_MESSAGE, null)
             ->setCustomOption(self::OPTION_FLYSYSTEM_STORAGE, null)
-            ->setCustomOption(self::OPTION_FLYSYSTEM_URL_PREFIX, null);
+            ->setCustomOption(self::OPTION_FLYSYSTEM_URL_PREFIX, null)
+            ->setCustomOption(self::OPTION_RISKY_INLINE_RENDER, false);
     }
 
     /**
@@ -243,6 +245,25 @@ final class ImageField implements FieldInterface
     public function isDeletable(bool $isDeletable = true): self
     {
         $this->setCustomOption(self::OPTION_DELETABLE, $isDeletable);
+
+        return $this;
+    }
+
+    /**
+     * By default, EasyAdmin forces a download for uploaded images whose type the
+     * browser would render inline and could execute scripts from (e.g. ".svg").
+     * This prevents a stored XSS when images are served from the same origin as
+     * the backend. Note that images shown as previews (via <img> tags) are not
+     * affected, because browsers never run scripts embedded in <img> sources.
+     *
+     * Call this method to disable that protection and allow those files to be
+     * opened inline again. Only enable it when you fully trust the uploaded
+     * contents (e.g. uploads are restricted to trusted users, SVGs are sanitized,
+     * or images are served from a separate domain).
+     */
+    public function allowRiskyInlineRender(bool $allow = true): self
+    {
+        $this->setCustomOption(self::OPTION_RISKY_INLINE_RENDER, $allow);
 
         return $this;
     }

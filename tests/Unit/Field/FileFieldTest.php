@@ -369,4 +369,30 @@ class FileFieldTest extends AbstractFieldTest
 
         self::assertTrue($fieldDto->getCustomOption(FileField::OPTION_DELETABLE));
     }
+
+    public function testRiskyInlineRenderIsDisabledByDefault(): void
+    {
+        $field = FileField::new('document');
+        $fieldDto = $this->configure($field);
+
+        self::assertFalse($fieldDto->getCustomOption(FileField::OPTION_RISKY_INLINE_RENDER));
+    }
+
+    public function testAllowRiskyInlineRender(): void
+    {
+        $field = FileField::new('document');
+        $field->allowRiskyInlineRender();
+        $fieldDto = $this->configure($field);
+
+        self::assertTrue($fieldDto->getCustomOption(FileField::OPTION_RISKY_INLINE_RENDER));
+    }
+
+    public function testAllowRiskyInlineRenderFalse(): void
+    {
+        $field = FileField::new('document');
+        $field->allowRiskyInlineRender(false);
+        $fieldDto = $this->configure($field);
+
+        self::assertFalse($fieldDto->getCustomOption(FileField::OPTION_RISKY_INLINE_RENDER));
+    }
 }

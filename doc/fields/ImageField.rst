@@ -196,6 +196,44 @@ controls what happens to the old file on disk. There are three behaviors:
 
         yield ImageField::new('...')->keepReplacedFileOrFail();
 
+Serving Uploaded Images Safely
+------------------------------
+
+``ImageField`` accepts SVG images by default, and SVG files can contain embedded
+JavaScript. Images shown as previews (via ``<img>`` tags) are safe, because
+browsers never run scripts embedded in ``<img>`` sources. However, opening an
+SVG file *directly* (as a top-level document, e.g. through a "view" link)
+renders it inline and runs its scripts in the session of the user who opens it
+(a stored `XSS`_ attack).
+
+To prevent this, EasyAdmin **forces a download** (instead of opening the file
+inline) for uploaded images whose type the browser would render and could execute
+scripts from, such as ``.svg``. Raster images (``.png``, ``.jpg``, ``.gif``,
+``.webp``, etc.) are unaffected. You can change this default behavior with the
+following option.
+
+allowRiskyInlineRender
+~~~~~~~~~~~~~~~~~~~~~~
+
+If you fully trust the uploaded contents, use this option to disable the
+protection above and allow those images to be opened inline again::
+
+    yield ImageField::new('...')->allowRiskyInlineRender();
+
+.. caution::
+
+    Only enable this when uploads are restricted to trusted users, SVGs are
+    sanitized, or images are served from a separate domain. Otherwise a malicious
+    ``.svg`` upload can run JavaScript in the backend user's session.
+
+.. note::
+
+    Forcing a download in the backend only protects EasyAdmin's own links. The
+    files are still served as static assets, so a user who opens the file URL
+    directly is not affected by this setting. For full protection, serve the
+    upload directory with the ``Content-Disposition: attachment`` header (via your
+    web server configuration) or store uploads outside the public web root.
+
 Flysystem Integration (Remote Storage)
 --------------------------------------
 
@@ -265,3 +303,4 @@ Flysystem integration works internally.
 .. _`Image constraint`: https://symfony.com/doc/current/reference/constraints/Image.html
 .. _`Flysystem`: https://flysystem.thephpleague.com
 .. _`league/flysystem-bundle`: https://github.com/thephpleague/flysystem-bundle
+.. _`XSS`: https://owasp.org/www-community/attacks/xss/
