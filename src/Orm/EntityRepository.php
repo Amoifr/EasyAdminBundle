@@ -410,18 +410,21 @@ final readonly class EntityRepository implements EntityRepositoryInterface
             return false;
         }
 
+        $classMetadata = $entityDto->getClassMetadata();
+
         // multi-segment customSort (e.g. "customer.secretField") would otherwise
         // reach the unfiltered multi-segment branch in applyOrderClause; URL-based
         // association sort is supported via AssociationField::setSortProperty()
-        // with a single-segment key
-        if (str_contains($sortProperty, '.')) {
+        // with a single-segment key. Embeddable properties (e.g. "address.city")
+        // are real Doctrine fields with a dotted name (hasField() === true), so
+        // they are still allowed
+        if (str_contains($sortProperty, '.') && !$classMetadata->hasField($sortProperty)) {
             return false;
         }
 
         // structural gate: the property must be a real Doctrine field or association
         // on the entity. This also rejects any key with characters (commas, spaces,
         // quotes…) that could otherwise smuggle DQL fragments through identifier interpolation
-        $classMetadata = $entityDto->getClassMetadata();
         if (!$classMetadata->hasField($sortProperty) && !$classMetadata->hasAssociation($sortProperty)) {
             return false;
         }
