@@ -119,6 +119,15 @@ Admin route name                Admin route path
 ``admin_product_view``          ``/admin/product/324``
 ==============================  =====================================
 
+.. tip::
+
+    The route paths of the ``edit``, ``delete`` and ``detail`` actions must contain
+    the ``{entityId}`` placeholder, which identifies the current entity. You can also
+    use ``{id}`` as an alias of ``{entityId}`` (e.g. ``'detail' => ['routePath' => '/{id}']``).
+    Both placeholders work the same in EasyAdmin, but ``{id}`` also allows Symfony
+    to inject the entity as a typed controller argument automatically
+    (see :ref:`custom actions <actions-custom>`).
+
 You can also customize the path and/or route name of CRUD controllers using the
 ``#[AdminRoute]`` attribute with the following options:
 
@@ -982,6 +991,25 @@ method (it will be called automatically for you):
     {% set url = ea_url()
         .setController('App\\Controller\\Admin\\SomeCrudController')
         .setAction('theActionName') %}
+
+When the URL points to an action that operates on a specific entity (e.g. ``edit``,
+``detail`` or a custom action), set the entity identifier with the ``setEntityId()``
+method. You can also use ``setId()``, a more concise alias of ``setEntityId()``
+(both work no matter if the route path uses the ``{entityId}`` placeholder or
+its ``{id}`` alias):
+
+.. code-block:: twig
+
+    {% set url = ea_url()
+        .setController('App\\Controller\\Admin\\SomeCrudController')
+        .setAction('detail')
+        .setId(product.id) %}
+
+.. note::
+
+    The ``setId()`` method is not part of ``AdminUrlGeneratorInterface`` yet (it will
+    be added in the next major version of EasyAdmin). If you generate URLs in PHP code
+    and type-hint the ``AdminUrlGeneratorInterface``, use ``setEntityId()`` instead.
 
 Generating CRUD URLs from outside EasyAdmin
 ...........................................

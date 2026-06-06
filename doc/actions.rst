@@ -718,7 +718,7 @@ The following example shows all kinds of actions in practice::
             ;
         }
 
-        #[AdminRoute('/{entityId:order.id}/invoice')]
+        #[AdminRoute('/{id}/invoice')]
         public function renderInvoice(Order $order): Response
         {
             // add your custom order logic here...
@@ -728,8 +728,23 @@ The following example shows all kinds of actions in practice::
 Apply the ``#[AdminRoute]`` attribute to turn CRUD controller methods into custom
 CRUD actions with their own admin routes. In the above example, if the dashboard
 uses ``admin`` as the main route name, EasyAdmin generates a route named
-``admin_order_render_invoice`` with the path ``/admin/order/{entityId}/invoice``.
+``admin_order_render_invoice`` with the path ``/admin/order/{id}/invoice``.
 You can :ref:`customize the name, path, and methods <crud_routes>` of this route.
+
+The placeholder that identifies the current entity in EasyAdmin routes is called
+``{entityId}``, but you can also use ``{id}`` as an alias of it. Both work the
+same but ``{id}`` provides a nicer integration with Symfony: since the placeholder
+name matches the identifier property of most entities, Symfony's ``EntityValueResolver``
+can inject the entity as a typed controller argument (the ``Order $order`` argument
+in the above example) without any extra configuration.
+
+.. note::
+
+    If your application doesn't enable the ``controller_resolver.auto_mapping``
+    option of DoctrineBundle, add the ``#[MapEntity]`` attribute to the controller
+    argument (``#[MapEntity] Order $order``) to inject the entity. When using the
+    ``{entityId}`` placeholder instead of ``{id}``, you must always use the explicit
+    `mapped route parameters`_ syntax: ``#[AdminRoute('/{entityId:order.id}/invoice')]``.
 
 .. tip::
 
@@ -1145,6 +1160,7 @@ backends. Instead of defining it repeatedly, you can create a reusable package
     }
 
 .. _`FontAwesome`: https://fontawesome.com/
+.. _`mapped route parameters`: https://symfony.com/doc/current/doctrine.html#fetch-automatically
 .. _`Symfony base controller class`: https://symfony.com/doc/current/controller.html#the-base-controller-class-services
 .. _`Symfony controllers`: https://symfony.com/doc/current/controller.html
 .. _`Symfony bundle`: https://symfony.com/doc/current/bundles.html

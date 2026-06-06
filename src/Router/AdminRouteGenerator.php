@@ -215,10 +215,12 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
                     }
                 }
 
-                // by default, the 'detail' route uses a catch-all route pattern (/{entityId});
+                // by default, the 'detail' route uses a catch-all route pattern (/{entityId} or its /{id} alias);
                 // so, if the user hasn't customized the 'detail' route path, we need to sort the actions
-                // to make sure that the 'detail' action is always the last one
-                if (isset($actionsRouteConfig['detail']) && '/{entityId}' === $actionsRouteConfig['detail']['routePath']) {
+                // to make sure that the 'detail' action is always the last one. The path is canonicalized via a
+                // temporary Route so mapped placeholders (e.g. /{id:product.id}) are also detected as catch-all.
+                $detailRoutePath = $actionsRouteConfig['detail']['routePath'] ?? null;
+                if (null !== $detailRoutePath && \in_array((new Route($detailRoutePath))->getPath(), ['/{entityId}', '/{id}'], true)) {
                     uasort($actionsRouteConfig, static function ($a, $b) {
                         $aRouteName = $a['routeName'] ?? '';
                         $bRouteName = $b['routeName'] ?? '';
@@ -554,8 +556,8 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
                 throw new \RuntimeException(sprintf('In the #[AdminDashboard] attribute of the "%s" dashboard controller, the route name "%s" for the "%s" action is not valid. It can only contain letter, numbers, dashes, and underscores.', $dashboardFqcn, $customRouteConfig['routeName'], $action));
             }
 
-            if (isset($customRouteConfig['routePath']) && \in_array($action, [Action::EDIT, Action::DETAIL, Action::DELETE], true) && !str_contains($customRouteConfig['routePath'], '{entityId}')) {
-                throw new \RuntimeException(sprintf('In the #[AdminDashboard] attribute of the "%s" dashboard controller, the path for the "%s" action must contain the "{entityId}" placeholder.', $action, $dashboardFqcn));
+            if (isset($customRouteConfig['routePath']) && \in_array($action, [Action::EDIT, Action::DETAIL, Action::DELETE], true) && null === $this->getEntityIdPlaceholderName($customRouteConfig['routePath'])) {
+                throw new \RuntimeException(sprintf('In the #[AdminDashboard] attribute of the "%s" dashboard controller, the path for the "%s" action must contain the "{id}" or "{entityId}" placeholder.', $action, $dashboardFqcn));
             }
         }
 
@@ -665,8 +667,8 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
                 $routeId = $action.'_route_'.++$index;
 
                 if (null !== $adminRouteInstance->path) {
-                    if (\in_array($action, [Action::EDIT, Action::DETAIL, Action::DELETE], true) && !str_contains($adminRouteInstance->path, '{entityId}')) {
-                        throw new \RuntimeException(sprintf('In the "%s" CRUD controller, the #[AdminRoute] attribute applied to the "%s()" action is missing the "{entityId}" placeholder in its route path.', $crudControllerFqcn, $action));
+                    if (\in_array($action, [Action::EDIT, Action::DETAIL, Action::DELETE], true) && null === $this->getEntityIdPlaceholderName($adminRouteInstance->path)) {
+                        throw new \RuntimeException(sprintf('In the "%s" CRUD controller, the #[AdminRoute] attribute applied to the "%s()" action is missing the "{id}" or "{entityId}" placeholder in its route path.', $crudControllerFqcn, $action));
                     }
 
                     $customActionsConfig[$routeId]['routePath'] = $adminRouteInstance->path;
@@ -718,6 +720,23 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
         }
 
         return $customActionsConfig;
+    }
+
+    /**
+     * Returns the name of the placeholder used in the given route path to identify the
+     * current entity: 'entityId' (canonical) or its 'id' alias; null if neither is present.
+     *
+     * It matches both the bare placeholders ({id}, {entityId}) and their mapped/constrained
+     * forms ({id:product.id}, {entityId<\d+>}, etc.) while ignoring unrelated variables such
+     * as {userId} or {idCard}.
+     */
+    private function getEntityIdPlaceholderName(string $routePath): ?string
+    {
+        if (1 === preg_match('#\{!?(id|entityId)(:[\w\x80-\xFF]++(\.[\w\x80-\xFF]++)?)?(<.*?>)?(\?[^}]*+)?\}#', $routePath, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 
     /**
@@ -847,10 +866,19 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
         $routeNameToRouteAttributes = [];
         $routeFqcnToRouteName = [];
         foreach ($adminRoutes as $routeName => $route) {
+            // store which placeholder (if any) this route uses to identify the current entity,
+            // so AdminUrlGenerator knows whether to generate the URL with 'entityId' or its 'id' alias.
+            // the canonical compiled path variables are used (instead of parsing the raw path) to ignore
+            // any literal '{id}' that might appear inside route defaults or requirements
+            $pathVariables = $route->compile()->getPathVariables();
+            $entityIdParamName = \in_array(EA::ENTITY_ID, $pathVariables, true) ? EA::ENTITY_ID
+                : (\in_array('id', $pathVariables, true) ? 'id' : null);
+
             $routeNameToRouteAttributes[$routeName] = [
                 EA::DASHBOARD_CONTROLLER_FQCN => $route->getDefault(EA::DASHBOARD_CONTROLLER_FQCN),
                 EA::CRUD_CONTROLLER_FQCN => $route->getDefault(EA::CRUD_CONTROLLER_FQCN),
                 EA::CRUD_ACTION => $route->getDefault(EA::CRUD_ACTION),
+                'entityIdParamName' => $entityIdParamName,
             ];
 
             $routeFqcnToRouteName[$route->getDefault(EA::DASHBOARD_CONTROLLER_FQCN)][$route->getDefault(EA::CRUD_CONTROLLER_FQCN) ?? ''][$route->getDefault(EA::CRUD_ACTION) ?? ''] = $routeName;
