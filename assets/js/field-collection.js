@@ -11,6 +11,10 @@ const eaCollectionHandler = (event) => {
     });
 
     document.querySelectorAll('button.field-collection-delete-button').forEach((deleteButton) => {
+        if(deleteButton.classList.contains('processed')) {
+            return;
+        }
+        deleteButton.classList.add('processed')
         deleteButton.addEventListener('click', () => {
             const collection = deleteButton.closest('[data-ea-collection-field]');
             const item = deleteButton.closest('.field-collection-item');
