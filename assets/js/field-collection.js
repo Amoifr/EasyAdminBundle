@@ -2,7 +2,7 @@ const eaCollectionHandler = (event) => {
     document.querySelectorAll('button.field-collection-add-button').forEach((addButton) => {
         const collection = addButton.closest('[data-ea-collection-field]');
 
-        if (!collection || collection.classList.contains('processed')) {
+        if (!collection || collection.dataset.eaProcessed) {
             return;
         }
 
@@ -11,10 +11,10 @@ const eaCollectionHandler = (event) => {
     });
 
     document.querySelectorAll('button.field-collection-delete-button').forEach((deleteButton) => {
-        if(deleteButton.classList.contains('processed')) {
+        if (deleteButton.dataset.eaProcessed) {
             return;
         }
-        deleteButton.classList.add('processed')
+        deleteButton.dataset.eaProcessed = 'true';
         deleteButton.addEventListener('click', () => {
             const collection = deleteButton.closest('[data-ea-collection-field]');
             const item = deleteButton.closest('.field-collection-item');
@@ -82,7 +82,7 @@ const EaCollectionProperty = {
             );
         });
 
-        collection.classList.add('processed');
+        collection.dataset.eaProcessed = 'true';
     },
 
     updateCollectionItemCssClasses: (collection) => {
