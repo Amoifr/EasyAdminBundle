@@ -530,18 +530,14 @@
                    aria-expanded="{{ is_collapsed ? 'false' : 'true' }}" aria-controls="content-{{ form.vars.name }}">
                     {{ ea_form_ealabel(form) }}
                     {%- if fieldset_error_count > 0 -%}
-                        <span class="badge badge-danger" title="{{ 'form.tab.error_badge_title'|trans({'%count%': fieldset_error_count}, 'EasyAdminBundle') }}">
-                            {{- fieldset_error_count -}}
-                        </span>
+                        <twig:ea:Badge variant="danger" title="{{ 'form.tab.error_badge_title'|trans({'%count%': fieldset_error_count}, 'EasyAdminBundle') }}">{{ fieldset_error_count }}</twig:ea:Badge>
                     {%- endif -%}
                 </a>
             {% else %}
                 <span class="not-collapsible form-fieldset-title-content">
                     {{ ea_form_ealabel(form) }}
                     {%- if fieldset_error_count > 0 -%}
-                        <span class="badge badge-danger" title="{{ 'form.tab.error_badge_title'|trans({'%count%': fieldset_error_count}, 'EasyAdminBundle') }}">
-                            {{- fieldset_error_count -}}
-                        </span>
+                        <twig:ea:Badge variant="danger" title="{{ 'form.tab.error_badge_title'|trans({'%count%': fieldset_error_count}, 'EasyAdminBundle') }}">{{ fieldset_error_count }}</twig:ea:Badge>
                     {%- endif -%}
                 </span>
             {% endif %}
@@ -599,9 +595,7 @@
 
                         {% set tab_error_count = tab.getCustomOption(tab_error_count_option_name) %}
                         {%- if tab_error_count > 0 -%}
-                            <span class="badge badge-danger" title="{{ 'form.tab.error_badge_title'|trans({'%count%': tab_error_count}, 'EasyAdminBundle') }}">
-                                {{- tab_error_count -}}
-                            </span>
+                            <twig:ea:Badge variant="danger" title="{{ 'form.tab.error_badge_title'|trans({'%count%': tab_error_count}, 'EasyAdminBundle') }}">{{ tab_error_count }}</twig:ea:Badge>
                         {%- endif -%}
                     </a>
                 </li>
