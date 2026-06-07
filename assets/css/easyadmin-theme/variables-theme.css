@@ -270,9 +270,6 @@
     --button-font-size-lg: 16px;
     --button-line-height: 1.5;
 
-    --button-transition-duration: 80ms;
-    --button-transition-timing: cubic-bezier(0.65, 0, 0.35, 1);
-
     --button-disabled-opacity: 0.9;
 
     --button-focus-outline-color: var(--indigo-600);
@@ -427,6 +424,15 @@
     --border-width: 1px;
     --border-style: solid;
     --border-color: hsl(213, 24%, 91%);
+}
+
+/* ----------------------------------------------------------------------------
+   Deprecated — don't use these. Kept only for backward compatibility.
+ --------------------------------------------------------------------------- */
+:root {
+    /* button transitions now use the shared --ea-transition-* primitives (utilities.css) */
+    --button-transition-duration: 80ms;
+    --button-transition-timing: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .ea-dark-scheme {
