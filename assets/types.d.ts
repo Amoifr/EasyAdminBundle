@@ -15,13 +15,13 @@ export type EAAutocompletePreConnectEvent = CustomEvent<{
 }>;
 //ea.collection.item-added
 export type EACollectionItemAddedEvent = CustomEvent<{
-    newElement: HTMLDivElement;
-    collection: HTMLDivElement;
+    newElement: HTMLElement;
+    collection: HTMLElement;
 }>;
 //ea.collection.item-removed
 export type EACollectionItemRemovedEvent = CustomEvent<{
-    deletedElement: HTMLDivElement;
-    collection: HTMLDivElement;
+    deletedElement: HTMLElement;
+    collection: HTMLElement;
 }>;
 //ea.form.submit
 export type EAFormSubmitEvent = CustomEvent<{

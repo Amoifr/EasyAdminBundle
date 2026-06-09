@@ -79,17 +79,20 @@ JavaScript Events
 
 EasyAdmin triggers several `JavaScript events`_ during user interactions with entity forms:
 
-================================  ==============================================  ================================  ==========
-Event type                        Occurs when                                     Event detail                      Cancelable
-================================  ==============================================  ================================  ==========
-``'ea.form.error'``               User submits a form that has validation errors  ``{page: pageName, form: form}``  true
---------------------------------  ----------------------------------------------  --------------------------        ----------
-``'ea.form.submit'``              User submits a form                             ``{page: pageName, form: form}``  true
---------------------------------  ----------------------------------------------  --------------------------------  ----------
-``'ea.collection.item-added'``    Item added to collection                        ``{newElement: element}``         false
---------------------------------  ----------------------------------------------  --------------------------------  ----------
-``'ea.collection.item-removed'``  Item removed from collection                                                      false
-================================  ==============================================  ================================  ==========
+=================================  ==============================================  ================================  ==========
+Event type                         Occurs when                                     Event detail                      Cancelable
+=================================  ==============================================  ================================  ==========
+``'ea.autocomplete.pre-connect'``  Before an autocomplete field is initialized     ``{config, prefix}``              false
+``'ea.autocomplete.connect'``      After an autocomplete field is initialized      ``{tomSelect, config, prefix}``   false
+``'ea.collection.item-added'``     Item added to collection                        ``{newElement, collection}``      false
+``'ea.collection.item-removed'``   Item removed from collection                    ``{deletedElement, collection}``  false
+``'ea.form.error'``                User submits a form that has validation errors  ``{page, form}``                  true
+``'ea.form.submit'``               User submits a form                             ``{page, form}``                  true
+=================================  ==============================================  ================================  ==========
+
+All these events can be listened to on ``document``. The ``ea.autocomplete.*``
+events are dispatched on the autocomplete form field element and bubble up,
+so you can also listen to them on the field itself or any of its ancestors.
 
 .. tip::
 
@@ -112,6 +115,29 @@ Here's how you can listen for these events in JavaScript:
 
 For more details and examples of the ``ea.collection.*`` events, see the
 :doc:`Collection Field JavaScript Events </fields/CollectionField#javascript-events>` section.
+
+TypeScript Support
+~~~~~~~~~~~~~~~~~~
+
+If your application frontend uses TypeScript, you can get type checking and
+autocompletion for all these events. To do so, add the type declarations
+provided by EasyAdmin to the ``include`` option of your ``tsconfig.json`` file:
+
+.. code-block:: json
+
+    {
+        "include": [
+            "src/**/*",
+            "vendor/easycorp/easyadmin-bundle/assets/types.d.ts"
+        ]
+    }
+
+.. caution::
+
+    These type declarations import some types from the ``tom-select`` package
+    (used by the ``ea.autocomplete.*`` events). Make sure that package is
+    installed in your application (e.g. with ``npm install tom-select``);
+    otherwise, the TypeScript compilation will fail.
 
 .. _`Symfony events`: https://symfony.com/doc/current/event_dispatcher.html
 .. _`JavaScript events`: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events
