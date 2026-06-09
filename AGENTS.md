@@ -6,7 +6,7 @@ Welcome, AI assistant. Please follow these guidelines when contributing to this 
 
 EasyAdminBundle is a third-party Symfony bundle for creating admin backends. It provides CRUD controllers, dashboard management, and extensive field/filter configuration.
 
-**Requirements:** PHP 8.1+, Symfony 5.4/6.x/7.x/8.x, Doctrine ORM 2.12+
+**Requirements:** PHP 8.2+, Symfony 6.4/7.x/8.x, Doctrine ORM 2.20+ or 3.6+
 
 ## General Rules
 
@@ -104,7 +104,7 @@ A bare `./vendor/bin/simple-phpunit` run skips the deprecation baseline (`tests/
 php-cs-fixer (`@Symfony` + `@Symfony:risky`) auto-formats most style — trailing commas, braces, strict comparisons, Yoda conditions, blank lines, quotes, etc. Run `make linter-cs-fixer` and let it handle formatting. The rules below are the conventions it does **not** enforce.
 
 ### Conventions
-- PHP 8.1+ syntax with constructor property promotion
+- PHP 8.2+ syntax with constructor property promotion
 - Don't add `declare(strict_types=1);` to PHP files
 - No service autowiring — configure explicitly in `config/services.php`
 - Use enums (`UpperCamelCase` case names) instead of constants for fixed sets of values
@@ -131,7 +131,7 @@ php-cs-fixer (`@Symfony` + `@Symfony:risky`) auto-formats most style — trailin
 
 ### Class Organization
 1. Properties before methods
-2. Constructor first, then  public, protected, private methods in that order
+2. Constructor first, then public, protected, private methods in that order
 
 ### PHPDoc
 - No single-line docblocks

@@ -28,6 +28,7 @@ Each is a real, self-contained Symfony app with its own Kernel, config, controll
 These are **public, stable API** — bundle users rely on them too, so don't break them.
 
 - Extend **`AbstractCrudTestCase`** for CRUD controller tests. It extends `WebTestCase`, composes the `CrudTest*` traits, and exposes `$this->client`, `$this->entityManager`, and `$this->adminUrlGenerator`. Subclasses implement `getControllerFqcn()` and `getDashboardFqcn()`.
+- Extend **`tests/Functional/AbstractFieldFunctionalTest.php`** for tests of individual fields (it builds on `AbstractCrudTestCase`).
 - Extend **`WebTestCase`** directly for simpler functional tests (e.g. dashboards).
 - Extend **`PHPUnit\Framework\TestCase`** for unit tests.
 
@@ -48,7 +49,7 @@ Never invoke a controller method directly in PHP. Browse the controller's URL wi
 ## Fixtures
 
 - Load data programmatically: instantiate entities, then `$entityManager->persist()` / `flush()`. No YAML fixtures.
-- Per-app Doctrine fixtures live in `tests/Functional/Apps/<App>/src/DataFixtures/AppFixtures.php`, loaded via DoctrineFixturesBundle.
+- Apps that need seed data ship Doctrine fixtures in `tests/Functional/Apps/<App>/src/DataFixtures/AppFixtures.php`, loaded via DoctrineFixturesBundle (currently `DefaultApp` and `CustomizationApp`; the other apps have none).
 - Use simple, unrealistic data (`'Action 1'`, `'Field 1'`, …), not lifelike values.
 
 ## Conventions
