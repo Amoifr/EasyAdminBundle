@@ -319,6 +319,20 @@ Permissions are defined globally; you cannot define different permissions per pa
         ;
     }
 
+When restricting several actions, you can also use the ``setPermissions()``
+method and pass all the permissions at once::
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            // ...
+            ->setPermissions([
+                Action::NEW => 'ROLE_ADMIN',
+                Action::DELETE => 'ROLE_SUPER_ADMIN',
+            ])
+        ;
+    }
+
 Reordering Actions
 ------------------
 

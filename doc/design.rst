@@ -272,6 +272,37 @@ Finally, add this custom theme to the list of themes used to render backend form
     ``{% block _Product_title_widget %}``. The full syntax is:
     ``{% block _<Entity name>_<Field name>_widget %}``.
 
+Using EasyAdmin Twig Components
+-------------------------------
+
+EasyAdmin uses `Twig Components`_ to render some parts of its interface. These
+components are registered under the ``ea:`` prefix and you can also use them in
+your own admin templates (e.g. when overriding backend templates or creating
+custom pages):
+
+.. code-block:: twig
+
+    <twig:ea:Badge variant="success">Published</twig:ea:Badge>
+
+    <twig:ea:Alert variant="warning" withDismissButton>
+        Some important message
+    </twig:ea:Alert>
+
+    <twig:ea:Icon name="user"/>
+
+    <twig:ea:Flag countryCode="JP"/>
+
+These are the available components:
+
+* ``ea:Badge``, renders a small colored label, commonly used for statuses,
+  counts and tags;
+* ``ea:Alert``, highlights important messages that require the user's attention,
+  such as notifications and flash messages;
+* ``ea:Icon``, renders the SVG icon associated to the given ``name``. The icon
+  is resolved using the icon set configured in the backend (`FontAwesome icons`_
+  by default, or :ref:`your own icon set <icon-customization>`);
+* ``ea:Flag``, renders the flag of a country as an SVG image.
+
 .. _crud-design-custom-web-assets:
 
 Adding Custom Web Assets
@@ -502,3 +533,4 @@ is not installed.
 .. _`Tabler`: https://tabler.io/icons
 .. _`Content Security Policy`: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 .. _`NelmioSecurityBundle`: https://github.com/nelmio/NelmioSecurityBundle
+.. _`Twig Components`: https://symfony.com/bundles/ux-twig-component/current/index.html

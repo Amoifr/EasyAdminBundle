@@ -359,6 +359,8 @@ the second argument is the icon to display. The icon name follows the pattern
     so you don't need to take any additional steps to use FontAwesome icons. Alternatively,
     you can :ref:`use your own icon sets <icon-customization>` instead of FontAwesome.
 
+.. _menu-item-options:
+
 Menu Item Configuration Options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -375,6 +377,9 @@ All menu items define the following methods to configure some options:
   for more details.
 * ``setHtmlAttribute(string $name, mixed $value)``, sets a custom HTML attribute
   in the HTML element that renders the menu item.
+* ``setQueryParameter(string $parameterName, mixed $parameterValue)``, adds the
+  given query parameter to the URL generated for the menu item (e.g. to filter
+  the listing of the linked CRUD controller).
 * ``setBadge($content, string $style='secondary', array $htmlAttributes = [])``, renders the given content
   as a badge of the menu item. It's commonly used to show notification counts.
   The first argument can be any value that can be converted to a string in a Twig
@@ -442,6 +447,18 @@ You can also link to your own Symfony controllers if they use the
 If the controller is invokable (has a ``__invoke()`` method), the action is
 detected automatically. Otherwise, call ``->setAction('theActionName')`` to
 specify which action to link to.
+
+In addition to the :ref:`common options of all menu items <menu-item-options>`,
+controller menu items define the following options:
+
+* ``setAction(string $actionName)``, sets the controller action to link to
+  (``index`` by default for CRUD controllers). Use the ``Action::*`` constants
+  for built-in CRUD actions or the method name for custom actions;
+* ``setEntityId($entityId)``, sets the ID of the entity to load in actions that
+  are associated to a specific entity (e.g. ``Action::DETAIL`` and ``Action::EDIT``);
+* ``setDefaultSort(array $sortFieldsAndOrder)``, sets the initial sorting
+  applied to the ``index`` action (e.g. ``['createdAt' => 'DESC']``). This only
+  applies until the user changes the sorting by clicking on any column.
 
 Dashboard Menu Item
 ...................
@@ -692,20 +709,20 @@ automatically on each backend request. This object implements the `context objec
 design pattern and stores all the information commonly needed in different parts
 of the backend.
 
-This context object is automatically injected in every template as a variable
-called ``ea`` (the initials of "EasyAdmin"):
+In templates, use the ``ea()`` Twig function (the initials of "EasyAdmin") to
+get this context object:
 
 .. code-block:: twig
 
-    <h1>{{ ea.dashboardTitle }}</h1>
+    <h1>{{ ea().dashboardTitle }}</h1>
 
-    {% for menuItem in ea.mainMenu.items %}
+    {% for menuItem in ea().mainMenu.items %}
         {# ... #}
     {% endfor %}
 
-The ``AdminContext`` variable is created dynamically on each request, so you
+The ``AdminContext`` object is created dynamically on each request, so you
 can't inject it directly in your services. Instead, use the ``AdminContextProvider``
-service to get the context variable::
+service to get the context object::
 
     use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 

@@ -31,10 +31,6 @@ under the ``EasyCorp\Bundle\EasyAdminBundle\Event\`` namespace:
 Event Subscriber Example
 ------------------------
 
-.. TODO: explain how to redirect to another URL from the listener (e.g. to avoid
-..       deleting an entity in some cases when listening to BeforeRemovingEntity
-..       Show the CRUD URL builder
-
 The following example shows how to use an event subscriber to set the ``slug``
 property of the ``BlogPost`` entity before persisting it::
 
@@ -73,6 +69,60 @@ property of the ``BlogPost`` entity before persisting it::
             $entity->setSlug($slug);
         }
     }
+
+Returning a Response From an Event Listener
+-------------------------------------------
+
+Sometimes you need to stop the execution of the current action and return a
+response immediately (e.g. to redirect to another URL instead of deleting an
+entity). To do so, call the ``setResponse()`` method of the event. When a
+listener sets a response, EasyAdmin stops the event propagation and returns
+that response right away.
+
+The following example prevents the deletion of blog posts that are published
+and redirects to the index page instead::
+
+    # src/EventSubscriber/EasyAdminSubscriber.php
+    namespace App\EventSubscriber;
+
+    use App\Entity\BlogPost;
+    use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityDeletedEvent;
+    use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+    use Symfony\Component\HttpFoundation\RedirectResponse;
+    use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+    class EasyAdminSubscriber implements EventSubscriberInterface
+    {
+        public function __construct(
+            private UrlGeneratorInterface $urlGenerator,
+        ) {
+        }
+
+        public static function getSubscribedEvents()
+        {
+            return [
+                BeforeEntityDeletedEvent::class => ['preventBlogPostDeletion'],
+            ];
+        }
+
+        public function preventBlogPostDeletion(BeforeEntityDeletedEvent $event)
+        {
+            $entity = $event->getEntityInstance();
+
+            if (!($entity instanceof BlogPost) || !$entity->isPublished()) {
+                return;
+            }
+
+            // setting a response stops the event propagation and returns
+            // that response immediately, so the entity is never deleted
+            $url = $this->urlGenerator->generate('admin_blog_post_index');
+            $event->setResponse(new RedirectResponse($url));
+        }
+    }
+
+In this example, the redirect URL is generated with the route name created by
+EasyAdmin for the CRUD action. If you don't know the route name beforehand, use
+the ``AdminUrlGenerator`` service to :ref:`build the admin URL dynamically <generate-admin-urls>`.
 
 JavaScript Events
 -----------------

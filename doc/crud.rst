@@ -850,17 +850,17 @@ refers to "whichever template is configured as the layout in the application".
 
 Working with template names instead of paths gives you full flexibility to
 customize the application behavior while keeping all the customized templates.
-In Twig templates, use the ``ea.templatePath()`` function to get the Twig path
+In Twig templates, use the ``ea().templatePath()`` method to get the Twig path
 associated to the given template name:
 
 .. code-block:: twig
 
     <div id="flash-messages">
-        {{ include(ea.templatePath('flash_messages')) }}
+        {{ include(ea().templatePath('flash_messages')) }}
     </div>
 
     {% if some_value is null %}
-        {{ include(ea.templatePath('label/null')) }}
+        {{ include(ea().templatePath('label/null')) }}
     {% endif %}
 
 .. _crud-generate-urls:
