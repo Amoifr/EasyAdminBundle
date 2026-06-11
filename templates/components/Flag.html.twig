@@ -1,1 +1,8 @@
-{{ this.getFlagAsSvg|raw }}
+<span {{- attributes.defaults({class: 'country-flag-wrapper'}) }}>
+    {%- if this.flagExists -%}
+        {{- this.getFlagAsSvg|raw -}}
+    {%- else -%}
+        {%- block fallback %}{{ this.getFallbackSvg|raw }}{% endblock -%}
+    {%- endif -%}
+    {%- if this.showName %}{{ this.getCountryName() }}{% endif -%}
+</span>

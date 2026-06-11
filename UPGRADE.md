@@ -1,7 +1,8 @@
 Upgrade Guide
 =============
 
-## EasyAdmin 5.0.14
+## EasyAdmin 5.2.0
+
 
 The HTML markup of the boolean switch has changed. Before, the element wrapping
 the switch applied the `.form-switch` CSS class and the checkbox used the
@@ -10,6 +11,13 @@ the switch applied the `.form-switch` CSS class and the checkbox used the
 the checkbox uses the `.ea-switch-input` class. This affects both the switch shown
 in the `index` page and the one displayed in the `edit`/`new` forms. Update any
 custom CSS or JavaScript that targeted the old selectors.
+
+The HTML markup of the `<twig:ea:Flag>` component has changed slightly. There's a
+new `<span class="country-flag-wrapper">` element that wraps the `<svg>` image
+and the optional country name text. If your custom CSS or JavaScript selects
+country flags with direct-child or sibling selectors (e.g. `td > svg.country-flag`),
+update them; descendant selectors (e.g. `td svg.country-flag`) keep working as before.
+
 
 ## Upgrading from Symfony 4.x to 5.x
 

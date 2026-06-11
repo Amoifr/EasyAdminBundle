@@ -25,6 +25,7 @@ class CountryFieldTest extends AbstractFieldFunctionalTest
             str_contains($cellText, 'United States') || str_contains($cellText, 'US') || str_contains($cellText, 'Estados Unidos'),
             sprintf('CountryField should display country name, got: %s', $cellText)
         );
+        static::assertCount(1, $countryFieldCell->filter('span.country-flag-wrapper svg.country-flag'), 'CountryField should render the flag inside the wrapper of the ea:Flag component');
     }
 
     public function testCountryFieldDisplaysOnDetail(): void

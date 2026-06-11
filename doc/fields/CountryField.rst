@@ -32,6 +32,18 @@ Basic Information
 
         <twig:ea:Flag countryCode="CR" height="18"/>
 
+        {# use 'showName' to display the localized country name next to the flag #}
+        <twig:ea:Flag countryCode="CR" showName/>
+
+        {# any other HTML attribute is applied to the element that wraps the flag #}
+        <twig:ea:Flag countryCode="CR" class="rounded shadow-sm" title="Shipping destination"/>
+
+        {# when the flag of the given country is not available, EasyAdmin renders
+           a generic red flag; use the 'fallback' block to customize it #}
+        <twig:ea:Flag countryCode="{{ some_var.country }}">
+            <twig:block name="fallback">🏳️</twig:block>
+        </twig:ea:Flag>
+
 Options
 -------
 
