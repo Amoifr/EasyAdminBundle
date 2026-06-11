@@ -1173,7 +1173,47 @@ etc. Example:
         </table>
     {% endblock %}
 
+.. _custom-pages-symfony-forms:
+
+Rendering Symfony Forms in Custom Pages
+.......................................
+
+Custom pages can also render your own Symfony forms. However, if you render
+them with ``{{ form(my_form) }}``, their design won't match the design of the
+rest of the backend forms. The reason is that the design of EasyAdmin forms is
+applied via a Symfony `form theme`_ which is only used by default on the CRUD
+``new`` and ``edit`` pages.
+
+Use the ``form_theme`` Twig tag to apply EasyAdmin's form theme to your own
+forms and they will look exactly like the rest of the backend forms:
+
+.. code-block:: twig
+
+    {# templates/admin/my-custom-page.html.twig #}
+    {% extends '@EasyAdmin/page/content.html.twig' %}
+    {% form_theme my_form with ['@EasyAdmin/crud/form_theme.html.twig'] only %}
+
+    {% block content_title %}The Title of the Page{% endblock %}
+
+    {% block main %}
+        {{ form(my_form) }}
+    {% endblock %}
+
+.. tip::
+
+    If your form uses Symfony's ``CollectionType``, load also EasyAdmin's
+    ``form.js`` asset, which implements the buttons to add and remove
+    collection items:
+
+    .. code-block:: twig
+
+        {% block head_javascript %}
+            {{ parent() }}
+            <script src="{{ asset('form.js', ea.assets.defaultAssetPackageName) }}"></script>
+        {% endblock %}
+
 .. _`Symfony controllers`: https://symfony.com/doc/current/controller.html
+.. _`form theme`: https://symfony.com/doc/current/form/form_themes.html
 .. _`context object`: https://wiki.c2.com/?ContextObject
 .. _`FontAwesome`: https://fontawesome.com/
 .. _`allowed values for the "rel" attribute`: https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types
