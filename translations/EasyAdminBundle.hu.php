@@ -22,6 +22,8 @@ return [
         'last' => 'Utolsó',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> / <strong>%results%</strong>',
         'results' => '{0} Nincs találat|[1,Inf] <strong>%count%</strong> találat',
+        'label' => 'Lapozás',
+        'more_pages' => 'További oldalak',
     ],
 
     'label' => [

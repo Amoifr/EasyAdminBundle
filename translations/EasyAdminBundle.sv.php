@@ -22,6 +22,8 @@ return [
         'last' => 'Sista',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> av <strong>%results%</strong>',
         'results' => '{0} Inga resultat|{1} <strong>1</strong> resultat|]1,Inf] <strong>%count%</strong> resultat',
+        'label' => 'Paginering',
+        'more_pages' => 'Fler sidor',
     ],
 
     'label' => [

@@ -22,6 +22,8 @@ return [
         'last' => 'Azkena',
         'counter' => '<strong>%start%</strong>tik - <strong>%end%</strong>era <strong>%results%</strong>tik',
         'results' => '{0} ez dago emaitzarik|{1} emaitza <strong>1</strong> |]1,Inf] <strong>%count%</strong> emaitza',
+        'label' => 'Orrialdekatzea',
+        'more_pages' => 'Orrialde gehiago',
     ],
 
     'label' => [

@@ -22,6 +22,8 @@ return [
         'last' => 'الأخير',
         'counter' => '<strong>%results%</strong> / <strong>%end%</strong> - <strong>%start%</strong>',
         'results' => '{0} لا توجد أيّ نتائج |{1} <strong>1</strong> نتيجة|]1,Inf] <strong>%count%</strong> نتائج',
+        'label' => 'Pagination', // TODO: translate
+        'more_pages' => 'More pages', // TODO: translate
     ],
 
     'label' => [

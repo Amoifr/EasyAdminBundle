@@ -22,6 +22,8 @@ return [
         'last' => 'آخرین',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> از <strong>%results%</strong>',
         'results' => '{0} نتیجه‌ای یافت نشد|{1} <strong>1</strong> نتیجه|]1,Inf] <strong>%count%</strong> نتیجه',
+        'label' => 'Pagination', // TODO: translate
+        'more_pages' => 'More pages', // TODO: translate
     ],
 
     'label' => [

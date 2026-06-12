@@ -22,6 +22,8 @@ return [
         'last' => 'Viimeinen',
         'counter' => 'Tulokset <strong>%start%</strong> - <strong>%end%</strong>, yhteensä <strong>%results%</strong>',
         'results' => '{0} Ei tuloksia|{1} <strong>1</strong> tulos|]1,Inf] <strong>%count%</strong> tulosta',
+        'label' => 'Sivutus',
+        'more_pages' => 'Lisää sivuja',
     ],
 
     'label' => [

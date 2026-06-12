@@ -22,6 +22,8 @@ return [
         'last' => 'Siste',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> av <strong>%results%</strong>',
         'results' => '{0} Ingen resultater|{1} <strong>1</strong> resultat|]1,Inf] <strong>%count%</strong> resultater',
+        'label' => 'Paginering',
+        'more_pages' => 'Flere sider',
     ],
 
     'label' => [

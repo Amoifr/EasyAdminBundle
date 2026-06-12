@@ -22,6 +22,8 @@ return [
         'last' => 'Последна',
         'counter' => '<strong>%start%</strong>–<strong>%end%</strong> от <strong>%results%</strong>',
         'results' => '{0} Няма резултати|{1} <strong>1</strong> резултат|]1,Inf] <strong>%count%</strong> резултата',
+        'label' => 'Странициране',
+        'more_pages' => 'Още страници',
     ],
 
     'label' => [

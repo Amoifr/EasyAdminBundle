@@ -22,6 +22,8 @@ return [
         'last' => 'Последна',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> од <strong>%results%</strong>',
         'results' => '{0} Нема пронајдено резултати|{1} <strong>1</strong> резултат|]1,Inf] <strong>%count%</strong> резултати',
+        'label' => 'Pagination', // TODO: translate
+        'more_pages' => 'More pages', // TODO: translate
     ],
 
     'label' => [
