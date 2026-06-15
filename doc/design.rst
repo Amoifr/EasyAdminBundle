@@ -218,6 +218,13 @@ and CRUD controllers define ``addFormTheme(string $themePath)`` and
 ``setFormThemes(array $themePaths)`` methods so you can
 `customize individual form fields`_ using your own form theme.
 
+.. tip::
+
+    EasyAdmin's form theme also works for regular Symfony forms not built with
+    EasyAdmin fields. This is useful to make the forms rendered on your own
+    backend pages look exactly like the rest of the backend forms. See
+    :ref:`how to render Symfony forms in custom pages <custom-pages-symfony-forms>`.
+
 Imagine a form field where you want to include a ``<a>`` element that links to
 additional information. If the field is called ``title`` and belongs to a
 ``Product`` entity, the configuration would look like this::

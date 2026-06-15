@@ -73,7 +73,8 @@
     {% set row_attr = row_attr|merge({
         class: row_attr.class|default('') ~ ' form-group',
     }) %}
-    {% set field = form.vars.ea_vars.field %}
+    {# 'field' is null for Symfony forms not created with EasyAdmin fields (e.g. custom forms rendered on custom dashboard pages) #}
+    {% set field = form.vars.ea_vars.field|default(null) %}
 
     <div class="{{ field.columns ?? field.defaultColumns ?? '' }}">
         {%- set row_class = row_class|default(row_attr.class|default('mb-3')) -%}
@@ -116,7 +117,7 @@
 {% endblock form_row %}
 
 {% block repeated_row %}
-    {% set field = form.vars.ea_vars.field %}
+    {% set field = form.vars.ea_vars.field|default(null) %}
 
     <div class="{{ field.columns ?? field.defaultColumns ?? '' }}">
         {{- block('form_rows') -}}
@@ -158,7 +159,7 @@
 
     {% set row_attr = row_attr|merge({
         'data-ea-collection-field': 'true',
-        'data-entry-is-complex': form.vars.ea_vars.field and form.vars.ea_vars.field.customOptions.get('entryIsComplex') ? 'true' : 'false',
+        'data-entry-is-complex': (form.vars.ea_vars.field.customOptions.get('entryIsComplex') ?? false) ? 'true' : 'false',
         'data-allow-add': allow_add ? 'true' : 'false',
         'data-allow-delete': allow_delete ? 'true' : 'false',
         'data-num-items': form.children is empty ? 0 : maxKey + 1,
@@ -434,11 +435,11 @@
 {% block ea_code_editor_widget %}
     {{ form_widget(form, {attr: attr|merge({
         'data-ea-code-editor-field': 'true',
-        'data-language': form.vars.ea_vars.field.customOptions.get('language'),
-        'data-tab-size': form.vars.ea_vars.field.customOptions.get('tabSize'),
-        'data-indent-with-tabs': form.vars.ea_vars.field.customOptions.get('indentWithTabs') ? 'true' : 'false',
-        'data-show-line-numbers': form.vars.ea_vars.field.customOptions.get('showLineNumbers') ? 'true' : 'false',
-        'data-number-of-rows': form.vars.ea_vars.field.customOptions.get('numOfRows'),
+        'data-language': form.vars.ea_vars.field.customOptions.get('language')|default('markdown'),
+        'data-tab-size': form.vars.ea_vars.field.customOptions.get('tabSize')|default(4),
+        'data-indent-with-tabs': (form.vars.ea_vars.field.customOptions.get('indentWithTabs') ?? false) ? 'true' : 'false',
+        'data-show-line-numbers': (form.vars.ea_vars.field.customOptions.get('showLineNumbers') ?? true) ? 'true' : 'false',
+        'data-number-of-rows': form.vars.ea_vars.field.customOptions.get('numOfRows')|default(null),
     })}) }}
 {% endblock ea_code_editor_widget %}
 
