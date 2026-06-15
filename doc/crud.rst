@@ -77,6 +77,16 @@ Admin route name                Admin route path
     dashboards. You can :ref:`restrict which controllers are accessible <security-controllers>`
     on each dashboard to not generate all these routes.
 
+.. note::
+
+    Because route names join the controller and action names with underscores, two
+    different controllers can generate the same route name when one entity name is a
+    prefix of another. For example, a ``FooCrudController`` (whose ``batchDelete`` action
+    generates ``admin_foo_batch_delete``) collides with a ``FooBatchCrudController`` (whose
+    ``delete`` action also generates ``admin_foo_batch_delete``). EasyAdmin detects this and
+    throws a descriptive exception. To resolve it, use the ``#[AdminRoute]`` attribute (see
+    below) to set a different ``name`` on one of the colliding controllers or actions.
+
 You can customize the route names and/or paths of the actions of all the CRUD controllers
 served by some dashboard using the ``routes`` option of the ``#[AdminDashboard]`` attribute::
 

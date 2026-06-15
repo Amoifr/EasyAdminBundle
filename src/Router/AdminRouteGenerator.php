@@ -164,7 +164,7 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
     {
         /** @var array<string, Route> $adminRoutes Stores the collection of admin routes created for the app */
         $adminRoutes = [];
-        /** @var array<string> $addedRouteNames Temporary cache that stores the route names to ensure that we don't add duplicated admin routes */
+        /** @var array<string, array{type: string, controllerFqcn: string|null, actionName: string|null}> $addedRouteNames Maps each generated route name to the controller/action that created it, to detect and explain duplicated admin routes */
         $addedRouteNames = [];
 
         // create the routes for the CRUD controllers and actions
@@ -180,7 +180,7 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
             $dashboardRouteOptions = $dashboardRouteConfig['routeOptions'];
             $adminRoute = $this->createDashboardRoute($dashboardRoutePath, $dashboardRouteOptions, $dashboardFqcn);
             $adminRoutes[$dashboardRouteName] = $adminRoute;
-            $addedRouteNames[] = $dashboardRouteName;
+            $addedRouteNames[$dashboardRouteName] = ['type' => 'dashboard', 'controllerFqcn' => $dashboardFqcn, 'actionName' => null];
 
             // then, create the routes of the CRUD controllers associated with the dashboard
             foreach ($this->crudControllers as $crudController) {
@@ -239,8 +239,8 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
                     $adminRoutePath = rtrim(sprintf('%s/%s/%s', $dashboardRouteConfig['routePath'], $crudControllerRouteConfig['routePath'], ltrim($actionRouteConfig['routePath'] ?? $actionNameSlug, '/')), '/');
                     $adminRouteName = sprintf('%s_%s_%s', $dashboardRouteConfig['routeName'], $crudControllerRouteConfig['routeName'], $actionRouteConfig['routeName'] ?? $actionNameSnakeCase);
 
-                    if (\in_array($adminRouteName, $addedRouteNames, true)) {
-                        throw new \RuntimeException(sprintf('The EasyAdmin CRUD controllers defined in your application must have unique PHP class names in order to generate unique route names. However, your application has at least two controllers with the FQCN "%s", generating the route "%s". Even if both CRUD controllers are in different namespaces, they cannot have the same class name. Rename one of these controllers to resolve the issue.', $crudControllerFqcn, $adminRouteName));
+                    if (isset($addedRouteNames[$adminRouteName])) {
+                        throw new \RuntimeException($this->getDuplicatedRouteNameErrorMessage($adminRouteName, $addedRouteNames[$adminRouteName], $crudControllerFqcn, $actionRouteConfig['actionName']));
                     }
 
                     $defaults = [
@@ -253,7 +253,7 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
 
                     $adminRoute = new Route($adminRoutePath, defaults: $defaults, methods: $actionRouteConfig['methods']);
                     $adminRoutes[$adminRouteName] = $adminRoute;
-                    $addedRouteNames[] = $adminRouteName;
+                    $addedRouteNames[$adminRouteName] = ['type' => 'crud', 'controllerFqcn' => $crudControllerFqcn, 'actionName' => $actionRouteConfig['actionName']];
                 }
             }
         }
@@ -322,14 +322,14 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
                             $adminRoutePath = rtrim(sprintf('%s/%s', $dashboardRouteConfig['routePath'], ltrim($currentClassAdminRoute->path, '/')), '/');
                             $adminRouteName = sprintf('%s_%s', $dashboardRouteConfig['routeName'], ltrim($currentClassAdminRoute->name, '_'));
 
-                            if (\in_array($adminRouteName, $addedRouteNames, true)) {
+                            if (isset($addedRouteNames[$adminRouteName])) {
                                 throw new \RuntimeException(sprintf('The #[AdminRoute] attribute applied to the "%s" controller would create an admin route called "%s", which already exists. You must change the "routeName" argument to generate a different route name.', $controllerFqcn, $adminRouteName));
                             }
 
                             $adminRoute = $this->createRouteForAdminAttribute($currentClassAdminRoute, $adminRoutePath, $dashboardFqcn, $controllerFqcn, '__invoke');
 
                             $adminRoutes[$adminRouteName] = $adminRoute;
-                            $addedRouteNames[] = $adminRouteName;
+                            $addedRouteNames[$adminRouteName] = ['type' => 'admin_route', 'controllerFqcn' => $controllerFqcn, 'actionName' => '__invoke'];
                         }
                     }
                 }
@@ -405,7 +405,7 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
                         }
                         $adminRouteName = implode('_', $routeNameParts);
 
-                        if (\in_array($adminRouteName, $addedRouteNames, true)) {
+                        if (isset($addedRouteNames[$adminRouteName])) {
                             throw new \RuntimeException(sprintf('The #[AdminRoute] attribute applied to the "%s" method of the "%s" controller would create an admin route called "%s", which already exists. You must change the "routeName" argument to generate a different route name.', $method->name, $controllerFqcn, $adminRouteName));
                         }
 
@@ -427,13 +427,40 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
                         $adminRoute = $this->createRouteForAdminAttribute($mergedAdminRoute, $adminRoutePath, $dashboardFqcn, $controllerFqcn, $method->name);
 
                         $adminRoutes[$adminRouteName] = $adminRoute;
-                        $addedRouteNames[] = $adminRouteName;
+                        $addedRouteNames[$adminRouteName] = ['type' => 'admin_route', 'controllerFqcn' => $controllerFqcn, 'actionName' => $method->name];
                     }
                 }
             }
         }
 
         return $adminRoutes;
+    }
+
+    /**
+     * Builds an accurate, actionable error message when two different controllers/actions
+     * generate the same admin route name (Symfony requires route names to be unique).
+     *
+     * @param array{type: string, controllerFqcn: string|null, actionName: string|null} $existingRoute the controller/action that first generated $routeName
+     */
+    private function getDuplicatedRouteNameErrorMessage(string $routeName, array $existingRoute, string $crudControllerFqcn, string $actionName): string
+    {
+        // the route name collided with a non-CRUD route (a dashboard or an #[AdminRoute] controller)
+        if ('crud' !== $existingRoute['type'] || null === $existingRoute['controllerFqcn']) {
+            return sprintf('The "%s" CRUD controller generates a route named "%s" for its "%s()" action, but that route name is already used by another route in your application. Add the #[AdminRoute(name: \'...\')] attribute to this controller or action to generate a unique route name.', $crudControllerFqcn, $routeName, $actionName);
+        }
+
+        $existingControllerFqcn = $existingRoute['controllerFqcn'];
+        $existingShortName = (new \ReflectionClass($existingControllerFqcn))->getShortName();
+        $currentShortName = (new \ReflectionClass($crudControllerFqcn))->getShortName();
+
+        // two different CRUD controllers that share the same short class name (in different namespaces)
+        if ($existingShortName === $currentShortName) {
+            return sprintf('Your application has at least two different CRUD controllers with the same "%s" class name (in different namespaces): "%s" and "%s". Both generate the same route name "%s", but EasyAdmin needs unique class names to generate unique route names. Rename one of these controllers to resolve the issue.', $currentShortName, $existingControllerFqcn, $crudControllerFqcn, $routeName);
+        }
+
+        // two different CRUD controllers whose name + action combination collides; this typically
+        // happens when one entity/controller name is a prefix of another (e.g. "Foo" and "FooBatch")
+        return sprintf('The route name "%s" is generated by two different CRUD actions: "%s::%s()" and "%s::%s()". This usually happens when one entity/controller name is a prefix of another (e.g. "Foo" and "FooBatch"). Add the #[AdminRoute(name: \'...\')] attribute to one of these controllers or actions to generate a unique route name.', $routeName, $existingControllerFqcn, $existingRoute['actionName'], $crudControllerFqcn, $actionName);
     }
 
     private function createRouteForAdminAttribute(AdminRoute $adminRouteAttribute, string $routePath, string $dashboardFqcn, string $controllerFqcn, string $methodName): Route
