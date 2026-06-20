@@ -11,6 +11,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\AdminRouteApp\Controll
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Router\Fixtures\FooBatchCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Router\Fixtures\FooBatchResolvedCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Router\Fixtures\FooCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Router\Fixtures\InvalidDetailPathCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Router\Fixtures\InvalidDetailPathDashboardController;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -70,6 +72,64 @@ class AdminRouteGeneratorTest extends KernelTestCase
 
         $routeName = $adminRouteGenerator->findRouteName($dashboardControllerFqcn, $crudControllerFqcn, $action);
         $this->assertSame($expectedRouteName, $routeName);
+    }
+
+    /**
+     * @dataProvider provideEntityIdPlaceholderData
+     */
+    public function testGetEntityIdPlaceholderName(string $routePath, ?string $expectedPlaceholderName): void
+    {
+        $adminRouteGenerator = new AdminRouteGenerator(
+            [],
+            [],
+            $this->getMockBuilder(CacheItemPoolInterface::class)->getMock(),
+        );
+
+        $method = new \ReflectionMethod($adminRouteGenerator, 'getEntityIdPlaceholderName');
+
+        $this->assertSame($expectedPlaceholderName, $method->invoke($adminRouteGenerator, $routePath));
+    }
+
+    public function testDashboardRoutesConfigWithoutEntityIdPlaceholderThrows(): void
+    {
+        $adminRouteGenerator = new AdminRouteGenerator(
+            [new InvalidDetailPathDashboardController()],
+            [],
+            $this->getMockBuilder(CacheItemPoolInterface::class)->getMock(),
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/must contain the "\{id\}" or "\{entityId\}" placeholder/');
+
+        $adminRouteGenerator->generateAll();
+    }
+
+    public function testAdminRouteAttributeWithoutEntityIdPlaceholderThrows(): void
+    {
+        $adminRouteGenerator = new AdminRouteGenerator(
+            [new DashboardController()],
+            [new InvalidDetailPathCrudController()],
+            $this->getMockBuilder(CacheItemPoolInterface::class)->getMock(),
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/missing the "\{id\}" or "\{entityId\}" placeholder/');
+
+        $adminRouteGenerator->generateAll();
+    }
+
+    public static function provideEntityIdPlaceholderData(): iterable
+    {
+        yield 'plain id' => ['/{id}', 'id'];
+        yield 'plain entityId' => ['/{entityId}', 'entityId'];
+        yield 'mapped id' => ['/{id:product.id}', 'id'];
+        yield 'mapped entityId' => ['/{entityId:product.id}', 'entityId'];
+        yield 'constrained id' => ['/{id<\d+>}', 'id'];
+        yield 'id in a longer path' => ['/safe-delete/{id}/confirm', 'id'];
+        yield 'entityId in a longer path' => ['/{entityId}/safe-delete', 'entityId'];
+        yield 'no placeholder' => ['/safe-delete', null];
+        yield 'unrelated userId is not matched' => ['/{userId}', null];
+        yield 'unrelated idCard is not matched' => ['/{idCard}', null];
     }
 
     public static function provideFindRouteData(): iterable
