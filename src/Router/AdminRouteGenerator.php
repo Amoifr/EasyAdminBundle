@@ -17,17 +17,6 @@ use Symfony\Component\Routing\RouteCollection;
 
 final class AdminRouteGenerator implements AdminRouteGeneratorInterface
 {
-    /**
-     * @deprecated Since easycorp/easyadmin-bundle 5.0.0 and will be removed in EasyAdmin 5.1.0.
-     * @see CacheKey::ROUTE_NAME_TO_ATTRIBUTES
-     */
-    public const CACHE_KEY_ROUTE_TO_FQCN = 'easyadmin.routes.route_to_fqcn';
-    /**
-     * @deprecated Since easycorp/easyadmin-bundle 5.0.0 and will be removed in EasyAdmin 5.1.0.
-     * @see CacheKey::ROUTE_ATTRIBUTES_TO_NAME
-     */
-    public const CACHE_KEY_FQCN_TO_ROUTE = 'easyadmin.routes.fqcn_to_route';
-
     public const BUILT_IN_ACTION_NAMES = [
         Action::INDEX, Action::NEW, Action::EDIT, Action::DETAIL, Action::DELETE,
         Action::BATCH_DELETE, Action::SAVE_AND_ADD_ANOTHER, Action::SAVE_AND_CONTINUE,
@@ -125,16 +114,6 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
         $this->saveCrudControllersAndEntityFqcnMapInCache($this->crudControllers);
 
         return $collection;
-    }
-
-    /**
-     * @deprecated Since easycorp/easyadmin-bundle 5.0.0 and will be removed in EasyAdmin 5.1.0.
-     */
-    public function usesPrettyUrls(): bool
-    {
-        @trigger_deprecation('easycorp/easyadmin-bundle', '5.0.0', 'The "%s()" method is deprecated and will be removed in EasyAdmin 5.1.0. This method always returns true.', __METHOD__);
-
-        return true;
     }
 
     public function findRouteName(?string $dashboardFqcn = null, ?string $crudControllerFqcn = null, ?string $actionName = null): ?string
