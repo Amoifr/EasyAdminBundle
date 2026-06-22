@@ -20,7 +20,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -112,7 +112,7 @@ jobs:
                       allow_failure: true
         runs-on: ${{ matrix.os }}
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -206,7 +206,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             # see https://github.com/OskarStark/php-cs-fixer-ga
             - name: PHP-CS-Fixer
@@ -218,7 +218,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             - name: DOCtor-RST
               uses: docker://oskarstark/doctor-rst
@@ -231,7 +231,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -263,7 +263,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -295,7 +295,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
             - run: corepack enable
             - uses: actions/setup-node@v6
               with:
