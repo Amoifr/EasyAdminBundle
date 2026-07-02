@@ -2,7 +2,7 @@
   "entrypoints": {
     "app": {
       "css": [
-        "/app.60a570da.css"
+        "/app.cec96de7.css"
       ],
       "js": [
         "/app.b016c66e.js"
@@ -25,7 +25,7 @@
     },
     "field-boolean": {
       "js": [
-        "/field-boolean.6eb3e3a7.js"
+        "/field-boolean.6adeff4e.js"
       ]
     },
     "field-code-editor": {
