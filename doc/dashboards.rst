@@ -901,7 +901,7 @@ When using this feature, you can omit the label when creating CRUD menu items:
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 
         // no label needed: will use the translated plural label
-        yield MenuItem::linkTo(BlogPostCrudController:::class, icon: 'fa fa-file-text');
+        yield MenuItem::linkTo(BlogPostCrudController::class, icon: 'fa fa-file-text');
         yield MenuItem::linkTo(UserCrudController::class, icon: 'fa fa-users');
     }
 
