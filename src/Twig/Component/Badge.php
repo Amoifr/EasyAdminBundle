@@ -4,6 +4,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Twig\Component;
 
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\BadgeVariant;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\Radius;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\Size;
 
 /**
  * Renders a badge: a small, colored label used for statuses, counts and tags.
@@ -14,11 +15,11 @@ class Badge
     public ?BadgeVariant $variant = BadgeVariant::Secondary;
     public ?string $icon = null;
     public ?string $endIcon = null;
-    public string $size = 'md';
+    public Size $size = Size::Medium;
     public ?Radius $radius = null;
     private ?string $customVariant = null;
 
-    public function mount(string|BadgeVariant|null $variant = BadgeVariant::Secondary, string|Radius|null $radius = null): void
+    public function mount(string|BadgeVariant|null $variant = BadgeVariant::Secondary, string|Radius|null $radius = null, string|Size $size = Size::Medium): void
     {
         if ($variant instanceof BadgeVariant) {
             $this->variant = $variant;
@@ -41,6 +42,9 @@ class Badge
         } else {
             $this->radius = Radius::tryFrom($radius);
         }
+
+        // unknown sizes fall back to the base 'md' size, which emits no CSS class
+        $this->size = \is_string($size) ? (Size::tryFrom($size) ?? Size::Medium) : $size;
     }
 
     public function getDefaultCssClass(): string
@@ -53,7 +57,7 @@ class Badge
             $cssClasses[] = 'badge-'.$this->customVariant;
         }
 
-        if ('sm' === $this->size) {
+        if (Size::Small === $this->size) {
             $cssClasses[] = 'badge-sm';
         }
 

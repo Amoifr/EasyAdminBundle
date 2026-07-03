@@ -3,15 +3,16 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Component;
 
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\AbstractFieldFunctionalTest;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\Size;
 
 /**
  * Rendering tests for the <twig:ea:Badge> component.
  */
 class BadgeTest extends AbstractFieldFunctionalTest
 {
-    private function renderBadge(string $template): string
+    private function renderBadge(string $template, array $context = []): string
     {
-        return static::getContainer()->get('twig')->createTemplate($template)->render();
+        return static::getContainer()->get('twig')->createTemplate($template)->render($context);
     }
 
     public function testDefaultVariantIsSecondary(): void
@@ -51,6 +52,14 @@ class BadgeTest extends AbstractFieldFunctionalTest
         self::assertSame(
             '<span class="badge badge-secondary badge-sm">x</span>',
             $this->renderBadge('<twig:ea:Badge size="sm">x</twig:ea:Badge>')
+        );
+    }
+
+    public function testSmallSizeAsEnum(): void
+    {
+        self::assertSame(
+            '<span class="badge badge-secondary badge-sm">x</span>',
+            $this->renderBadge('<twig:ea:Badge size="{{ size }}">x</twig:ea:Badge>', ['size' => Size::Small])
         );
     }
 
