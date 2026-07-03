@@ -5,6 +5,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Twig\Component;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Badge;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\BadgeVariant;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\Radius;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\Size;
 use PHPUnit\Framework\TestCase;
 
 class BadgeTest extends TestCase
@@ -99,13 +100,30 @@ class BadgeTest extends TestCase
     }
 
     /**
-     * @dataProvider provideGetDefaultCssClassData
+     * @dataProvider provideSizeValues
      */
-    public function testGetDefaultCssClass(string|BadgeVariant|null $variant, string $size, string|Radius|null $radius, string $expectedCssClass): void
+    public function testMountResolvesSize(string|Size $size, Size $expectedSize): void
     {
         $badge = new Badge();
-        $badge->mount($variant, $radius);
-        $badge->size = $size;
+        $badge->mount('secondary', null, $size);
+
+        $this->assertSame($expectedSize, $badge->size);
+    }
+
+    public static function provideSizeValues(): iterable
+    {
+        yield 'string' => ['sm', Size::Small];
+        yield 'enum' => [Size::Small, Size::Small];
+        yield 'unknown string falls back to md' => ['nope', Size::Medium];
+    }
+
+    /**
+     * @dataProvider provideGetDefaultCssClassData
+     */
+    public function testGetDefaultCssClass(string|BadgeVariant|null $variant, string|Size $size, string|Radius|null $radius, string $expectedCssClass): void
+    {
+        $badge = new Badge();
+        $badge->mount($variant, $radius, $size);
 
         $this->assertSame($expectedCssClass, $badge->getDefaultCssClass());
     }
@@ -116,6 +134,7 @@ class BadgeTest extends TestCase
         yield 'enum variant' => [BadgeVariant::Info, 'md', null, 'badge badge-info'];
         yield 'custom variant' => ['currency', 'md', null, 'badge badge-currency'];
         yield 'small size' => ['secondary', 'sm', null, 'badge badge-secondary badge-sm'];
+        yield 'small size as enum' => ['secondary', Size::Small, null, 'badge badge-secondary badge-sm'];
         yield 'radius full' => ['secondary', 'md', 'full', 'badge badge-secondary ea-rounded-full'];
         yield 'small size and radius' => ['warning', 'sm', Radius::Large, 'badge badge-warning badge-sm ea-rounded-lg'];
         yield 'no variant' => ['', 'md', null, 'badge'];
