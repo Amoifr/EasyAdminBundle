@@ -6,12 +6,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Contracts\Context\AdminContextInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Component\Uid\Ulid;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
+use Twig\TwigTest;
 
 /**
  * Defines the filters and functions used to render the bundle's templates.
@@ -36,6 +38,17 @@ class EasyAdminTwigExtension extends AbstractExtension implements GlobalsInterfa
             new TwigFunction('ea', [$this, 'ea']),
             new TwigFunction('ea_url', [$this, 'getAdminUrlGenerator']),
             new TwigFunction('ea_form_ealabel', null, ['node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => ['html']]),
+            new TwigFunction('ea_uid', static fn (string $prefix = 'ea-'): string => $prefix.Ulid::generate()),
+        ];
+    }
+
+    public function getTests(): array
+    {
+        return [
+            // 'foo is not empty' can't be used with TranslatableMessage values because it triggers
+            // a deprecation ("Method TranslatableMessage::__toString() is deprecated"); this test
+            // checks the same without casting the value to a string
+            new TwigTest('ea_is_not_empty', static fn (mixed $value): bool => false !== $value && null !== $value && '' !== $value),
         ];
     }
 

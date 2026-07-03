@@ -479,9 +479,8 @@
 {% block ea_form_column_open_row %}
     {% set field = form.vars.ea_vars.field %}
     {% set field_icon = field.getCustomOption('icon') %}
-    {# don't use "field.label|default()" here; it'll trigger deprecation messages: Method TranslatableMessage::__toString() is deprecated #}
-    {% set has_label = field.label is not same as(false) and field.label is not null and field.label is not same as('') %}
-    {% set has_help = field.help is not same as(false) and field.help is not null and field.help is not same as('') %}
+    {% set has_label = field.label is ea_is_not_empty %}
+    {% set has_help = field.help is ea_is_not_empty %}
     {% set column_has_title = field_icon != null or has_label or has_help %}
 
     <div class="form-column {{ not column_has_title ? 'form-column-no-header' }} {{ field.cssClass }}">
@@ -516,8 +515,7 @@
 {% endblock ea_form_fieldset_open_ealabel %}
 
 {% block ea_form_fieldset_open_label %}
-    {# don't use 'ea_help is not empty' here; it'll trigger deprecation messages: Method TranslatableMessage::__toString() is deprecated #}
-    {% set has_help = ea_help is not same as(false) and ea_help is not null and ea_help is not same as('') %}
+    {% set has_help = ea_help is ea_is_not_empty %}
     {% set collapsed_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_COLLAPSED') %}
     {% set fieldset_error_count_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_FIELDSET_ERROR_COUNT') %}
     {% set fieldset_error_count = form.vars.ea_vars.field.getCustomOption(fieldset_error_count_option_name)|default(0) %}
@@ -551,10 +549,8 @@
 {% endblock ea_form_fieldset_open_label %}
 
 {% block ea_form_fieldset_open_row %}
-    {# don't use 'ea_help is not empty' here; it'll trigger deprecation messages: Method TranslatableMessage::__toString() is deprecated #}
-    {% set has_help = ea_help is not same as(false) and ea_help is not null and ea_help is not same as('') %}
-    {# don't use 'form.vars.label is not empty' here; it'll trigger deprecation messages: Method TranslatableMessage::__toString() is deprecated #}
-    {% set has_label = form.vars.label is not same as(false) and form.vars.label is not null and form.vars.label is not same as('') %}
+    {% set has_help = ea_help is ea_is_not_empty %}
+    {% set has_label = form.vars.label is ea_is_not_empty %}
     {% set fieldset_has_header = has_label or ea_icon or has_help %}
     {% set collapsed_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_COLLAPSED') %}
     {% set fieldset_error_count_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_FIELDSET_ERROR_COUNT') %}
@@ -645,8 +641,7 @@
                     <input type="checkbox" class="filter-checkbox" {% if field.vars.name in applied_filters %}checked{% endif %}>
                     <a data-bs-toggle="collapse" href="#filter-content-{{ loop.index }}" aria-expanded="{{ field.vars.name in applied_filters ? 'true' : 'false' }}" aria-controls="filter-content-{{ loop.index }}"
                         {% for name, value in field.vars.label_attr|default([]) %}{{ name }}="{{ value|e('html') }}" {% endfor %}>
-                        {# don't use 'field.vars.label is not empty' here; it'll trigger deprecation messages: Method TranslatableMessage::__toString() is deprecated #}
-                        {% set has_filter_label = field.vars.label is not same as(false) and field.vars.label is not null and field.vars.label is not same as('') %}
+                        {% set has_filter_label = field.vars.label is ea_is_not_empty %}
                         {% set filter_label = has_filter_label ? field.vars.label : field.vars.name|humanize %}
                         {{ filter_label|trans(domain: ea().i18n.translationDomain) }}
                     </a>

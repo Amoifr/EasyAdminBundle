@@ -77,6 +77,75 @@ class EasyAdminTwigExtensionTest extends KernelTestCase
         $this->assertSame($expected, $twigExtensionInstance->forceFileDownload($filename));
     }
 
+    /**
+     * @dataProvider provideValuesForIsNotEmpty
+     */
+    public function testIsNotEmpty(mixed $value, bool $expected): void
+    {
+        $isNotEmpty = $this->getTwigTestCallable('ea_is_not_empty');
+
+        $this->assertSame($expected, $isNotEmpty($value));
+    }
+
+    public function testUid(): void
+    {
+        $uid = $this->getTwigFunctionCallable('ea_uid');
+
+        // the generated IDs use the given prefix followed by a ULID (26 chars, Crockford base32)
+        $this->assertMatchesRegularExpression('/^ea-[0-9A-HJKMNP-TV-Z]{26}$/', $uid());
+        $this->assertMatchesRegularExpression('/^ea-form-[0-9A-HJKMNP-TV-Z]{26}$/', $uid('ea-form-'));
+        $this->assertNotSame($uid(), $uid());
+    }
+
+    public static function provideValuesForIsNotEmpty(): iterable
+    {
+        yield [false, false];
+        yield [null, false];
+        yield ['', false];
+
+        yield ['foo', true];
+        yield [' ', true];
+        yield [0, true];
+        yield ['0', true];
+        yield [[], true];
+        // TranslatableInterface values must not be stringified (that would trigger
+        // a deprecation for TranslatableMessage); any object counts as not empty
+        yield [new class implements TranslatableInterface {
+            public function trans(TranslatorInterface $translator, ?string $locale = null): string
+            {
+                return 'some value';
+            }
+        }, true];
+    }
+
+    private function getTwigFunctionCallable(string $name): callable
+    {
+        $reflectedClass = new \ReflectionClass(EasyAdminTwigExtension::class);
+        $twigExtensionInstance = $reflectedClass->newInstanceWithoutConstructor();
+
+        foreach ($twigExtensionInstance->getFunctions() as $function) {
+            if ($name === $function->getName()) {
+                return $function->getCallable();
+            }
+        }
+
+        throw new \InvalidArgumentException(sprintf('The "%s" Twig function is not defined in %s.', $name, EasyAdminTwigExtension::class));
+    }
+
+    private function getTwigTestCallable(string $name): callable
+    {
+        $reflectedClass = new \ReflectionClass(EasyAdminTwigExtension::class);
+        $twigExtensionInstance = $reflectedClass->newInstanceWithoutConstructor();
+
+        foreach ($twigExtensionInstance->getTests() as $test) {
+            if ($name === $test->getName()) {
+                return $test->getCallable();
+            }
+        }
+
+        throw new \InvalidArgumentException(sprintf('The "%s" Twig test is not defined in %s.', $name, EasyAdminTwigExtension::class));
+    }
+
     public static function provideValuesForForceFileDownload(): iterable
     {
         // files the browser renders inline and can execute scripts from
