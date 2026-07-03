@@ -157,43 +157,41 @@
                     <twig:ea:ActionMenu:Overlay>
                         <twig:ea:ActionMenu:ActionList>
                             {% if ea.dashboardLocales %}
-                                <twig:ea:ActionMenu:ActionList:Header
-                                    class="dropdown-locales-label"
-                                    label="{{ 'settings.locale'|trans(domain: 'EasyAdminBundle') }}" />
+                                <twig:ea:ActionMenu:ActionList:RadioList label="{{ 'settings.locale'|trans(domain: 'EasyAdminBundle') }}" labelClass="dropdown-locales-label">
+                                    {% for localeDto in ea.dashboardLocales %}
+                                        {% set url = ea_url(app.current_route_parameters)
+                                            .set('_locale', localeDto.locale)
+                                            .set('entityId', app.request.attributes.get('entityId')) %}
+
+                                        <twig:ea:ActionMenu:ActionList:Item
+                                            url="{{ url.generateUrl() }}"
+                                            icon="{{ localeDto.icon }}" label="{{ localeDto.name }}"
+                                            :selected="app.request.locale == localeDto.locale" />
+                                    {% endfor %}
+                                </twig:ea:ActionMenu:ActionList:RadioList>
                             {% endif %}
-
-                            {% for localeDto in ea.dashboardLocales %}
-                                {% set url = ea_url(app.current_route_parameters)
-                                    .set('_locale', localeDto.locale)
-                                    .set('entityId', app.request.attributes.get('entityId')) %}
-
-                                <twig:ea:ActionMenu:ActionList:Item
-                                    class="{{ app.request.locale == localeDto.locale ? 'active' }}"
-                                    url="{{ url.generateUrl() }}"
-                                    icon="{{ localeDto.icon }}" label="{{ localeDto.name }}" />
-                            {% endfor %}
 
                             {% if ea.dashboardHasDarkModeEnabled %}
                                 {% if ea.dashboardLocales %}
                                     <twig:ea:ActionMenu:ActionList:Divider/>
                                 {% endif %}
 
-                                <twig:ea:ActionMenu:ActionList:Header
-                                    class="dropdown-appearance-label"
-                                    label="{{ 'settings.appearance.label'|trans(domain: 'EasyAdminBundle') }}" />
-
-                                <twig:ea:ActionMenu:ActionList:Item
-                                    class="dropdown-appearance-item"
-                                    url="#" icon="internal:sun" data-ea-color-scheme="light"
-                                    label="{{ 'settings.appearance.light'|trans(domain: 'EasyAdminBundle') }}" />
-                                <twig:ea:ActionMenu:ActionList:Item
-                                    class="dropdown-appearance-item"
-                                    url="#" icon="internal:moon" data-ea-color-scheme="dark"
-                                    label="{{ 'settings.appearance.dark'|trans(domain: 'EasyAdminBundle') }}" />
-                                <twig:ea:ActionMenu:ActionList:Item
-                                    class="dropdown-appearance-item active"
-                                    url="#" icon="internal:desktop" data-ea-color-scheme="auto"
-                                    label="{{ 'settings.appearance.auto'|trans(domain: 'EasyAdminBundle') }}" />
+                                <twig:ea:ActionMenu:ActionList:RadioList label="{{ 'settings.appearance.label'|trans(domain: 'EasyAdminBundle') }}" labelClass="dropdown-appearance-label">
+                                    <twig:ea:ActionMenu:ActionList:Item
+                                        class="dropdown-appearance-item"
+                                        url="#" icon="internal:sun" data-ea-color-scheme="light" :selected="false"
+                                        label="{{ 'settings.appearance.light'|trans(domain: 'EasyAdminBundle') }}" />
+                                    <twig:ea:ActionMenu:ActionList:Item
+                                        class="dropdown-appearance-item"
+                                        url="#" icon="internal:moon" data-ea-color-scheme="dark" :selected="false"
+                                        label="{{ 'settings.appearance.dark'|trans(domain: 'EasyAdminBundle') }}" />
+                                    {# 'auto' is the default the JS selector falls back to when there is no
+                                       saved preference; mark it selected server-side and let the JS correct it #}
+                                    <twig:ea:ActionMenu:ActionList:Item
+                                        class="dropdown-appearance-item"
+                                        url="#" icon="internal:desktop" data-ea-color-scheme="auto" :selected="true"
+                                        label="{{ 'settings.appearance.auto'|trans(domain: 'EasyAdminBundle') }}" />
+                                </twig:ea:ActionMenu:ActionList:RadioList>
                             {% endif %}
                         </twig:ea:ActionMenu:ActionList>
                     </twig:ea:ActionMenu:Overlay>

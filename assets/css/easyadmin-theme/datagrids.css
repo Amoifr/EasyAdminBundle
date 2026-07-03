@@ -280,11 +280,6 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     position: relative;
 }
 
-.datagrid .dropdown-actions .dropstart .dropdown-toggle:before {
-    margin-inline-start: -20px;
-    position: absolute;
-}
-
 /* Position nested dropdown menu to the left */
 .datagrid .dropdown-actions .dropdown-menu .dropstart > .dropdown-menu {
     inset-block-start: 0;
@@ -327,15 +322,6 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 .datagrid .dropdown-actions .dropdown-menu .dropstart .dropdown-toggle-split:before {
     display: none;
-}
-
-.datagrid .dropdown-actions .dropdown-menu .dropstart .dropdown-toggle-split .dropdown-toggle-marker {
-    /* this is a chevron-like icon made out of text with CSS border tricks */
-    border-block-end: .3em solid transparent;
-    border-inline-end: .3em solid;
-    border-block-start: .3em solid transparent;
-    content: "";
-    display: inline-block;
 }
 
 .datagrid .ea-lightbox-thumbnail img {
