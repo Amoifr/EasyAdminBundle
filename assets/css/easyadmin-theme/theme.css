@@ -2,6 +2,7 @@
 @import "./variables-theme.css";
 
 @import "./base.css";
+@import "./action-menu.css";
 @import "./menu.css";
 @import "./datagrids.css";
 @import "./detail-page.css";
