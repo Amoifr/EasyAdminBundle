@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Factory\FieldFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\AssociationConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Security\Permission;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\ProjectDomain\DeveloperCrudController;
@@ -55,6 +56,7 @@ class AssociationConfiguratorTest extends AbstractFieldTest
             static::getContainer()->get(FieldFactory::class),
             static::getContainer()->get(AuthorizationCheckerInterface::class),
             static::getContainer()->get(AdminContextFactory::class),
+            static::getContainer()->get(EntityRepository::class),
         );
     }
 
@@ -104,6 +106,16 @@ class AssociationConfiguratorTest extends AbstractFieldTest
         $field = AssociationField::new('latestRelease.category')
             ->setCrudController(ProjectReleaseCategoryCrudController::class)
         ;
+
+        $fieldDto = $this->configure($field);
+
+        $this->assertSame(EntityType::class, $fieldDto->getFormType());
+        $this->assertSame(ProjectReleaseCategory::class, $fieldDto->getFormTypeOption('class'));
+    }
+
+    public function testNestedAssociationWithAutoConfiguration(): void
+    {
+        $field = AssociationField::new('latestRelease.category');
 
         $fieldDto = $this->configure($field);
 
@@ -266,6 +278,7 @@ class AssociationConfiguratorTest extends AbstractFieldTest
             static::getContainer()->get(FieldFactory::class),
             $authChecker,
             static::getContainer()->get(AdminContextFactory::class),
+            static::getContainer()->get(EntityRepository::class),
         );
     }
 

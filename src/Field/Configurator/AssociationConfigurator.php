@@ -22,6 +22,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Factory\FieldFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudAutocompleteType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudFormType;
+use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository as EAEntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Security\Permission;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,6 +49,7 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
         private readonly FieldFactory $fieldFactory,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly AdminContextFactory $adminContextFactory,
+        private EAEntityRepository $entityRepository,
     ) {
     }
 
@@ -64,6 +66,11 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
     public function configure(FieldDto $field, EntityDto $entityDto, AdminContext $context): void
     {
         $propertyName = $field->getProperty();
+        $resolvedProperty = $this->entityRepository->resolveNestedAssociations(null, $entityDto, $propertyName, true);
+        /** @var EntityDto $entityDtoResolved */
+        $entityDtoResolved = $resolvedProperty['entity_dto'];
+        /** @var string $resolvedProperty */
+        $resolvedProperty = $resolvedProperty['property_name'];
 
         if (!$this->isAssociation($entityDto->getClassMetadata(), $propertyName)) {
             throw new \RuntimeException(sprintf('The "%s" field is not a Doctrine association, so it cannot be used as an association field.', $propertyName));
@@ -71,7 +78,7 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
 
         // the target CRUD controller can be NULL; in that case, field value doesn't link to the related entity
         $targetCrudControllerFqcn = $field->getCustomOption(AssociationField::OPTION_EMBEDDED_CRUD_FORM_CONTROLLER)
-            ?? $context->getAdminControllers()->findCrudControllerByEntity($entityDto->getClassMetadata()->getAssociationTargetClass($propertyName));
+            ?? $context->getAdminControllers()->findCrudControllerByEntity($entityDtoResolved->getClassMetadata()->getAssociationTargetClass($resolvedProperty));
 
         if (true === $field->getCustomOption(AssociationField::OPTION_RENDER_AS_EMBEDDED_FORM)) {
             if (false === $entityDto->getClassMetadata()->isSingleValuedAssociation($propertyName)) {
