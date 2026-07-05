@@ -18,8 +18,8 @@
         </twig:ea:Badge>
     {% endif %}
 {% else %}
-    {# a TranslatableMessage can't be stringified directly, so translate it first and guard against false/null/'' #}
-    {% set switch_aria_label = (field.label is not same as(false) and field.label is not null and field.label is not same as(''))
+    {# a TranslatableMessage can't be stringified directly, so translate it before passing it as an attribute #}
+    {% set switch_aria_label = (field.label is ea_is_not_empty)
         ? field.label|trans(domain: ea.i18n.translationDomain) : null %}
     <twig:ea:Switch
         id="{{ field.uniqueId }}"
