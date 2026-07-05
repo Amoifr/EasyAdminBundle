@@ -293,7 +293,7 @@ custom pages):
 
     <twig:ea:Badge variant="success">Published</twig:ea:Badge>
 
-    <twig:ea:Alert variant="warning" withDismissButton>
+    <twig:ea:Alert variant="warning" icon="fa-triangle-exclamation" title="Disk space low" withDismissButton>
         Some important message
     </twig:ea:Alert>
 
@@ -313,6 +313,28 @@ These are the available components:
 * ``ea:Flag``, renders the flag of a country as an SVG image;
 * ``ea:Pagination``, renders a pagination control with links to navigate the
   pages of some results and an optional counter of the total number of results.
+
+Customizing Flash Messages
+--------------------------
+
+EasyAdmin displays the `flash messages`_ added by your application using the
+``ea:Alert`` component. Flash messages are usually plain strings, which are
+translated using the translation domain configured in the dashboard::
+
+    $this->addFlash('success', 'post.published');
+
+If you want to customize the rendered alert, pass an array with a mandatory
+``message`` key and optional ``title`` and ``icon`` keys::
+
+    $this->addFlash('success', [
+        'message' => 'post.published',
+        'title' => 'post.published.title',
+        'icon' => 'fa-circle-check',
+    ]);
+
+The ``message`` and ``title`` values are translated like plain string flash
+messages; the ``icon`` value accepts the same values as the ``ea:Icon``
+component (icon names from the icon set configured in the backend).
 
 .. _crud-design-custom-web-assets:
 
@@ -545,3 +567,4 @@ is not installed.
 .. _`Content Security Policy`: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 .. _`NelmioSecurityBundle`: https://github.com/nelmio/NelmioSecurityBundle
 .. _`Twig Components`: https://symfony.com/bundles/ux-twig-component/current/index.html
+.. _`flash messages`: https://symfony.com/doc/current/session.html#flash-messages

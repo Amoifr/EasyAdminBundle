@@ -157,7 +157,12 @@ class ActionTestEntityCrudController extends AbstractCrudController
         $entityManager = $this->container->get('doctrine')->getManagerForClass(ActionTestEntity::class);
         $entityManager->flush();
 
-        $this->addFlash('success', sprintf('Entity "%s" has been activated.', $entity->getName()));
+        // use the structured flash message format to test the 'title' and 'icon' options
+        $this->addFlash('success', [
+            'message' => sprintf('Entity "%s" has been activated.', $entity->getName()),
+            'title' => 'Activation',
+            'icon' => 'internal:check',
+        ]);
 
         return $this->redirect($this->container->get(AdminUrlGenerator::class)->setAction(Action::INDEX)->generateUrl());
     }

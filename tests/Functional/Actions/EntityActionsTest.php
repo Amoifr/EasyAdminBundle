@@ -174,12 +174,16 @@ class EntityActionsTest extends AbstractCrudTestCase
         $updatedEntity = $this->actionTestEntities->find($entityId);
         static::assertTrue($updatedEntity->isActive(), 'Entity should be active after clicking activate action');
 
-        // Verify flash message is shown
+        // verify flash message is shown; this action uses the structured flash message
+        // format, so the alert must display the custom title and icon too
         $crawler = $this->client->getCrawler();
+        $flashMessage = $crawler->filter('.alert-success');
         static::assertStringContainsString(
             sprintf('Entity "%s" has been activated.', $entityName),
-            $crawler->filter('.alert-success')->text()
+            $flashMessage->filter('.alert-description')->text()
         );
+        static::assertSame('Activation', $flashMessage->filter('.alert-title')->text());
+        static::assertCount(1, $flashMessage->filter('.alert-icon'));
     }
 
     public function testDeactivateEntityAction(): void

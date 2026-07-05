@@ -6,15 +6,17 @@ use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\AlertVariant;
 
 /**
  * Highlights important messages that require the user's attention, such as notifications and flash messages.
- * Inspired by https://primer.style/components/banner.
+ * Inspired by https://primer.style/components/banner and https://ui.shadcn.com/docs/components/alert.
  */
 class Alert
 {
     public AlertVariant $variant = AlertVariant::Info;
     public bool $withDismissButton = false;
+    public ?string $icon = null;
+    public ?string $title = null;
     private ?string $customVariant = null;
 
-    public function mount(string|AlertVariant $variant): void
+    public function mount(string|AlertVariant $variant = AlertVariant::Info): void
     {
         if (\is_string($variant)) {
             $resolved = AlertVariant::tryFrom($variant);

@@ -45,6 +45,50 @@ class AlertTest extends TestCase
         $this->assertSame(AlertVariant::Info, $alert->variant);
     }
 
+    public function testMountWithoutVariantFallsBackToInfo(): void
+    {
+        $alert = new Alert();
+        $alert->mount();
+
+        $this->assertSame(AlertVariant::Info, $alert->variant);
+    }
+
+    public function testIconAndTitleAreNullByDefault(): void
+    {
+        $alert = new Alert();
+
+        $this->assertNull($alert->icon);
+        $this->assertNull($alert->title);
+    }
+
+    /**
+     * @dataProvider provideAllVariants
+     */
+    public function testMountDoesNotSetDefaultIconForVariants(AlertVariant $variant): void
+    {
+        $alert = new Alert();
+        $alert->mount($variant);
+
+        $this->assertNull($alert->icon);
+    }
+
+    public static function provideAllVariants(): iterable
+    {
+        foreach (AlertVariant::cases() as $variant) {
+            yield $variant->value => [$variant];
+        }
+    }
+
+    public function testIconAndTitleDoNotChangeDefaultCssClass(): void
+    {
+        $alert = new Alert();
+        $alert->mount('success');
+        $alert->icon = 'internal:circle-check';
+        $alert->title = 'Some title';
+
+        $this->assertSame('alert alert-success', $alert->getDefaultCssClass());
+    }
+
     /**
      * @dataProvider provideGetDefaultCssClassData
      */
