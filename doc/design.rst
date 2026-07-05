@@ -284,7 +284,7 @@ Finally, add this custom theme to the list of themes used to render backend form
 Using EasyAdmin Twig Components
 -------------------------------
 
-EasyAdmin uses `Twig Components`_ to render some parts of its interface. These
+EasyAdmin uses `Twig Components`_ to render many parts of its interface. These
 components are registered under the ``ea:`` prefix and you can also use them in
 your own admin templates (e.g. when overriding backend templates or creating
 custom pages):
@@ -293,26 +293,9 @@ custom pages):
 
     <twig:ea:Badge variant="success">Published</twig:ea:Badge>
 
-    <twig:ea:Alert variant="warning" icon="fa-triangle-exclamation" title="Disk space low" withDismissButton>
-        Some important message
-    </twig:ea:Alert>
-
-    <twig:ea:Icon name="user"/>
-
-    <twig:ea:Flag countryCode="JP"/>
-
-These are the available components:
-
-* ``ea:Badge``, renders a small colored label, commonly used for statuses,
-  counts and tags;
-* ``ea:Alert``, highlights important messages that require the user's attention,
-  such as notifications and flash messages;
-* ``ea:Icon``, renders the SVG icon associated to the given ``name``. The icon
-  is resolved using the icon set configured in the backend (`FontAwesome icons`_
-  by default, or :ref:`your own icon set <icon-customization>`);
-* ``ea:Flag``, renders the flag of a country as an SVG image;
-* ``ea:Pagination``, renders a pagination control with links to navigate the
-  pages of some results and an optional counter of the total number of results.
+Read the :doc:`Twig Components reference </components>` to learn about all the
+available components (buttons, badges, icons, modals, dropdown menus, etc.)
+with practical examples of how to use them.
 
 Customizing Flash Messages
 --------------------------

@@ -26,6 +26,8 @@ Table of Contents
 * :doc:`Events </events>` (entity events, CRUD events, JavaScript events)
 * :doc:`Tests </tests>` (functional testing, utilities, assertions)
 * :doc:`Upgrade </upgrade>` (from EasyAdmin 4)
+* :doc:`Appendix: Twig Components </components>` (reusable UI components: badges, buttons,
+  icons, modals, dropdown menus)
 
 Technical Requirements
 ----------------------
