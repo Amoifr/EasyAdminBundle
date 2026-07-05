@@ -112,10 +112,38 @@ class IconTest extends TestCase
         yield ['another-custom-prefix:some-other-icon'];
     }
 
+    /**
+     * @dataProvider provideIconSetCheckersData
+     */
+    public function testIconSetCheckers(string $appIconSet, bool $isBuiltIn, bool $isFontAwesome): void
+    {
+        $iconComponent = new Icon($this->getAdminContextProvider($appIconSet));
+
+        $this->assertSame($isBuiltIn, $iconComponent->isBuiltInIconSet());
+        $this->assertSame($isFontAwesome, $iconComponent->isFontAwesomeIconSet());
+    }
+
+    public static function provideIconSetCheckersData(): iterable
+    {
+        yield [IconSet::FontAwesome, true, true];
+        yield [IconSet::Internal, true, false];
+        yield [IconSet::Custom, false, false];
+    }
+
+    public function testNullIconName(): void
+    {
+        $iconComponent = new Icon($this->getAdminContextProvider(IconSet::FontAwesome));
+        $iconDto = $iconComponent->getIcon();
+
+        $this->assertSame('', $iconDto->getName());
+        $this->assertNull($iconDto->getPath());
+        $this->assertNull($iconDto->getSvgContents());
+    }
+
     public function testUnknownInternalIcon(): void
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessageMatches('/The icon "internal:this-does-not-exist" does not exist\. Check the icon name spelling and make sure that the "this-does-not-exist\.svg" file exists in the "assets\/icons\/internal\/ directory of EasyAdmin"\./');
+        $this->expectExceptionMessageMatches('/The icon "internal:this-does-not-exist" does not exist\. Check the icon name spelling and make sure that the "this-does-not-exist\.svg" file exists in the "assets\/icons\/internal\/" directory of EasyAdmin\./');
 
         $iconComponent = new Icon($this->getAdminContextProvider(IconSet::Internal));
         $iconComponent->name = 'internal:this-does-not-exist';

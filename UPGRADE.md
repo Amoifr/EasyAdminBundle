@@ -3,6 +3,7 @@ Upgrade Guide
 
 ## EasyAdmin 5.2.0
 
+### HTML Markup Changes
 
 The HTML markup of the boolean switch has changed. Before, the element wrapping
 the switch applied the `.form-switch` CSS class and the checkbox used the
@@ -18,6 +19,10 @@ and the optional country name text. If your custom CSS or JavaScript selects
 country flags with direct-child or sibling selectors (e.g. `td > svg.country-flag`),
 update them; descendant selectors (e.g. `td svg.country-flag`) keep working as before.
 
+The HTML of icons when using a custom icon set has changed. Before, all HTML attributes
+were wrongly applied to both the wrapping `<span>` element and the inner `<svg>` element.
+Now, HTML attributes are only applied to the wrapping element. Update any custom CSS
+or JavaScript that targeted those attributes on the inner `<svg>` element.
 
 ## Upgrading from Symfony 4.x to 5.x
 

@@ -8,6 +8,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\IconDto;
 
 class Icon
 {
+    private const FILETYPES_ICON_PREFIX = 'filetypes';
+
     public ?string $name = null;
     private string $iconsDir = __DIR__.'/../../../assets/icons';
     private ?string $iconSet = null;
@@ -24,12 +26,12 @@ class Icon
 
     public function isFontAwesomeIconSet(): bool
     {
-        return IconSet::Custom !== $this->getIconSet();
+        return IconSet::FontAwesome === $this->getIconSet();
     }
 
     public function getIcon(): IconDto
     {
-        return $this->getIconDto(trim($this->name), $this->getIconSet());
+        return $this->getIconDto(trim($this->name ?? ''), $this->getIconSet());
     }
 
     private function getIconSet(): string
@@ -44,7 +46,7 @@ class Icon
 
     private function getIconDto(string $iconName, string $iconSet): IconDto
     {
-        if (str_starts_with($iconName, IconSet::Internal.':') || str_starts_with($iconName, 'filetypes:')) {
+        if (str_starts_with($iconName, IconSet::Internal.':') || str_starts_with($iconName, self::FILETYPES_ICON_PREFIX.':')) {
             return $this->getInternalIcon($iconName);
         }
 
@@ -59,13 +61,13 @@ class Icon
     {
         [$iconPrefix, $iconName] = explode(':', $internalIconName, 2);
         if (1 !== preg_match('/^[a-zA-Z0-9_-]+$/D', $iconName)) {
-            throw new \RuntimeException(sprintf('The icon "%s" does not exist. Check the icon name spelling and make sure that the "%s.svg" file exists in the "assets/icons/internal/ directory of EasyAdmin".', $internalIconName, $iconName));
+            throw new \RuntimeException(sprintf('The icon "%s" does not exist. Check the icon name spelling and make sure that the "%s.svg" file exists in the "assets/icons/%s/" directory of EasyAdmin.', $internalIconName, $iconName, $iconPrefix));
         }
 
         $iconFilePath = sprintf('%s/%s/%s.svg', $this->iconsDir, $iconPrefix, $iconName);
         $content = @file_get_contents($iconFilePath);
         if (!\is_string($content)) {
-            throw new \RuntimeException(sprintf('The icon "%s" does not exist. Check the icon name spelling and make sure that the "%s.svg" file exists in the "assets/icons/internal/ directory of EasyAdmin".', $internalIconName, $iconName));
+            throw new \RuntimeException(sprintf('The icon "%s" does not exist. Check the icon name spelling and make sure that the "%s.svg" file exists in the "assets/icons/%s/" directory of EasyAdmin.', $internalIconName, $iconName, $iconPrefix));
         }
 
         return IconDto::new(name: $internalIconName, path: $iconFilePath, svgContents: $content, iconSet: IconSet::Internal);
