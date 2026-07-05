@@ -97,6 +97,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Security\SecurityVoter;
 use EasyCorp\Bundle\EasyAdminBundle\Translation\EntityTranslationIdGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Alert;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Badge;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Button;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Flag;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Icon;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Pagination;
@@ -480,6 +481,10 @@ return static function (ContainerConfigurator $container) {
 
         ->set(Pagination::class)
             ->arg(0, service(AdminContextProvider::class))
+            ->tag('twig.component')
+
+        ->set(Button::class)
+            ->arg(0, service('translator'))
             ->tag('twig.component')
     ;
 };

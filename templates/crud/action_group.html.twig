@@ -13,7 +13,7 @@
             action="{{ main_action.htmlElement.isForm ? main_action.linkUrl : null }}"
             method="{{ main_action.htmlElement.isForm ? 'POST' : null }}"
             icon="{{ main_action.icon ?: group.icon }}"
-            htmlAttributes="{{ main_action.htmlAttributes|ea_html_attrs|merge({'data-action-group-name-main-action': true, 'data-ea-action-url': main_action.htmlElement.isButton ? main_action.linkUrl : null})|filter((v) => v is not null) }}"
+            {{ ...main_action.htmlAttributes|ea_html_attrs|merge({'data-action-group-name-main-action': true, 'data-ea-action-url': main_action.htmlElement.isButton ? main_action.linkUrl : null})|filter((v) => v is not null) }}
         >
             {% set main_action_label = main_action.label|trans %}
             {%- if main_action_label is not same as(false) -%}{{ main_action_label|raw }}{%- endif -%}
@@ -24,7 +24,8 @@
                 htmlElement="button"
                 type="button"
                 class="{{ main_action.cssClass }} {{ main_action.addedCssClass }} dropdown-toggle dropdown-toggle-split"
-                htmlAttributes="{{ {'data-bs-toggle': 'dropdown', 'aria-expanded': 'false'} }}"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
                 label:class="visually-hidden"
         >
             {{ 'action.toggle_dropdown'|trans(domain: 'EasyAdminBundle') }}
@@ -36,7 +37,8 @@
             htmlElement="button"
             type="button"
             icon="{{ group.icon }}"
-            htmlAttributes="{{ {'data-bs-toggle': 'dropdown', 'aria-expanded': 'false'} }}"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
         >
             {% set group_label = group.label|trans %}
             {%- if group_label is not same as(false) -%}{{ group_label|raw }}{%- endif -%}

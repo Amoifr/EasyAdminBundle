@@ -1,90 +1,42 @@
-{% props
-    variant = 'default', # primary|default|danger|success|warning|info (default: 'default')
-    isInvisible = false, # true|false (default: false) if true, button has transparent background and no border
-    isBlock = false, # true|false (default: false) if true, button takes full width of container
-    size = 'md', # sm|md|lg (string or Option\Size enum) (default: 'md')
-    icon = null, # icon name string (e.g., 'tabler:user' or 'fa fas fa-user')
-    withTrailingIcon = false, # boolean to show icon after label (default: false)
-    inactive = false, # boolean to disable the button (default: false)
-    htmlElement = 'button', # button|a|form (default: 'button')
-    htmlAttributes = {}, # additional HTML attributes as key-value pairs
-    href = '#', # URL for link buttons (default: '#')
-    action = null, # form action URL (for htmlElement='form')
-    method = 'POST', # HTTP method for forms (default: 'POST')
-    type = null, # button|submit (default: 'submit') button type attribute
-    name = null, # form button name attribute
-    value = null, # form button value attribute
-%}
+{# the inner content is the same for all button elements: leading icon + label + trailing icon #}
+{% set button_content %}
+    {%- if this.icon and not this.withTrailingIcon -%}
+        <twig:ea:Icon name="{{ this.icon }}" class="btn-icon" />
+    {%- endif -%}
+    {%- if block('content') is defined and block('content') is not empty -%}
+        <span {{- attributes.nested('label').defaults({class: 'btn-label'}) }}>{{ block('content') }}</span>
+    {%- endif -%}
+    {%- if this.icon and this.withTrailingIcon -%}
+        <twig:ea:Icon name="{{ this.icon }}" class="btn-icon btn-icon-trailing" />
+    {%- endif -%}
+{% endset %}
 
-{# handle both string and enum values #}
-{% set html_element_value = htmlElement.value is defined ? htmlElement.value : htmlElement %}
-{% set variant_value = variant.value is defined ? variant.value : variant %}
-{% set size_value = size.value is defined ? size.value : size %}
+{% if this.htmlElement.isLink %}
+    {% set link_defaults = {class: this.defaultCssClass(), role: 'button'} %}
+    {% if this.inactive %}
+        {% set link_defaults = link_defaults|merge({'aria-disabled': 'true', tabindex: '-1'}) %}
+    {% elseif this.href %}
+        {% set link_defaults = link_defaults|merge({href: this.href}) %}
+    {% endif %}
 
-{% set variant_class = variant_value == 'default' ? 'btn-secondary' : 'btn-' ~ variant_value %}
-{% set size_class = size_value == 'md' ? '' : 'btn-' ~ size_value %}
-{% set css_class = html_classes('btn', variant_class, size_class, {
-    'btn-invisible': isInvisible,
-    'btn-block': isBlock,
-    disabled: inactive,
-}) %}
-
-{% if html_element_value == 'a' %}
-    <a {{ attributes.only('class').defaults({class: css_class}) }}
-       href="{{ inactive ? '#' : href }}"
-       role="button"
-       {% if inactive %}aria-disabled="true" tabindex="-1"{% endif %}
-       {% for attrName, attrValue in htmlAttributes %}{{ attrName }}="{{ (attrValue.trans is defined ? attrValue|trans : attrValue)|e('html') }}" {% endfor %}
-       {{ attributes.without('class', 'href', 'role', 'aria-disabled', 'tabindex')|raw }}>
-        {% if icon and not withTrailingIcon %}
-            <twig:ea:Icon name="{{ icon }}" class="btn-icon" />
-        {% endif %}
-        {% if block('content') is defined and block('content') is not empty %}
-            <span {{ attributes.nested('label').defaults({class: 'btn-label'}) }}>{{ block('content') }}</span>
-        {% endif %}
-        {% if icon and withTrailingIcon %}
-            <twig:ea:Icon name="{{ icon }}" class="btn-icon btn-icon-trailing" />
-        {% endif %}
-    </a>
-{% elseif html_element_value == 'form' %}
-    <form action="{{ action }}" method="{{ method }}" {{ attributes.only('id', 'class', 'data-*') }}>
-        {% if method|upper not in ['GET', 'POST'] %}
-            <input type="hidden" name="_method" value="{{ method|upper }}">
-        {% endif %}
-
-        <button {{ attributes.only('class').defaults({class: css_class}) }}
-            type="{{ type ?? 'submit' }}"
-            {% if name %}name="{{ name }}"{% endif %}
-            {% if value %}value="{{ value }}"{% endif %}
-            {% if inactive %}disabled="disabled"{% endif %}
-            {% for attrName, attrValue in htmlAttributes %}{{ attrName }}="{{ (attrValue.trans is defined ? attrValue|trans : attrValue)|e('html') }}" {% endfor %}
-            {{ attributes.without('class', 'form', 'type', 'name', 'value', 'disabled')|raw }}
-        >
-            {% if icon and not withTrailingIcon %}
-                <twig:ea:Icon name="{{ icon }}" class="btn-icon" />
-            {% endif %}
-            {% if block('content') is defined and block('content') is not empty %}
-                <span {{ attributes.nested('label').defaults({class: 'btn-label'}) }}>{{ block('content') }}</span>
-            {% endif %}
-            {% if icon and withTrailingIcon %}
-                <twig:ea:Icon name="{{ icon }}" class="btn-icon btn-icon-trailing" />
-            {% endif %}
-        </button>
-    </form>
+    <a {{- attributes.defaults(link_defaults) }}>{{ button_content }}</a>
 {% else %}
-    <button {{ attributes.only('class').defaults({class: css_class}) }}
-        type="{{ type ?? 'submit' }}"
-        {% if inactive %}disabled="disabled"{% endif %}
-        {% for attrName, attrValue in htmlAttributes %}{{ attrName }}="{{ (attrValue.trans is defined ? attrValue|trans : attrValue)|e('html') }}" {% endfor %}
-        {{ attributes.without('class', 'type', 'disabled')|raw }}>
-        {% if icon and not withTrailingIcon %}
-            <twig:ea:Icon name="{{ icon }}" class="btn-icon" />
-        {% endif %}
-        {% if block('content') is defined and block('content') is not empty %}
-            <span {{ attributes.nested('label').defaults({class: 'btn-label'}) }}>{{ block('content') }}</span>
-        {% endif %}
-        {% if icon and withTrailingIcon %}
-            <twig:ea:Icon name="{{ icon }}" class="btn-icon btn-icon-trailing" />
-        {% endif %}
-    </button>
+    {% set button_defaults = {class: this.defaultCssClass(), type: this.type.value} %}
+    {% if this.name %}{% set button_defaults = button_defaults|merge({name: this.name}) %}{% endif %}
+    {% if this.value is not null %}{% set button_defaults = button_defaults|merge({value: this.value}) %}{% endif %}
+    {% if this.inactive %}{% set button_defaults = button_defaults|merge({disabled: true}) %}{% endif %}
+
+    {% if this.htmlElement.isForm %}
+        {# HTML forms only support GET and POST; other methods are submitted as POST
+           with the real method in the '_method' hidden field (needs 'http_method_override') #}
+        <form action="{{ this.action }}" method="{{ this.formMethod }}" {{- attributes.only('class') }}>
+            {% if this.usesMethodOverride %}
+                <input type="hidden" name="_method" value="{{ this.method }}">
+            {% endif %}
+
+            <button {{- attributes.defaults(button_defaults) }}>{{ button_content }}</button>
+        </form>
+    {% else %}
+        <button {{- attributes.defaults(button_defaults) }}>{{ button_content }}</button>
+    {% endif %}
 {% endif %}

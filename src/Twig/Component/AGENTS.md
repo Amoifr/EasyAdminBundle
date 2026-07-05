@@ -12,8 +12,8 @@ How to build UI components in EasyAdmin with [Symfony UX TwigComponent](https://
 
 ## Two kinds of components
 
-1. **Anonymous (template-only)** — for pure markup with no logic. Declare inputs with `{% props %}` at the top of `templates/components/<Name>.html.twig`. Examples: `Button.html.twig`, `ActionMenu`.
-2. **Class-backed** — when you need logic, computed values, defaults, or services. PHP class in `src/Twig/Component/<Name>.php` + template in `templates/components/<Name>.html.twig`. Examples: `Alert`, `Badge`, `Icon`, `Flag`.
+1. **Anonymous (template-only)** — for pure markup with no logic. Declare inputs with `{% props %}` at the top of `templates/components/<Name>.html.twig`. Examples: `Switch.html.twig`, `ActionMenu`.
+2. **Class-backed** — when you need logic, computed values, defaults, or services. PHP class in `src/Twig/Component/<Name>.php` + template in `templates/components/<Name>.html.twig`. Examples: `Alert`, `Badge`, `Button`, `Icon`, `Flag`.
 
 Prefer anonymous components; reach for a class only when there's real logic.
 
