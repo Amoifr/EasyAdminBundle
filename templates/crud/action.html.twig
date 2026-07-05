@@ -6,9 +6,9 @@
     variant="{{ action.variant }}"
     isInvisible="{{ action.usesTextStyle }}"
     class="{{ action.htmlElement.isLink and isIncludedInDropdown|default(false) ? 'dropdown-item' }} {{ action.cssClass }}"
-    htmlAttributes="{{ action.htmlAttributes|ea_html_attrs }}"
+    {{ ...action.htmlAttributes|ea_html_attrs|filter(v => v is not null) }}
     htmlElement="{{ action.htmlElement }}"
-    type="{{ action.buttonType.value }}"
+    type="{{ action.buttonType }}"
     icon="{{ action.icon }}"
     href="{{ action.htmlElement.isLink ? action.linkUrl : null }}"
     action="{{ action.htmlElement.isForm ? action.linkUrl : null }}"
