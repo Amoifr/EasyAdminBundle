@@ -22,6 +22,8 @@ return [
         'last' => 'Poslední',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> z <strong>%results%</strong>',
         'results' => '{0} Žádná položka|{1} <strong>1</strong> položka|{2,3,4} <strong>%count%</strong> položky|[5,Inf] <strong>%count%</strong> položek',
+        'label' => 'Stránkování',
+        'more_pages' => 'Více stránek',
     ],
 
     'label' => [

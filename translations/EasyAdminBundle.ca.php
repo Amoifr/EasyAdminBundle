@@ -22,6 +22,8 @@ return [
         'last' => 'Última',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> de <strong>%results%</strong>',
         'results' => '{0} Cap resultat|{1} <strong>1</strong> resultat|]1,Inf] <strong>%count%</strong> resultats',
+        'label' => 'Paginació',
+        'more_pages' => 'Més pàgines',
     ],
 
     'label' => [

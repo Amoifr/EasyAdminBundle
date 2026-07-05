@@ -99,6 +99,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Alert;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Badge;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Flag;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Icon;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Pagination;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\EasyAdminTwigExtension;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Reference;
@@ -475,6 +476,10 @@ return static function (ContainerConfigurator $container) {
             ->tag('twig.component')
 
         ->set(Badge::class)
+            ->tag('twig.component')
+
+        ->set(Pagination::class)
+            ->arg(0, service(AdminContextProvider::class))
             ->tag('twig.component')
     ;
 };

@@ -22,6 +22,8 @@ return [
         'last' => 'Ostatnia',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> z <strong>%results%</strong>',
         'results' => '<strong>%count%</strong> wynik|<strong>%count%</strong> wyniki|<strong>%count%</strong> wyników|{0} Brak wyników',
+        'label' => 'Paginacja',
+        'more_pages' => 'Więcej stron',
     ],
 
     'label' => [

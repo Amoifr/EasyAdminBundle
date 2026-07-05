@@ -22,6 +22,8 @@ return [
         'last' => '尾页',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> of <strong>%results%</strong>',
         'results' => '{0} 无结果|{1} <strong>1</strong> 条结果|]1,Inf] <strong>%count%</strong> 条结果',
+        'label' => '分页',
+        'more_pages' => '更多页面',
     ],
 
     'label' => [

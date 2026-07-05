@@ -279,6 +279,8 @@ Finally, add this custom theme to the list of themes used to render backend form
     ``{% block _Product_title_widget %}``. The full syntax is:
     ``{% block _<Entity name>_<Field name>_widget %}``.
 
+.. _using-easyadmin-twig-components:
+
 Using EasyAdmin Twig Components
 -------------------------------
 
@@ -308,7 +310,9 @@ These are the available components:
 * ``ea:Icon``, renders the SVG icon associated to the given ``name``. The icon
   is resolved using the icon set configured in the backend (`FontAwesome icons`_
   by default, or :ref:`your own icon set <icon-customization>`);
-* ``ea:Flag``, renders the flag of a country as an SVG image.
+* ``ea:Flag``, renders the flag of a country as an SVG image;
+* ``ea:Pagination``, renders a pagination control with links to navigate the
+  pages of some results and an optional counter of the total number of results.
 
 .. _crud-design-custom-web-assets:
 

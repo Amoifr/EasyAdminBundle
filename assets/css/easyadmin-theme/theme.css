@@ -3,6 +3,7 @@
 
 @import "./base.css";
 @import "./action-menu.css";
+@import "./pagination.css";
 @import "./menu.css";
 @import "./datagrids.css";
 @import "./detail-page.css";

@@ -22,6 +22,8 @@ return [
         'last' => 'Последняя',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> из <strong>%results%</strong>',
         'results' => '<strong>%count%</strong> результат|<strong>%count%</strong> результата|<strong>%count%</strong> результатов',
+        'label' => 'Навигация по страницам',
+        'more_pages' => 'Ещё страницы',
     ],
 
     'label' => [

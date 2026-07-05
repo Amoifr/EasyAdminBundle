@@ -22,6 +22,8 @@ return [
         'last' => 'Τελευταία',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> από <strong>%results%</strong>',
         'results' => '{0} Δεν βρέθηκαν εγγραφές |{1} <strong>1</strong> εγγραφή|]1,Inf] <strong>%count%</strong> εγγραφές',
+        'label' => 'Σελιδοποίηση',
+        'more_pages' => 'Περισσότερες σελίδες',
     ],
 
     'label' => [

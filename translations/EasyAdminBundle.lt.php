@@ -22,6 +22,8 @@ return [
         'last' => 'Paskutinis',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> iš <strong>%results%</strong>',
         'results' => '{0} Nėra rezultatų|{1} <strong>1</strong> rezultatas|]1,Inf] <strong>%count%</strong> rezultatai',
+        'label' => 'Pagination', // TODO: translate
+        'more_pages' => 'More pages', // TODO: translate
     ],
 
     'label' => [

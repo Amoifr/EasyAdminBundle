@@ -22,6 +22,8 @@ return [
         'last' => 'אחרון',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> מתוך <strong>%results%</strong>',
         'results' => '{0} אין תוצאות|{1} <strong>1</strong> תוצאה|]1,Inf] <strong>%count%</strong> תוצאות',
+        'label' => 'Pagination', // TODO: translate
+        'more_pages' => 'More pages', // TODO: translate
     ],
 
     'label' => [

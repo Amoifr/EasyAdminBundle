@@ -22,6 +22,8 @@ return [
         'last' => 'Terakhir',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> dari <strong>%results%</strong>',
         'results' => '{0} Tidak ada hasil|{1} <strong>1</strong> hasil|]1,Inf] <strong>%count%</strong> hasil',
+        'label' => 'Pagination', // TODO: translate
+        'more_pages' => 'More pages', // TODO: translate
     ],
 
     'label' => [

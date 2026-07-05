@@ -22,6 +22,8 @@ return [
         'last' => 'Poslednja',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> od <strong>%results%</strong>',
         'results' => '{0} Nema rezultata|{1} <strong>1</strong> rezultat|]1,Inf] <strong>%count%</strong> rezultata',
+        'label' => 'Straničenje',
+        'more_pages' => 'Više stranica',
     ],
 
     'label' => [

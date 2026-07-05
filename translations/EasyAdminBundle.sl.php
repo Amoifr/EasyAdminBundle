@@ -22,6 +22,8 @@ return [
         'last' => 'Zadnja',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> od <strong>%results%</strong>',
         'results' => '{0} Ni rezultatov|{1} <strong>1</strong> rezultat|{2} <strong>2</strong> rezultata|{3,4} <strong>%count%</strong> rezultati|[5,Inf] <strong>%count%</strong> rezultatov',
+        'label' => 'Pagination', // TODO: translate
+        'more_pages' => 'More pages', // TODO: translate
     ],
 
     'label' => [

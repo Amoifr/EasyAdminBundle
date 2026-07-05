@@ -22,6 +22,8 @@ return [
         'last' => 'Lescht',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> vu(n) <strong>%results%</strong>',
         'results' => '{0} Keng Resultater|{1} <strong>1</strong> Resultat|]1,Inf] <strong>%count%</strong> Resultater',
+        'label' => 'Pagination', // TODO: translate
+        'more_pages' => 'More pages', // TODO: translate
     ],
 
     'label' => [

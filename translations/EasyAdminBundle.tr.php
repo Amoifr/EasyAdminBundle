@@ -22,6 +22,8 @@ return [
         'last' => 'Son',
         'counter' => '<strong>%results%</strong> öğeden <strong>%start%</strong> - <strong>%end%</strong> arası',
         'results' => '{0} Sonuç yok|{1} <strong>1</strong> sonuç|]1,Inf] <strong>%count%</strong> sonuç',
+        'label' => 'Sayfalandırma',
+        'more_pages' => 'Daha fazla sayfa',
     ],
 
     'label' => [

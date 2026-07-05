@@ -22,6 +22,8 @@ return [
         'last' => 'Posledná',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> z <strong>%results%</strong>',
         'results' => '{0} Žiadne výsledky|{1} <strong>1</strong> výsledok|{2,3,4} <strong>%count%</strong> výsledky|[5,Inf] <strong>%count%</strong> výsledkov',
+        'label' => 'Stránkovanie',
+        'more_pages' => 'Viac stránok',
     ],
 
     'label' => [

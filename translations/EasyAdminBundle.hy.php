@@ -22,6 +22,8 @@ return [
         'last' => 'Վերջին',
         'counter' => '<strong>%start%</strong> - <strong>%end%</strong> ից <strong>%results%</strong>',
         'results' => '<strong>%count%</strong> արդյունք|<strong>%count%</strong> արդյունք|<strong>%count%</strong> արդյունքներ',
+        'label' => 'Pagination', // TODO: translate
+        'more_pages' => 'More pages', // TODO: translate
     ],
 
     'label' => [

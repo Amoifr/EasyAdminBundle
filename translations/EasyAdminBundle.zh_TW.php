@@ -22,6 +22,8 @@ return [
         'last' => '最後一頁',
         'counter' => '<strong>%start%</strong> – <strong>%end%</strong> 共 <strong>%results%</strong> 個',
         'results' => '{0} 無結果|{1} <strong>1</strong> 個結果|]1,Inf] <strong>%count%</strong> 個結果',
+        'label' => '分頁',
+        'more_pages' => '更多頁面',
     ],
 
     'label' => [

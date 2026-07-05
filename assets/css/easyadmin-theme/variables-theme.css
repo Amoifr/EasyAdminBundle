@@ -424,9 +424,11 @@
     --link-danger-color: var(--red-600);
     --link-danger-hover-color: var(--red-500);
 
+    --border-radius-none: 0;
+    --border-radius-sm: 2px;
     --border-radius: 4px;
     --border-radius-lg: 8px;
-    --border-radius-sm: 2px;
+    --border-radius-full: 50rem;
     --border-width: 1px;
     --border-style: solid;
     --border-color: hsl(213, 24%, 91%);

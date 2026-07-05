@@ -465,6 +465,22 @@ Search, Order, and Pagination Options
         ;
     }
 
+.. tip::
+
+    The pagination UI of the ``index`` page is rendered with a
+    :ref:`custom Twig component <using-easyadmin-twig-components>` called
+    ``<twig:ea:Pagination>``, which you can also use in your own pages
+    and customize via its props and override blocks:
+
+    .. code-block:: twig
+
+        {# pass an EasyAdmin paginator object (e.g. when overriding backend templates) #}
+        <twig:ea:Pagination paginator="{{ paginator }}"/>
+
+        {# or pass raw values to use it anywhere, even outside EasyAdmin backends;
+           'urlPattern' is required and must contain the '{page}' placeholder #}
+        <twig:ea:Pagination currentPage="42" totalItems="1567" pageSize="25" urlPattern="?page={page}"/>
+
 .. note::
 
     When using `Doctrine filters`_, listings may not include some items because
