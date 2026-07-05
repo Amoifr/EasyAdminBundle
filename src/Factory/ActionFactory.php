@@ -271,6 +271,14 @@ final readonly class ActionFactory
         if ($actionDto->hasConfirmation()) {
             $confirmationMessage = $actionDto->getConfirmationMessage();
 
+            // the DELETE action shows a richer, dedicated confirmation by default: a
+            // specific title and a description ("there is no undo…"). A custom delete
+            // confirmation message (or any other action) keeps the generic behavior.
+            $useDefaultDeleteConfirmation = Action::DELETE === $actionDto->getName() && true === $confirmationMessage;
+            if ($useDefaultDeleteConfirmation) {
+                $confirmationMessage = t('delete_modal.title', [], 'EasyAdminBundle');
+            }
+
             $actionDto->addHtmlAttributes([
                 'data-bs-toggle' => 'modal',
                 'data-bs-target' => '#modal-action-confirmation',
@@ -286,6 +294,11 @@ final readonly class ActionFactory
                         ? $confirmationMessage
                         : t($confirmationMessage, $defaultTranslationParameters, $translationDomain)
                 );
+            }
+
+            // add confirmation description attribute (shown below the title)
+            if ($useDefaultDeleteConfirmation) {
+                $actionDto->setHtmlAttribute('data-action-confirmation-content', t('delete_modal.content', [], 'EasyAdminBundle'));
             }
 
             // add confirmation button label attribute
@@ -327,6 +340,8 @@ final readonly class ActionFactory
             } else {
                 $batchActionAttributes['data-bs-toggle'] = 'modal';
                 $batchActionAttributes['data-bs-target'] = '#modal-batch-action';
+                // so the modal confirmation button can mirror the variant/color of the action that opened it
+                $batchActionAttributes['data-action-variant'] = $actionDto->getVariant()->value;
 
                 // if the confirmation config is not a boolean, it's a string or TranslatableInterface with the custom confirmation message
                 if (true !== $confirmationConfig) {

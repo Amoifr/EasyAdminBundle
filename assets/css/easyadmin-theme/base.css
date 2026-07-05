@@ -816,23 +816,6 @@ a.user-menu-wrapper .user-details:hover {
     cursor: default;
 }
 
-/* Modal for delete action */
-.modal-content {
-    border-color: var(--modal-border-color);
-}
-.modal-body {
-    background: var(--modal-bg);
-}
-.modal-body h4 {
-    font-size: var(--font-size-lg);
-}
-
-.modal-footer {
-    background: var(--modal-footer-bg);
-    border-color: var(--modal-border-color);
-    padding: 8px 10px;
-}
-
 /* Utilities */
 .text-primary {
     color: var(--text-primary-color) !important;

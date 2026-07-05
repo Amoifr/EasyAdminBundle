@@ -9,6 +9,18 @@ import { sanitizeUrl, toggleVisibilityClasses } from './helpers';
 // Provide Bootstrap variable globally to allow custom backend pages to use it
 window.bootstrap = bootstrap;
 
+// maps an action variant to its button CSS class; shared by the action and
+// batch action confirmation modals so their confirm button mirrors the
+// variant/color of the action that opened the modal
+const variantToClass = {
+    default: 'btn-secondary',
+    primary: 'btn-primary',
+    success: 'btn-success',
+    warning: 'btn-warning',
+    danger: 'btn-danger',
+};
+const allVariantClasses = Object.values(variantToClass);
+
 document.addEventListener('DOMContentLoaded', () => {
     window.EasyAdminApp = new App();
 });
@@ -350,7 +362,7 @@ class App {
             });
         });
 
-        const modalTitle = document.querySelector('#batch-action-confirmation-title');
+        const modalTitle = document.querySelector('#modal-batch-action .modal-body-content h4');
         const titleContentWithPlaceholders = modalTitle?.textContent;
 
         document.querySelectorAll('[data-action-batch]').forEach((dataActionBatch) => {
@@ -404,7 +416,14 @@ class App {
                         .replace('%action_name%', actionName)
                         .replace('%num_items%', selectedItems.length.toString());
 
-                    document.querySelector('#modal-batch-action-button').addEventListener('click', submitBatchAction);
+                    // apply to the modal button the same variant as the action that opened the modal
+                    const modalButton = document.querySelector('#modal-batch-action-button');
+                    const variant = actionElement.getAttribute('data-action-variant') || 'danger';
+                    const variantClass = variantToClass[variant] || 'btn-danger';
+                    modalButton.classList.remove(...allVariantClasses);
+                    modalButton.classList.add(variantClass);
+
+                    modalButton.addEventListener('click', submitBatchAction, { once: true });
                 }
             });
         });
@@ -419,17 +438,10 @@ class App {
 
     #createActionConfirmationModals() {
         const modalTitle = document.querySelector('#action-confirmation-title');
+        const modalContent = document.querySelector('#action-confirmation-content');
         const modalButton = document.querySelector('#modal-action-confirmation-button');
         const defaultTitleTemplate = modalTitle?.textContent;
         const defaultButtonLabel = modalButton?.textContent;
-        const variantToClass = {
-            default: 'btn-secondary',
-            primary: 'btn-primary',
-            success: 'btn-success',
-            warning: 'btn-warning',
-            danger: 'btn-danger',
-        };
-        const allVariantClasses = Object.values(variantToClass);
 
         document.querySelectorAll('[data-action-confirmation="true"]').forEach((actionElement) => {
             actionElement.addEventListener('click', (event) => {
@@ -447,6 +459,21 @@ class App {
                     .replace('%action_name%', actionName)
                     .replace('%entity_name%', entityName)
                     .replace('%entity_id%', entityId);
+
+                // optional description below the title (e.g. the DELETE action); hidden when absent
+                const contentMessage = actionElement.getAttribute('data-action-confirmation-content');
+                if (modalContent) {
+                    if (contentMessage) {
+                        modalContent.textContent = contentMessage
+                            .replace('%action_name%', actionName)
+                            .replace('%entity_name%', entityName)
+                            .replace('%entity_id%', entityId);
+                        modalContent.classList.remove('d-none');
+                    } else {
+                        modalContent.textContent = '';
+                        modalContent.classList.add('d-none');
+                    }
+                }
 
                 // use custom button label if provided, otherwise use default
                 const customButtonLabel = actionElement.getAttribute('data-action-confirmation-button');
