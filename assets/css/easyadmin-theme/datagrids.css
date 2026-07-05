@@ -478,7 +478,11 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 #modal-filters .modal-content {
     background: var(--modal-bg);
     border: 1px solid var(--modal-border-color);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-xl);
+    /* the filters layout manages its own spacing, so opt out of the modal
+       component's default content padding/gap and render the sections flush */
+    padding: 0;
+    gap: 0;
 }
 #modal-filters .modal-header {
     background: var(--modal-header-bg);
@@ -492,7 +496,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 #modal-filters .modal-body {
     background: var(--modal-bg);
     border-block-end: 0;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-xl);
     padding: 15px;
 }
 .action-filters-button .icon {
