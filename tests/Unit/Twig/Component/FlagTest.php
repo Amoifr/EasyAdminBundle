@@ -86,4 +86,72 @@ class FlagTest extends TestCase
             '" onload="alert(1)',
         ];
     }
+
+    public function testCountryNamePropOverridesIntlName(): void
+    {
+        $flag = new Flag();
+        $flag->countryCode = 'ES';
+        $flag->countryName = 'Custom Name';
+
+        $this->assertSame('Custom Name', $flag->getCountryName());
+        $this->assertStringContainsString('<title>Custom Name</title>', $flag->getFlagAsSvg());
+    }
+
+    public function testCountryNameIsLocalizedUsingTheDefaultLocale(): void
+    {
+        $previousLocale = \Locale::getDefault();
+
+        try {
+            $flag = new Flag();
+            $flag->countryCode = 'ES';
+
+            \Locale::setDefault('es');
+            $this->assertSame('España', $flag->getCountryName());
+            $this->assertStringContainsString('<title>España</title>', $flag->getFlagAsSvg());
+
+            \Locale::setDefault('uk');
+            $this->assertSame('Іспанія', $flag->getCountryName());
+            $this->assertStringContainsString('<title>Іспанія</title>', $flag->getFlagAsSvg());
+        } finally {
+            \Locale::setDefault($previousLocale);
+        }
+    }
+
+    /**
+     * @dataProvider provideXssPayloads
+     */
+    public function testXssPayloadInCountryNameIsEscapedInSvg(string $payload, string $mustNotAppear): void
+    {
+        $flag = new Flag();
+        $flag->countryCode = 'ES';
+        $flag->countryName = $payload;
+
+        $this->assertStringNotContainsString($mustNotAppear, $flag->getFlagAsSvg());
+    }
+
+    public function testFlagExists(): void
+    {
+        $flag = new Flag();
+        $flag->countryCode = 'ES';
+        $this->assertTrue($flag->flagExists());
+
+        $flag = new Flag();
+        $flag->countryCode = 'XX';
+        $this->assertFalse($flag->flagExists());
+
+        $flag = new Flag();
+        $flag->countryCode = '../../../etc/passwd';
+        $this->assertFalse($flag->flagExists());
+    }
+
+    public function testFallbackSvgIsPubliclyAvailableAndEscaped(): void
+    {
+        $flag = new Flag();
+        $flag->countryCode = '"><script>alert(1)</script>';
+
+        $svg = $flag->getFallbackSvg();
+
+        $this->assertStringContainsString('You are not seeing a country flag here', $svg);
+        $this->assertStringNotContainsString('<script>alert(1)</script>', $svg);
+    }
 }

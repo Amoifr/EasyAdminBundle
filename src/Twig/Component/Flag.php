@@ -9,9 +9,15 @@ class Flag
 {
     public string $countryCode;
     public int $height = 17;
+    public bool $showName = false;
+    public ?string $countryName = null;
 
     public function getCountryName(): string
     {
+        if (null !== $this->countryName) {
+            return $this->countryName;
+        }
+
         try {
             return Countries::getName($this->countryCode);
         } catch (MissingResourceException) {
@@ -19,25 +25,33 @@ class Flag
         }
     }
 
-    public function getFlagAsSvg(): string
+    public function flagExists(): bool
     {
-        if (!Countries::exists($this->countryCode)) {
-            return $this->getFallbackSvg();
-        }
-
-        $flagSvgFilePath = sprintf('%s/../../../assets/icons/flags/%s.svg', __DIR__, $this->countryCode);
-        $content = @file_get_contents($flagSvgFilePath);
-        if (false === $content) {
-            return $this->getFallbackSvg();
-        }
-
-        return str_replace(['__HEIGHT__', '__COUNTRY_NAME__'], [(string) $this->height, $this->getCountryName()], $content);
+        // checking the country code first is essential to prevent path traversal attacks
+        return Countries::exists($this->countryCode) && is_file($this->getFlagFilePath());
     }
 
-    private function getFallbackSvg(): string
+    public function getFlagAsSvg(): string
+    {
+        if (!$this->flagExists()) {
+            return $this->getFallbackSvg();
+        }
+
+        $content = file_get_contents($this->getFlagFilePath());
+        $escapedCountryName = htmlspecialchars($this->getCountryName(), \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
+
+        return str_replace(['__HEIGHT__', '__COUNTRY_NAME__'], [(string) $this->height, $escapedCountryName], $content);
+    }
+
+    public function getFallbackSvg(): string
     {
         $escapedCountryCode = htmlspecialchars($this->countryCode, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
 
         return sprintf('<svg xmlns="http://www.w3.org/2000/svg" class="country-flag" height="%d" viewBox="0 0 25 17"><title>You are not seeing a country flag here because the "%s.svg" file associated to given the "%s" country code does not exist in the assets/icons/flags/ directory of EasyAdmin.</title><rect width="100%%" height="%d" fill="#ff0000"/></svg>', $this->height, $escapedCountryCode, $escapedCountryCode, $this->height);
+    }
+
+    private function getFlagFilePath(): string
+    {
+        return sprintf('%s/../../../assets/icons/flags/%s.svg', __DIR__, $this->countryCode);
     }
 }
