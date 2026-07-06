@@ -65,12 +65,11 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
 
     public function configure(FieldDto $field, EntityDto $entityDto, AdminContext $context): void
     {
-        $propertyName = $field->getProperty();
-        $resolvedProperty = $this->entityRepository->resolveNestedAssociations(null, $entityDto, $propertyName, true);
-        /** @var EntityDto $entityDtoResolved */
-        $entityDtoResolved = $resolvedProperty['entity_dto'];
-        /** @var string $resolvedProperty */
-        $resolvedProperty = $resolvedProperty['property_name'];
+        $rootPropertyName = $field->getProperty();
+        $resolvedProperty = $this->entityRepository->resolveNestedAssociations(null, $entityDto, $rootPropertyName, true);
+        $entityDto = $resolvedProperty['entity_dto'];
+        $propertyName = $resolvedProperty['property_name'];
+        $field->setProperty($propertyName);
 
         if (!$this->isAssociation($entityDto->getClassMetadata(), $propertyName)) {
             throw new \RuntimeException(sprintf('The "%s" field is not a Doctrine association, so it cannot be used as an association field.', $propertyName));
@@ -78,14 +77,14 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
 
         // the target CRUD controller can be NULL; in that case, field value doesn't link to the related entity
         $targetCrudControllerFqcn = $field->getCustomOption(AssociationField::OPTION_EMBEDDED_CRUD_FORM_CONTROLLER)
-            ?? $context->getAdminControllers()->findCrudControllerByEntity($entityDtoResolved->getClassMetadata()->getAssociationTargetClass($resolvedProperty));
+            ?? $context->getAdminControllers()->findCrudControllerByEntity($entityDto->getClassMetadata()->getAssociationTargetClass($propertyName));
 
         if (true === $field->getCustomOption(AssociationField::OPTION_RENDER_AS_EMBEDDED_FORM)) {
             if (false === $entityDto->getClassMetadata()->isSingleValuedAssociation($propertyName)) {
                 throw new \RuntimeException(
                     sprintf(
                         'The "%s" association field of "%s" is a to-many association but it\'s trying to use the "renderAsEmbeddedForm()" option, which is only available for to-one associations. If you want to use a CRUD form to render to-many associations, use a CollectionField instead of the AssociationField.',
-                        $field->getProperty(),
+                        $rootPropertyName,
                         $context->getCrud()?->getControllerFqcn(),
                     )
                 );
@@ -95,7 +94,7 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
                 throw new \RuntimeException(
                     sprintf(
                         'The "%s" association field of "%s" wants to render its contents using an EasyAdmin CRUD form. However, no CRUD form was found related to this field. You can either create a CRUD controller for the entity "%s" or pass the CRUD controller to use as the first argument of the "renderAsEmbeddedForm()" method.',
-                        $field->getProperty(),
+                        $rootPropertyName,
                         $context->getCrud()?->getControllerFqcn(),
                         $entityDto->getClassMetadata()->getAssociationTargetClass($propertyName)
                     )
@@ -177,7 +176,7 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
         if (true === $field->getCustomOption(AssociationField::OPTION_AUTOCOMPLETE)) {
             $targetCrudControllerFqcn = $field->getCustomOption(AssociationField::OPTION_EMBEDDED_CRUD_FORM_CONTROLLER);
             if (null === $targetCrudControllerFqcn) {
-                throw new \RuntimeException(sprintf('The "%s" field cannot be autocompleted because it doesn\'t define the related CRUD controller FQCN with the "setCrudController()" method.', $field->getProperty()));
+                throw new \RuntimeException(sprintf('The "%s" field cannot be autocompleted because it doesn\'t define the related CRUD controller FQCN with the "setCrudController()" method.', $rootPropertyName));
             }
 
             $field->setFormType(CrudAutocompleteType::class);
