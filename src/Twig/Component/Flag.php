@@ -12,6 +12,12 @@ class Flag
     public bool $showName = false;
     public ?string $countryName = null;
 
+    private ?bool $flagExists = null;
+    private ?string $flagFilePath = null;
+
+    /** @var array<string, string> */
+    private static array $svgCache = [];
+
     public function getCountryName(): string
     {
         if (null !== $this->countryName) {
@@ -28,7 +34,7 @@ class Flag
     public function flagExists(): bool
     {
         // checking the country code first is essential to prevent path traversal attacks
-        return Countries::exists($this->countryCode) && is_file($this->getFlagFilePath());
+        return $this->flagExists ??= Countries::exists($this->countryCode) && is_file($this->getFlagFilePath());
     }
 
     public function getFlagAsSvg(): string
@@ -37,7 +43,11 @@ class Flag
             return $this->getFallbackSvg();
         }
 
-        $content = file_get_contents($this->getFlagFilePath());
+        // the same flag can be rendered many times per page (e.g. once per row on
+        // CRUD index pages), so cache the SVG file contents to avoid reading the
+        // same files from disk repeatedly; the raw contents keep the placeholders,
+        // which are replaced per render because they vary per component instance
+        $content = self::$svgCache[$this->countryCode] ??= file_get_contents($this->getFlagFilePath());
         $escapedCountryName = htmlspecialchars($this->getCountryName(), \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
 
         return str_replace(['__HEIGHT__', '__COUNTRY_NAME__'], [(string) $this->height, $escapedCountryName], $content);
@@ -52,6 +62,6 @@ class Flag
 
     private function getFlagFilePath(): string
     {
-        return sprintf('%s/../../../assets/icons/flags/%s.svg', __DIR__, $this->countryCode);
+        return $this->flagFilePath ??= sprintf('%s/../../../assets/icons/flags/%s.svg', __DIR__, $this->countryCode);
     }
 }

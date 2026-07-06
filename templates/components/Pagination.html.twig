@@ -6,20 +6,25 @@
             {% endblock %}
         {%- endif -%}
     </div>
-    {% if this.hasPreviousPage or this.hasNextPage %}
+    {% set has_previous_page = this.hasPreviousPage %}
+    {% set has_next_page = this.hasNextPage %}
+    {% if has_previous_page or has_next_page %}
+        {% set current_page = this.getCurrentPage %}
+        {% set page_link_css_class = this.pageLinkCssClass %}
+        {% set is_rtl = this.isRtl %}
         <nav class="{{ this.navCssClass }}" aria-label="{{ 'paginator.label'|trans({}, this.translationDomain) }}">
             <ul class="{{ this.listCssClass }}">
                 {% if this.showFirstLast %}
-                    <li class="page-item page-item-first {{ not this.hasPreviousPage ? 'disabled' }}">
-                        <a class="{{ this.pageLinkCssClass }}" href="{{ not this.hasPreviousPage ? '#' : this.urlForPage(1) }}"{% if not this.hasPreviousPage %} aria-disabled="true" tabindex="-1"{% endif %}>
+                    <li class="page-item page-item-first {{ not has_previous_page ? 'disabled' }}">
+                        <a class="{{ page_link_css_class }}" href="{{ not has_previous_page ? '#' : this.urlForPage(1) }}"{% if not has_previous_page %} aria-disabled="true" tabindex="-1"{% endif %}>
                             <span class="btn-label">{{ 'paginator.first'|trans({}, this.translationDomain) }}</span>
                         </a>
                     </li>
                 {% endif %}
 
-                <li class="page-item page-item-previous {{ not this.hasPreviousPage ? 'disabled' }}">
-                    <a class="{{ this.pageLinkCssClass }}" href="{{ not this.hasPreviousPage ? '#' : this.urlForPage(this.previousPage) }}"{% if this.hasPreviousPage %} rel="prev"{% else %} aria-disabled="true" tabindex="-1"{% endif %}>
-                        {% if this.isRtl %}
+                <li class="page-item page-item-previous {{ not has_previous_page ? 'disabled' }}">
+                    <a class="{{ page_link_css_class }}" href="{{ not has_previous_page ? '#' : this.urlForPage(this.previousPage) }}"{% if has_previous_page %} rel="prev"{% else %} aria-disabled="true" tabindex="-1"{% endif %}>
+                        {% if is_rtl %}
                             <twig:ea:Icon name="internal:chevron-right" class="mx-1" aria-hidden="true" />
                         {% else %}
                             <twig:ea:Icon name="internal:chevron-left" class="mx-1" aria-hidden="true" />
@@ -31,25 +36,25 @@
 
                 {% if this.showPageNumbers %}
                     {% for page in this.pageRange %}
-                        <li class="page-item {{ page == this.getCurrentPage ? 'active' }} {{ page is null ? 'disabled' }}">
+                        <li class="page-item {{ page == current_page ? 'active' }} {{ page is null ? 'disabled' }}">
                             {% if page is null %}
-                                <span class="{{ this.pageLinkCssClass }}"><span aria-hidden="true">&hellip;</span><span class="visually-hidden">{{ 'paginator.more_pages'|trans({}, this.translationDomain) }}</span></span>
+                                <span class="{{ page_link_css_class }}"><span aria-hidden="true">&hellip;</span><span class="visually-hidden">{{ 'paginator.more_pages'|trans({}, this.translationDomain) }}</span></span>
                             {% else %}
-                                <a class="{{ this.pageLinkCssClass }}" href="{{ this.urlForPage(page) }}"{% if page == this.getCurrentPage %} aria-current="page"{% endif %}>{{ page }}</a>
+                                <a class="{{ page_link_css_class }}" href="{{ this.urlForPage(page) }}"{% if page == current_page %} aria-current="page"{% endif %}>{{ page }}</a>
                             {% endif %}
                         </li>
                     {% endfor %}
                 {% else %}
                     <li class="page-item active">
-                        <a class="{{ this.pageLinkCssClass }}" href="{{ this.urlForPage(this.getCurrentPage) }}" aria-current="page">{{ this.getCurrentPage }}</a>
+                        <a class="{{ page_link_css_class }}" href="{{ this.urlForPage(current_page) }}" aria-current="page">{{ current_page }}</a>
                     </li>
                 {% endif %}
 
-                <li class="page-item page-item-next {{ not this.hasNextPage ? 'disabled' }}">
-                    <a class="{{ this.pageLinkCssClass }}" href="{{ not this.hasNextPage ? '#' : this.urlForPage(this.nextPage) }}"{% if this.hasNextPage %} rel="next"{% else %} aria-disabled="true" tabindex="-1"{% endif %}>
+                <li class="page-item page-item-next {{ not has_next_page ? 'disabled' }}">
+                    <a class="{{ page_link_css_class }}" href="{{ not has_next_page ? '#' : this.urlForPage(this.nextPage) }}"{% if has_next_page %} rel="next"{% else %} aria-disabled="true" tabindex="-1"{% endif %}>
                         <span class="{{ this.showPreviousNextLabels ? 'btn-label' : 'visually-hidden' }}">{% block next_label %}{{ 'paginator.next'|trans({}, this.translationDomain) }}{% endblock %}</span>
 
-                        {% if this.isRtl %}
+                        {% if is_rtl %}
                             <twig:ea:Icon name="internal:chevron-left" class="mx-1" aria-hidden="true" />
                         {% else %}
                             <twig:ea:Icon name="internal:chevron-right" class="mx-1" aria-hidden="true" />
@@ -58,8 +63,8 @@
                 </li>
 
                 {% if this.showFirstLast %}
-                    <li class="page-item page-item-last {{ not this.hasNextPage ? 'disabled' }}">
-                        <a class="{{ this.pageLinkCssClass }}" href="{{ not this.hasNextPage ? '#' : this.urlForPage(this.getLastPage) }}"{% if not this.hasNextPage %} aria-disabled="true" tabindex="-1"{% endif %}>
+                    <li class="page-item page-item-last {{ not has_next_page ? 'disabled' }}">
+                        <a class="{{ page_link_css_class }}" href="{{ not has_next_page ? '#' : this.urlForPage(this.getLastPage) }}"{% if not has_next_page %} aria-disabled="true" tabindex="-1"{% endif %}>
                             <span class="btn-label">{{ 'paginator.last'|trans({}, this.translationDomain) }}</span>
                         </a>
                     </li>
