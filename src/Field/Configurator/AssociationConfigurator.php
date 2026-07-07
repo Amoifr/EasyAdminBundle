@@ -109,6 +109,8 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
                 $targetCrudControllerFqcn,
             );
 
+            $field->setProperty($rootPropertyName);
+
             return;
         }
 
@@ -221,6 +223,8 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
                 return $queryBuilder;
             });
         }
+
+        $field->setProperty($rootPropertyName);
     }
 
     /**

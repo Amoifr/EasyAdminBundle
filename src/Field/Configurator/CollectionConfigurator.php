@@ -48,6 +48,11 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
 
     public function configure(FieldDto $field, EntityDto $entityDto, AdminContext $context): void
     {
+        $rootPropertyName = $field->getProperty();
+        $resolvedProperty = $this->entityRepository->resolveNestedAssociations(null, $entityDto, $field->getProperty(), true);
+        $entityDto = $resolvedProperty['entity_dto'];
+        $field->setProperty($resolvedProperty['property_name']);
+
         if (null !== $entryTypeFqcn = $field->getCustomOptions()->get(CollectionField::OPTION_ENTRY_TYPE)) {
             $field->setFormTypeOption('entry_type', $entryTypeFqcn);
         }
@@ -83,7 +88,9 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
 
         $field->setFormattedValue($this->formatCollection($field, $context));
 
-        $this->configureEntryType($field, $entityDto, $context);
+        $this->configureEntryType($field, $entityDto, $context, $rootPropertyName);
+
+        $field->setProperty($rootPropertyName);
     }
 
     private function formatCollection(FieldDto $field, AdminContext $context): int|string
@@ -132,7 +139,7 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
         return 0;
     }
 
-    private function configureEntryType(FieldDto $fieldDto, EntityDto $entityDto, AdminContext $context): void
+    private function configureEntryType(FieldDto $fieldDto, EntityDto $entityDto, AdminContext $context, string $rootPropertyName): void
     {
         // entry_type and prototype options are only consumed when the field is
         // rendered as a form (NEW/EDIT). On INDEX/DETAIL the field is rendered
@@ -143,11 +150,6 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
         if (!\in_array($context->getCrud()->getCurrentPage(), [Crud::PAGE_EDIT, Crud::PAGE_NEW], true)) {
             return;
         }
-
-        $rootPropertyName = $fieldDto->getProperty();
-        $resolvedProperty = $this->entityRepository->resolveNestedAssociations(null, $entityDto, $fieldDto->getProperty(), true);
-        $entityDto = $resolvedProperty['entity_dto'];
-        $fieldDto->setProperty($resolvedProperty['property_name']);
 
         if (true === $fieldDto->getCustomOption(CollectionField::OPTION_ENTRY_USES_CRUD_FORM)) {
             if (!$entityDto->getClassMetadata()->hasAssociation($fieldDto->getProperty())) {
