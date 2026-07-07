@@ -1,6 +1,6 @@
 <?php
 
-namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Router;
+namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Orm;
 
 use EasyCorp\Bundle\EasyAdminBundle\Orm\Escaper;
 use PHPUnit\Framework\TestCase;

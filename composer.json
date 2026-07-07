@@ -74,7 +74,10 @@
     "autoload": {
         "psr-4": {
             "EasyCorp\\Bundle\\EasyAdminBundle\\": "src/"
-        }
+        },
+        "exclude-from-classmap": [
+            "/tests/Functional/Apps/*/config/reference.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
