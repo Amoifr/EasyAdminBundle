@@ -2,6 +2,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field;
 
+use EasyCorp\Bundle\EasyAdminBundle\Dto\FormTabBadgeDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Ulid;
@@ -36,5 +37,47 @@ class FormFieldTest extends TestCase
         yield [FormField::addColumn()->setPropertySuffix('foo'), 'ea_form_column_foo', 'foo'];
         yield [FormField::addRow()->setPropertySuffix('foo'), 'ea_form_row_foo', 'foo'];
         yield [FormField::addTab()->setPropertySuffix('foo'), 'ea_form_tab_foo', 'foo'];
+    }
+
+    public function testSetBadgeStoresBadgeDto(): void
+    {
+        $dto = FormField::addTab('Bars')->setBadge(7, 'info', ['data-foo' => 'bar'])->getAsDto();
+
+        $badge = $dto->getCustomOption(FormField::OPTION_TAB_BADGE);
+        $this->assertInstanceOf(FormTabBadgeDto::class, $badge);
+        $this->assertSame(7, $badge->getContent());
+        $this->assertSame('badge-info', $badge->getCssClass());
+        $this->assertSame('', $badge->getHtmlStyle());
+        $this->assertSame(['data-foo' => 'bar'], $badge->getHtmlAttributes());
+    }
+
+    public function testSetBadgeWithDefaultStyle(): void
+    {
+        $badge = FormField::addTab('Bars')->setBadge('New')->getAsDto()->getCustomOption(FormField::OPTION_TAB_BADGE);
+
+        $this->assertSame('badge-secondary', $badge->getCssClass());
+    }
+
+    public function testSetBadgeWithCustomStyle(): void
+    {
+        $badge = FormField::addTab('Bars')->setBadge(3, 'color: red;')->getAsDto()->getCustomOption(FormField::OPTION_TAB_BADGE);
+
+        $this->assertSame('', $badge->getCssClass());
+        $this->assertSame('color: red;', $badge->getHtmlStyle());
+    }
+
+    public function testSetBadgeKeepsCallableUnresolved(): void
+    {
+        $callable = static fn ($entity) => 42;
+        $badge = FormField::addTab('Bars')->setBadge($callable)->getAsDto()->getCustomOption(FormField::OPTION_TAB_BADGE);
+
+        $this->assertSame($callable, $badge->getContent());
+    }
+
+    public function testSetBadgeThrowsOnNonTabFields(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        FormField::addFieldset('Foo')->setBadge(7);
     }
 }

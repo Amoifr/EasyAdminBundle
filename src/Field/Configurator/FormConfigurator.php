@@ -6,6 +6,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\FormTabBadgeDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Layout\EaFormRowType;
 
@@ -26,6 +27,19 @@ final class FormConfigurator implements FieldConfiguratorInterface
         // make the label FALSE to not display it
         if (null === $field->getLabel()) {
             $field->setLabel(false);
+        }
+
+        // if a form tab defines a badge whose content is a callable, resolve it now that the
+        // current entity instance is available (e.g. fn (Foo $foo) => $foo->getBars()->count())
+        if ($field->isFormTab()) {
+            $badge = $field->getCustomOption(FormField::OPTION_TAB_BADGE);
+            if ($badge instanceof FormTabBadgeDto && \is_callable($content = $badge->getContent())) {
+                $field->setCustomOption(FormField::OPTION_TAB_BADGE, new FormTabBadgeDto(
+                    $content($entityDto->getInstance()),
+                    $badge->getStyle(),
+                    $badge->getHtmlAttributes(),
+                ));
+            }
         }
 
         if (EaFormRowType::class === $field->getFormType()) {

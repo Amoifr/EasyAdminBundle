@@ -37,13 +37,14 @@ class FormLayoutTabsCrudController extends AbstractCrudController
         yield TextField::new('name');
         yield TextareaField::new('description');
 
-        // tab 2: Contact Information
-        yield FormField::addTab('Contact', 'fa fa-phone');
+        // tab 2: Contact Information (static badge)
+        yield FormField::addTab('Contact', 'fa fa-phone')->setBadge(42, 'info');
         yield EmailField::new('email');
         yield TelephoneField::new('phone');
 
-        // tab 3: Address
-        yield FormField::addTab('Address', 'fa fa-map-marker');
+        // tab 3: Address (dynamic badge computed from the entity instance)
+        yield FormField::addTab('Address', 'fa fa-map-marker')
+            ->setBadge(static fn (FormTestEntity $entity): int => \strlen((string) $entity->getName()), 'warning');
         yield TextField::new('street');
         yield TextField::new('city');
         yield TextField::new('postalCode');

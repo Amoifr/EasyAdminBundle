@@ -110,6 +110,44 @@ class TabsTest extends AbstractCrudTestCase
         static::assertCount(1, $fourthPane->filter('[name="FormTestEntity[priority]"]'), 'Fourth tab should contain priority field');
     }
 
+    public function testTabsRenderStaticAndDynamicBadges(): void
+    {
+        $crawler = $this->client->request('GET', $this->generateNewFormUrl());
+
+        $tabItems = $crawler->filter('.nav-tabs .nav-item');
+
+        // tab 2 (Contact) has a static badge with value 42 and the 'info' style
+        $contactBadge = $tabItems->eq(1)->filter('.tab-nav-item-badge');
+        static::assertCount(1, $contactBadge, 'Contact tab should render a badge');
+        static::assertStringContainsString('badge-info', $contactBadge->attr('class'));
+        static::assertSame('42', trim($contactBadge->text()));
+
+        // tab 3 (Address) has a dynamic badge computed from the entity; on the new form the
+        // entity has no name, so strlen('') === 0 (the value 0 is still displayed)
+        $addressBadge = $tabItems->eq(2)->filter('.tab-nav-item-badge');
+        static::assertCount(1, $addressBadge, 'Address tab should render a dynamic badge');
+        static::assertStringContainsString('badge-warning', $addressBadge->attr('class'));
+        static::assertSame('0', trim($addressBadge->text()));
+
+        // tabs without a badge don't render one
+        static::assertCount(0, $tabItems->eq(0)->filter('.tab-nav-item-badge'), 'Basic Info tab should not render a badge');
+    }
+
+    public function testDynamicBadgeReflectsEntityInEditForm(): void
+    {
+        $entity = new FormTestEntity();
+        $entity->setName('Edit Test'); // 9 characters
+        $entity->setEmail('edit@test.com');
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        $crawler = $this->client->request('GET', $this->generateEditFormUrl($entity->getId()));
+
+        $addressBadge = $crawler->filter('.nav-tabs .nav-item')->eq(2)->filter('.tab-nav-item-badge');
+        static::assertCount(1, $addressBadge);
+        static::assertSame('9', trim($addressBadge->text()), 'Dynamic badge should reflect the edited entity');
+    }
+
     public function testTabNavigationHasCorrectDataAttributes(): void
     {
         $crawler = $this->client->request('GET', $this->generateNewFormUrl());

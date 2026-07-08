@@ -5,6 +5,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Factory;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\FormTabBadgeDto;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\FormLayoutFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
@@ -318,6 +319,38 @@ class FormLayoutFactoryTest extends TestCase
 
         $this->assertNotNull($tabField, 'A tab field should exist in the layout');
         $this->assertSame($expectedTabId, $tabField->getCustomOption(FormField::OPTION_TAB_ID));
+    }
+
+    public function testTabBadgeSurvivesLayoutAndReachesTabList(): void
+    {
+        $fields = new FieldCollection([
+            FormField::addTab('My Tab')->setBadge(7, 'info'),
+            TextField::new('some_field'),
+        ]);
+
+        $formLayoutFactory = new FormLayoutFactory(new IdentityTranslator());
+        $formLayoutFactory->createLayout($fields, Crud::PAGE_EDIT);
+
+        // the badge is still present on the tab field after linearization
+        $tabField = null;
+        $tabListField = null;
+        foreach ($fields as $fieldDto) {
+            if ($fieldDto->isFormTab()) {
+                $tabField = $fieldDto;
+            } elseif (null !== $fieldDto->getCustomOption('tabs')) {
+                $tabListField = $fieldDto;
+            }
+        }
+
+        $this->assertNotNull($tabField);
+        $this->assertInstanceOf(FormTabBadgeDto::class, $tabField->getCustomOption(FormField::OPTION_TAB_BADGE));
+
+        // the same tab DTO (with its badge) is collected into the synthetic tab-list field
+        $this->assertNotNull($tabListField, 'A tab-list field should exist in the layout');
+        $tabs = $tabListField->getCustomOption('tabs');
+        $this->assertCount(1, $tabs);
+        $collectedTab = reset($tabs);
+        $this->assertSame(7, $collectedTab->getCustomOption(FormField::OPTION_TAB_BADGE)->getContent());
     }
 
     public function provideTabLabels(): \Generator
