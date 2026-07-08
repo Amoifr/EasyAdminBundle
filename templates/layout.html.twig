@@ -300,6 +300,18 @@
                                                     {% endfor %}
                                                 {% endblock %}
 
+                                                {% block search_form_query_parameters %}
+                                                    {# browsers drop the query string of a GET form's action URL and only
+                                                       submit form fields, so custom query parameters (e.g. a menu-driven
+                                                       list context) are re-added here as hidden fields to survive search
+                                                       submissions. 'query' is provided by the search input, 'page' is reset
+                                                       to 1 by the form action, and 'filters' are already re-applied above
+                                                       as hidden fields. #}
+                                                    {% for paramName, paramValue in app.request.query.all|filter((value, key) => key not in ['query', 'page', 'filters'])|ea_flatten_array %}
+                                                        <input type="hidden" name="{{ paramName }}" value="{{ paramValue }}">
+                                                    {% endfor %}
+                                                {% endblock %}
+
                                                 <div class="form-group">
                                                     <div class="form-widget">
                                                         <twig:ea:Icon name="internal:search" class="content-search-icon" />
