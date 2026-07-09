@@ -14,9 +14,14 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
  * Don't use this class directly; use @AdminContext class instead.
  *
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
+ *
+ * @template TEntity of object
  */
 final class CrudContext
 {
+    /**
+     * @param EntityDto<TEntity>|null $entityDto
+     */
     public function __construct(
         private readonly ?CrudDto $crudDto,
         private readonly ?EntityDto $entityDto,
@@ -30,6 +35,9 @@ final class CrudContext
         return $this->crudDto;
     }
 
+    /**
+     * @return EntityDto<TEntity>|null
+     */
     public function getEntity(): ?EntityDto
     {
         return $this->entityDto;
@@ -47,6 +55,12 @@ final class CrudContext
 
     /**
      * Creates a CrudContext instance suitable for testing.
+     *
+     * @template T of object = object
+     *
+     * @param EntityDto<T>|null $entityDto
+     *
+     * @return self<T>
      */
     public static function forTesting(
         ?CrudDto $crudDto = null,
