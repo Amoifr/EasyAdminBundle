@@ -200,7 +200,9 @@ class FileUploadType extends AbstractType implements DataMapperInterface
 
         $allowAdd = static fn (Options $options) => $options['multiple'];
 
-        $dataClass = static fn (Options $options) => $options['multiple'] ? null : File::class;
+        // null (no class check) for multiple files (data is an array) and for
+        // Flysystem storage (data is a FlysystemFile, which is not a File)
+        $dataClass = static fn (Options $options) => $options['multiple'] || null !== $options['flysystem_storage'] ? null : File::class;
 
         $emptyData = static fn (Options $options) => $options['multiple'] ? [] : null;
 
