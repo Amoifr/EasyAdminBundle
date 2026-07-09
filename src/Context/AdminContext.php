@@ -35,6 +35,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 final class AdminContext implements AdminContextInterface
 {
+    /**
+     * @param CrudContext<TEntity> $crudContext
+     */
     public function __construct(
         private readonly RequestContext $requestContext,
         private readonly CrudContext $crudContext,
@@ -63,6 +66,9 @@ final class AdminContext implements AdminContextInterface
         return $this->crudContext->getCrud();
     }
 
+    /**
+     * @return EntityDto<TEntity>
+     */
     public function getEntity(): EntityDto
     {
         // The interface requires non-null return, but CrudContext may return null
@@ -161,6 +167,12 @@ final class AdminContext implements AdminContextInterface
     /**
      * Returns a new AdminContext with a different EntityDto.
      * Useful for nested CRUD operations (e.g., CollectionField).
+     *
+     * @template TNewEntity of object
+     *
+     * @param EntityDto<TNewEntity> $entityDto
+     *
+     * @return self<TNewEntity>
      */
     public function withEntity(EntityDto $entityDto): self
     {
@@ -183,10 +195,12 @@ final class AdminContext implements AdminContextInterface
      * This method provides sensible defaults for all sub-contexts, making it easy
      * to create AdminContext instances in tests without complex setup.
      *
-     * @param RequestContext|null   $requestContext   Custom request context (defaults to empty request, no user)
-     * @param CrudContext|null      $crudContext      Custom CRUD context (defaults to empty CrudDto)
-     * @param DashboardContext|null $dashboardContext Custom dashboard context (defaults to empty dashboard)
-     * @param I18nContext|null      $i18nContext      Custom i18n context (defaults to 'en' locale)
+     * @param RequestContext|null      $requestContext   Custom request context (defaults to empty request, no user)
+     * @param CrudContext<object>|null $crudContext      Custom CRUD context (defaults to empty CrudDto)
+     * @param DashboardContext|null    $dashboardContext Custom dashboard context (defaults to empty dashboard)
+     * @param I18nContext|null         $i18nContext      Custom i18n context (defaults to 'en' locale)
+     *
+     * @return self<object>
      */
     public static function forTesting(
         ?RequestContext $requestContext = null,
