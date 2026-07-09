@@ -1,9 +1,17 @@
 /* Buttons
 /* ------------------------------------------------------------------------- */
 .btn {
-    --button-bg: transparent;
-    --button-border-color: transparent;
-    --button-color: var(--text-color);
+    /* Bridge to Bootstrap's button variables so native BS variant classes that EasyAdmin does
+       not restyle (.btn-outline-*, .btn-light, .btn-dark, …) still render like Bootstrap. Each
+       falls back to EasyAdmin's neutral default, and EA's own variant rules (.btn-primary, …) set
+       --button-* directly later in this file, so they always win over the bridge. */
+    --button-bg: var(--bs-btn-bg, transparent);
+    --button-border-color: var(--bs-btn-border-color, transparent);
+    --button-color: var(--bs-btn-color, var(--text-color));
+    --button-hover-bg: var(--bs-btn-hover-bg, var(--button-bg));
+    --button-hover-color: var(--bs-btn-hover-color, var(--button-color));
+    --button-hover-border-color: var(--bs-btn-hover-border-color, var(--button-border-color));
+    --button-active-bg: var(--bs-btn-active-bg, var(--button-hover-bg));
     --button-box-shadow: none;
 
     align-items: center;
@@ -19,7 +27,7 @@
     font-family: inherit;
     font-size: var(--button-font-size, .875rem);
     font-weight: var(--button-font-weight, 500);
-    gap: var(--button-icon-gap, .5rem);
+    gap: var(--button-icon-gap, .375rem);
     min-block-size: var(--button-height, 2rem);
     justify-content: space-between;
     line-height: var(--button-line-height);
@@ -29,28 +37,41 @@
     text-align: center;
     text-decoration: none;
     transition: var(--ea-transition-duration) var(--ea-transition-timing);
-    transition-property: border-color, color, box-shadow, opacity, fill;
+    transition-property: border-color, color, box-shadow, opacity, fill, translate;
     user-select: none;
     white-space: nowrap;
 }
 
-/* Button hover state */
+/* Button hover and keyboard-focus states. The background is pinned to the resting value because
+   Bootstrap's own .btn:hover rule (higher specificity than our base .btn) would otherwise paint
+   Bootstrap's --bs-btn-hover-bg under our state layer, and it flashes through while the layer
+   fades in (very visible on .btn-outline-warning/info: Bootstrap yellow/cyan under EasyAdmin
+   colors). The hover background itself is painted by the ::before state layer below. */
 .btn:not(:disabled):not(.disabled):hover,
-.btn:not(:disabled):not(.disabled):focus,
 .btn:not(:disabled):not(.disabled):focus-visible {
+    background: var(--button-bg);
     border-color: var(--button-hover-border-color, var(--button-border-color));
     color: var(--button-hover-color, var(--button-color));
     text-decoration: none;
 }
 
-/* Button active/focus states */
+/* Button active (pressed) state (background pinned for the same reason as in the hover rule) */
 .btn:not(:disabled):not(.disabled):active {
+    background: var(--button-bg);
     border-color: var(--button-active-border-color, var(--button-border-color));
     box-shadow: var(--button-active-box-shadow, var(--button-box-shadow));
     color: var(--button-active-color, var(--button-color));
     outline: none;
 }
-.btn:not(:disabled):not(.disabled):focus:not(:active),
+
+/* subtle press feedback (like shadcn): the button shifts down 1px while pressed;
+   dropdown triggers are excluded so the menu being opened doesn't jump */
+.btn:not(:disabled):not(.disabled):not([aria-haspopup]):active {
+    translate: 0 1px;
+}
+
+/* focus ring only for keyboard focus (:focus-visible); clicking with the mouse focuses the
+   button too (:focus) but must not show the ring */
 .btn:not(:disabled):not(.disabled):focus-visible:not(:active) {
     box-shadow: none;
     outline: 2px solid var(--button-focus-outline-color);
@@ -66,7 +87,11 @@
 .btn:not(.btn-close)::before {
     content: "";
     position: absolute;
-    inset: 0;
+    /* extend under the border so the layer's rounded corners (border-radius: inherit = the OUTER
+       radius) match the button outline exactly; with inset: 0 the layer only covers the padding
+       box, whose corner curve is smaller (outer radius minus border width), leaving dirty corner
+       artifacts when the hover fill is subtle */
+    inset: calc(-1 * var(--button-border-width, .0625rem));
     z-index: -1;
     border-radius: inherit;
     background: var(--button-hover-bg, var(--button-bg));
@@ -75,7 +100,6 @@
     pointer-events: none;
 }
 .btn:not(.btn-close):not(.is-loading):not(:disabled):not(.disabled):hover::before,
-.btn:not(.btn-close):not(.is-loading):not(:disabled):not(.disabled):focus::before,
 .btn:not(.btn-close):not(.is-loading):not(:disabled):not(.disabled):focus-visible::before {
     opacity: 1;
 }
@@ -90,7 +114,6 @@
     transition-property: background-color, border-color, color, box-shadow, opacity, fill;
 }
 .btn-close:not(:disabled):not(.disabled):hover,
-.btn-close:not(:disabled):not(.disabled):focus,
 .btn-close:not(:disabled):not(.disabled):focus-visible {
     background: var(--button-hover-bg, var(--button-bg));
 }
@@ -183,6 +206,166 @@
     --button-active-border-color: var(--button-danger-active-border-color);
 }
 
+.btn-info,
+.btn-info.btn.disabled,
+.btn-info.btn:disabled {
+    --button-box-shadow: var(--button-info-box-shadow);
+    --button-bg: var(--button-info-bg);
+    --button-color: var(--button-info-color);
+    --button-icon-color: var(--button-info-icon-color);
+    --button-border-color: var(--button-info-border-color);
+    --button-hover-bg: var(--button-info-hover-bg);
+    --button-hover-color: var(--button-info-hover-color);
+    --button-hover-border-color: var(--button-info-hover-border-color);
+    --button-active-box-shadow: var(--button-info-active-box-shadow);
+    --button-active-color: var(--button-info-active-color);
+    --button-active-bg: var(--button-info-active-bg);
+    --button-active-border-color: var(--button-info-active-border-color);
+}
+
+/* Outline variants: transparent background with the variant accent as text and border color.
+   Defined explicitly (instead of delegating to Bootstrap via the --bs-btn-* bridge above) so
+   they use the EasyAdmin palette; e.g. .btn-outline-primary is indigo like .btn-primary, not
+   Bootstrap blue. On hover/active they reuse the --button-X-hover/active-* tokens, so an
+   outline button fills exactly like its solid counterpart (and adapts to the dark scheme).
+   .btn-outline-secondary deviates from this pattern; see the comments in its rule. */
+.btn-outline-primary,
+.btn-outline-primary.btn.disabled,
+.btn-outline-primary.btn:disabled {
+    --button-box-shadow: none;
+    --button-bg: transparent;
+    --button-color: var(--button-outline-primary-color);
+    --button-icon-color: inherit;
+    --button-border-color: var(--button-outline-primary-color);
+    --button-hover-bg: var(--button-primary-hover-bg);
+    --button-hover-color: var(--button-primary-hover-color);
+    --button-hover-border-color: var(--button-primary-hover-border-color);
+    --button-active-box-shadow: var(--button-primary-active-box-shadow);
+    --button-active-bg: var(--button-primary-active-bg);
+    --button-active-color: var(--button-primary-active-color);
+    --button-active-border-color: var(--button-primary-active-border-color);
+}
+
+.btn-outline-secondary,
+.btn-outline-secondary.btn.disabled,
+.btn-outline-secondary.btn:disabled {
+    --button-box-shadow: none;
+    --button-bg: transparent;
+    --button-color: var(--button-secondary-color);
+    --button-icon-color: var(--button-secondary-icon-color);
+    /* soft border at rest; on hover/active the border strengthens to the text color */
+    --button-border-color: var(--button-secondary-border-color);
+    /* the secondary HOVER tokens are nearly white and imperceptible over a transparent resting
+       background, so this variant hovers straight to the secondary ACTIVE tokens instead */
+    --button-hover-bg: var(--button-secondary-active-bg);
+    --button-hover-color: var(--button-secondary-active-color);
+    --button-hover-border-color: var(--button-secondary-color);
+    --button-active-box-shadow: var(--button-secondary-active-box-shadow);
+    --button-active-bg: var(--button-secondary-active-bg);
+    --button-active-color: var(--button-secondary-active-color);
+    --button-active-border-color: var(--button-secondary-color);
+}
+
+.btn-outline-success,
+.btn-outline-success.btn.disabled,
+.btn-outline-success.btn:disabled {
+    --button-box-shadow: none;
+    --button-bg: transparent;
+    --button-color: var(--button-success-color);
+    --button-icon-color: inherit;
+    --button-border-color: var(--button-success-color);
+    --button-hover-bg: var(--button-success-hover-bg);
+    --button-hover-color: var(--button-success-hover-color);
+    --button-hover-border-color: var(--button-success-hover-border-color);
+    --button-active-box-shadow: var(--button-success-active-box-shadow);
+    --button-active-bg: var(--button-success-active-bg);
+    --button-active-color: var(--button-success-active-color);
+    --button-active-border-color: var(--button-success-active-border-color);
+}
+
+.btn-outline-warning,
+.btn-outline-warning.btn.disabled,
+.btn-outline-warning.btn:disabled {
+    --button-box-shadow: none;
+    --button-bg: transparent;
+    --button-color: var(--button-warning-color);
+    --button-icon-color: inherit;
+    --button-border-color: var(--button-warning-color);
+    --button-hover-bg: var(--button-warning-hover-bg);
+    --button-hover-color: var(--button-warning-hover-color);
+    --button-hover-border-color: var(--button-warning-hover-border-color);
+    --button-active-box-shadow: var(--button-warning-active-box-shadow);
+    --button-active-bg: var(--button-warning-active-bg);
+    --button-active-color: var(--button-warning-active-color);
+    --button-active-border-color: var(--button-warning-active-border-color);
+}
+
+.btn-outline-danger,
+.btn-outline-danger.btn.disabled,
+.btn-outline-danger.btn:disabled {
+    --button-box-shadow: none;
+    --button-bg: transparent;
+    --button-color: var(--button-danger-color);
+    --button-icon-color: inherit;
+    --button-border-color: var(--button-danger-color);
+    --button-hover-bg: var(--button-danger-hover-bg);
+    --button-hover-color: var(--button-danger-hover-color);
+    --button-hover-border-color: var(--button-danger-hover-border-color);
+    --button-active-box-shadow: var(--button-danger-active-box-shadow);
+    --button-active-bg: var(--button-danger-active-bg);
+    --button-active-color: var(--button-danger-active-color);
+    --button-active-border-color: var(--button-danger-active-border-color);
+}
+
+.btn-outline-info,
+.btn-outline-info.btn.disabled,
+.btn-outline-info.btn:disabled {
+    --button-box-shadow: none;
+    --button-bg: transparent;
+    --button-color: var(--button-info-color);
+    --button-icon-color: inherit;
+    --button-border-color: var(--button-info-color);
+    --button-hover-bg: var(--button-info-hover-bg);
+    --button-hover-color: var(--button-info-hover-color);
+    --button-hover-border-color: var(--button-info-hover-border-color);
+    --button-active-box-shadow: var(--button-info-active-box-shadow);
+    --button-active-bg: var(--button-info-active-bg);
+    --button-active-color: var(--button-info-active-color);
+    --button-active-border-color: var(--button-info-active-border-color);
+}
+
+/* Link-style buttons (e.g. the "add new item" / "delete item" buttons of collection fields).
+   Defined explicitly so they use EasyAdmin's link colors instead of the Bootstrap link colors
+   that would otherwise leak in through the --bs-btn-* bridge above. */
+.btn-link,
+.btn-link.btn.disabled,
+.btn-link.btn:disabled {
+    --button-box-shadow: none;
+    --button-bg: transparent;
+    --button-color: var(--link-color);
+    --button-icon-color: inherit;
+    --button-border-color: transparent;
+    --button-hover-bg: transparent;
+    --button-hover-color: var(--link-hover-color);
+    --button-hover-border-color: transparent;
+    --button-active-box-shadow: none;
+    --button-active-color: var(--link-hover-color);
+    --button-active-bg: transparent;
+    --button-active-border-color: transparent;
+}
+.btn-link:not(:disabled):not(.disabled):hover,
+.btn-link:not(:disabled):not(.disabled):focus-visible {
+    text-decoration: underline;
+}
+
+.btn-link.btn-link-danger,
+.btn-link.btn-link-danger.btn.disabled,
+.btn-link.btn-link-danger.btn:disabled {
+    --button-color: var(--link-danger-color);
+    --button-hover-color: var(--link-danger-hover-color);
+    --button-active-color: var(--link-danger-hover-color);
+}
+
 .btn-invisible,
 .btn-invisible.btn.disabled,
 .btn-invisible.btn:disabled {
@@ -236,8 +419,7 @@
     --button-font-size: var(--button-font-size-lg);
     --button-padding-y: var(--button-padding-y-lg);
     --button-padding-x: var(--button-padding-x-lg);
-
-    min-block-size: 2.5rem;
+    --button-height: 2.25rem;
 }
 
 .btn-block {
@@ -249,9 +431,9 @@
 /* Disabled state */
 .btn.disabled,
 .btn:disabled {
-    background: var(--button-active-bg, var(--button-bg));
-    border-color: var(--button-active-border-color, var(--button-border-color));
-    color: var(--button-active-color, var(--button-color));
+    background: var(--button-bg);
+    border-color: var(--button-border-color);
+    color: var(--button-color);
     box-shadow: none;
     cursor: not-allowed;
     opacity: var(--button-disabled-opacity);
@@ -298,12 +480,14 @@ fieldset:disabled a.btn {
     display: none;
 }
 
-.btn-sm:not(:has(.btn-label)) {
-    padding: var(--button-padding-y-sm);
-}
-
-.btn-lg:not(:has(.btn-label)) {
-    padding: var(--button-padding-y-lg);
+/* Icon-only buttons render as a true square: no padding and a minimum width equal to the button
+   height (28/32/36px for sm/md/lg, like shadcn's icon sizes). Scoped to buttons that actually
+   contain an EA icon so that native Bootstrap buttons (no .btn-icon and no .btn-label) keep
+   their horizontal padding. */
+.btn:has(.btn-icon):not(:has(.btn-label)) {
+    justify-content: center;
+    min-inline-size: var(--button-height, 2rem);
+    padding: 0;
 }
 
 /* Button groups */
@@ -341,7 +525,9 @@ fieldset:disabled a.btn {
 
 .btn.is-loading::after {
     animation: button-spin 500ms linear infinite;
-    border: 2px solid currentColor;
+    /* the spinner can't use currentColor because .is-loading sets 'color: transparent' to hide
+       the label; the --button-color token still holds the variant's real text color */
+    border: 2px solid var(--button-color, currentColor);
     border-radius: 50%;
     border-inline-end-color: transparent;
     border-block-start-color: transparent;
@@ -380,7 +566,9 @@ fieldset:disabled a.btn {
     margin-inline-end: 0;
 }
 
-/* Focus visible for accessibility */
+/* fallback focus ring for buttons excluded from the main :focus-visible rule at the top of this
+   file (e.g. disabled anchor buttons, which remain focusable); on regular buttons that rule wins
+   because it has a higher specificity */
 .btn:focus-visible {
     outline: 2px solid var(--link-color);
     outline-offset: 2px;

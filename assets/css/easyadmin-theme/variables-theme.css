@@ -273,17 +273,21 @@
     --alert-dark-border-color: var(--gray-500);
 
     --button-padding-y-sm: 0px;
-    --button-padding-x-sm: 8px;
+    --button-padding-x-sm: 10px;
     --button-padding-y-md: 0;
     --button-padding-x-md: 12px;
-    --button-padding-y-lg: 8px;
+    /* vertical padding is 0 for every size: the height comes from --button-height, so large
+       buttons are taller but not inflated by padding */
+    --button-padding-y-lg: 0;
     --button-padding-x-lg: 16px;
     --button-font-size-sm: 12px;
     --button-font-size-md: 14px;
-    --button-font-size-lg: 16px;
+    /* large buttons are taller than medium ones but keep the same font size (like shadcn) */
+    --button-font-size-lg: 14px;
     --button-line-height: 1.5;
+    --button-border-radius: var(--border-radius-lg);
 
-    --button-disabled-opacity: 0.9;
+    --button-disabled-opacity: 0.5;
 
     --button-focus-outline-color: var(--indigo-600);
 
@@ -351,6 +355,23 @@
     --button-danger-active-bg: #a40e26;
     --button-danger-active-color: var(--white);
     --button-danger-active-border-color: #1f23280a;
+
+    --button-info-box-shadow: 0 1px 0 0 #1f23280a;
+    --button-info-bg: linear-gradient(to bottom, white, #f6f8fa);
+    --button-info-color: #0969da;
+    --button-info-icon-color: inherit;
+    --button-info-border-color: #1f232826;
+    --button-info-hover-bg: #0969da;
+    --button-info-hover-color: var(--white);
+    --button-info-hover-border-color: #1f232826;
+    --button-info-active-box-shadow: inset 0 1px 0 0 #001a4d33;
+    --button-info-active-bg: #0860c9;
+    --button-info-active-color: var(--white);
+    --button-info-active-border-color: #1f232826;
+
+    /* accent (text + border) of .btn-outline-primary; the primary tokens can't be reused
+       because --button-primary-color is the white text painted over the solid background */
+    --button-outline-primary-color: var(--color-primary);
 
     --button-invisible-box-shadow: none;
     --button-invisible-bg: transparent;
@@ -738,6 +759,23 @@
     --button-danger-active-color: var(--white);
     --button-danger-active-border-color: #ffffff26;
 
+    --button-info-box-shadow: none;
+    --button-info-bg: #242424;
+    --button-info-color: #79c0ff;
+    --button-info-icon-color: inherit;
+    --button-info-border-color: #3d3d3d;
+    --button-info-hover-bg: #1f6feb;
+    --button-info-hover-color: var(--white);
+    --button-info-hover-border-color: #ffffff26;
+    --button-info-active-box-shadow: none;
+    --button-info-active-bg: #388bfd;
+    --button-info-active-color: var(--white);
+    --button-info-active-border-color: #ffffff26;
+
+    /* in the dark scheme the primary button is royal blue, so the outline accent is blue too
+       (same as the dark link color) */
+    --button-outline-primary-color: var(--blue-400);
+
     --button-invisible-box-shadow: none;
     --button-invisible-bg: transparent;
     --button-invisible-color: inherit;
@@ -859,7 +897,7 @@
     --bs-btn-font-size: 0.875rem;
     --bs-btn-font-weight: 400;
     --bs-btn-border-width: 0;
-    --bs-btn-border-radius: var(--border-radius);
+    --bs-btn-border-radius: var(--border-radius-lg);
 }
 .dropdown-menu {
     --bs-dropdown-font-size: 0.875rem;
