@@ -195,12 +195,14 @@ final class AdminContext implements AdminContextInterface
      * This method provides sensible defaults for all sub-contexts, making it easy
      * to create AdminContext instances in tests without complex setup.
      *
-     * @param RequestContext|null      $requestContext   Custom request context (defaults to empty request, no user)
-     * @param CrudContext<object>|null $crudContext      Custom CRUD context (defaults to empty CrudDto)
-     * @param DashboardContext|null    $dashboardContext Custom dashboard context (defaults to empty dashboard)
-     * @param I18nContext|null         $i18nContext      Custom i18n context (defaults to 'en' locale)
+     * @template T of object = object
      *
-     * @return self<object>
+     * @param RequestContext|null   $requestContext   Custom request context (defaults to empty request, no user)
+     * @param CrudContext<T>|null   $crudContext      Custom CRUD context (defaults to empty CrudDto)
+     * @param DashboardContext|null $dashboardContext Custom dashboard context (defaults to empty dashboard)
+     * @param I18nContext|null      $i18nContext      Custom i18n context (defaults to 'en' locale)
+     *
+     * @return self<T>
      */
     public static function forTesting(
         ?RequestContext $requestContext = null,
