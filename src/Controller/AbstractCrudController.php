@@ -74,12 +74,10 @@ use function Symfony\Component\String\u;
  *
  * @template TEntity of object
  *
- * @implements  CrudControllerInterface<TEntity>
+ * @implements CrudControllerInterface<TEntity>
  */
 abstract class AbstractCrudController extends AbstractController implements CrudControllerInterface
 {
-    abstract public static function getEntityFqcn(): string;
-
     public function configureCrud(Crud $crud): Crud
     {
         return $crud;
