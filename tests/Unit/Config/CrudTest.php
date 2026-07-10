@@ -5,6 +5,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Config;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ClickTrigger;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\FilterConfigDto;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Translation\TranslatableMessage;
 
@@ -307,5 +308,13 @@ class CrudTest extends TestCase
 
         $crudConfig = Crud::new();
         $crudConfig->setDefaultRowActionTrigger($clickTrigger);
+    }
+
+    public function testSetFiltersAcceptsNull(): void
+    {
+        $crudConfig = Crud::new();
+        $crudConfig->setFilters(null);
+
+        $this->assertInstanceOf(FilterConfigDto::class, $crudConfig->getAsDto()->getFiltersConfig());
     }
 }
