@@ -31,7 +31,7 @@ class ComparisonType extends AbstractType
             'label' => false,
             'type' => 'numeric',
             'choices' => static function (Options $options) {
-                $choices = match ($options['type']) {
+                return match ($options['type']) {
                     'numeric' => [
                         'filter.label.is_equal_to' => self::EQ,
                         'filter.label.is_not_equal_to' => self::NEQ,
@@ -69,8 +69,6 @@ class ComparisonType extends AbstractType
                     ],
                     default => [],
                 };
-
-                return $choices;
             },
             'translation_domain' => 'EasyAdminBundle',
         ]);

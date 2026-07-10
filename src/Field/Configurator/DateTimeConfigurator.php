@@ -3,7 +3,6 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Field\Configurator;
 
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping\FieldMapping;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Intl\IntlFormatterInterface;

@@ -58,10 +58,9 @@ final readonly class AdminContextFactory
         $validPageNames = [Crud::PAGE_INDEX, Crud::PAGE_DETAIL, Crud::PAGE_EDIT, Crud::PAGE_NEW];
         $pageName = \in_array($crudAction, $validPageNames, true) ? $crudAction : null;
 
-        $dashboardDto = $this->getDashboardDto($request, $dashboardController);
+        $dashboardDto = $this->getDashboardDto($dashboardController);
         $assetDto = $this->getAssetDto($dashboardController, $crudController, $pageName);
         $filters = $this->getFilters($dashboardController, $crudController);
-        $user = $this->getUser($this->tokenStorage);
 
         // build a first version of CrudDto without actions so we can create AdminContext, which is
         // needed for action extensions; later, we'll update the CrudDto object with the full action config
@@ -105,7 +104,7 @@ final readonly class AdminContextFactory
         return $adminContext;
     }
 
-    private function getDashboardDto(Request $request, DashboardControllerInterface $dashboardControllerInstance): DashboardDto
+    private function getDashboardDto(DashboardControllerInterface $dashboardControllerInstance): DashboardDto
     {
         $dashboardRoutes = $this->adminRouteGenerator->getDashboardRoutes();
         $dashboardFqcn = $dashboardControllerInstance::class;
@@ -196,7 +195,7 @@ final readonly class AdminContextFactory
             $translationParameters['%entity_id%'] = $entityId = EntityIdReader::fromRequest($request);
             $translationParameters['%entity_short_id%'] = null === $entityId ? null : u($entityId)->truncate(7)->toString();
 
-            $entityInstance = null === $entityDto ? null : $entityDto->getInstance();
+            $entityInstance = $entityDto?->getInstance();
             $pageName = $crudDto->getCurrentPage();
 
             $singularLabel = $crudDto->getEntityLabelInSingular($entityInstance, $pageName)

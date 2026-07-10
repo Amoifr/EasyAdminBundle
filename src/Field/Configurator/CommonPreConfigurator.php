@@ -3,7 +3,6 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Field\Configurator;
 
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -73,7 +72,7 @@ final readonly class CommonPreConfigurator implements FieldConfiguratorInterface
         $isVirtual = $this->buildVirtualOption($field, $entityDto);
         $field->setVirtual($isVirtual);
 
-        $templatePath = $this->buildTemplatePathOption($context, $field, $entityDto, $isReadable);
+        $templatePath = $this->buildTemplatePathOption($context, $field, $isReadable);
         $field->setTemplatePath($templatePath);
 
         $doctrineMetadata = [];
@@ -173,7 +172,7 @@ final readonly class CommonPreConfigurator implements FieldConfiguratorInterface
             && !$entityDto->getClassMetadata()->hasAssociation($field->getProperty());
     }
 
-    private function buildTemplatePathOption(AdminContext $adminContext, FieldDto $field, EntityDto $entityDto, bool $isReadable): string
+    private function buildTemplatePathOption(AdminContext $adminContext, FieldDto $field, bool $isReadable): string
     {
         if (null !== $templatePath = $field->getTemplatePath()) {
             return $templatePath;
