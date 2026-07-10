@@ -210,9 +210,12 @@ final class AdminContext implements AdminContextInterface
         ?DashboardContext $dashboardContext = null,
         ?I18nContext $i18nContext = null,
     ): self {
+        /** @var CrudContext<T> $crudContext */
+        $crudContext ??= CrudContext::forTesting();
+
         return new self(
             $requestContext ?? RequestContext::forTesting(),
-            $crudContext ?? CrudContext::forTesting(),
+            $crudContext,
             $dashboardContext ?? DashboardContext::forTesting(),
             $i18nContext ?? I18nContext::forTesting(),
         );
