@@ -25,8 +25,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * - DashboardContext: Dashboard configuration and menus
  * - I18nContext: Internationalization and templates
  *
- * IMPORTANT: any new methods added here MUST be duplicated in the AdminContextProvider class.
- *
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  *
  * @template TEntity of object
