@@ -92,8 +92,8 @@ class NumberFieldTest extends AbstractFieldTest
         $field->setRoundingMode($mode);
         $fieldDto = $this->configure($field);
 
-        self::assertSame($mode, $fieldDto->getCustomOption(NumberField::OPTION_ROUNDING_MODE));
-        self::assertSame($mode, $fieldDto->getFormTypeOption('rounding_mode'));
+        self::assertSame($mode, $fieldDto->getCustomOption(NumberField::OPTION_ROUNDING_MODE), $modeName);
+        self::assertSame($mode, $fieldDto->getFormTypeOption('rounding_mode'), $modeName);
     }
 
     public function testSetRoundingModeThrowsExceptionForInvalidMode(): void

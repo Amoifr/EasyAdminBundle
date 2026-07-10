@@ -52,10 +52,8 @@ class CrudDtoTest extends TestCase
 
     /**
      * @dataProvider provideLabels
-     *
-     * @param string|closure|null $setLabel
      */
-    public function testGetEntityLabelInSingular($setLabel, ?string $expectedGetLabel): void
+    public function testGetEntityLabelInSingular(string|\Closure|null $setLabel, ?string $expectedGetLabel): void
     {
         $crudDto = new CrudDto();
 

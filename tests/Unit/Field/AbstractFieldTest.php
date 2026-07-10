@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\DashboardContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\I18nContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\RequestContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Context\AdminContextInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\CrudDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
@@ -26,8 +27,8 @@ use Twig\Environment;
 abstract class AbstractFieldTest extends KernelTestCase
 {
     protected EntityDto $entityDto;
-    protected $adminContext;
-    protected $configurator;
+    protected AdminContextInterface $adminContext;
+    protected FieldConfiguratorInterface $configurator;
 
     protected function getEntityDto(): EntityDto
     {

@@ -3,7 +3,6 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\Trait;
 
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
 /**

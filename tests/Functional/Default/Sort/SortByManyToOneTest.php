@@ -47,9 +47,6 @@ class SortByManyToOneTest extends AbstractCrudTestCase
             $sortFunction($entities);
         }
 
-        /**
-         * @var SortTestEntity $entity
-         */
         foreach ($entities as $entity) {
             // easyAdmin shows "Null" label for null associations
             $relatedName = $entity->getManyToOneRelation()?->getName() ?? 'Null';

@@ -4,7 +4,6 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Factory;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Factory\ActionFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\ButtonVariant;
 use PHPUnit\Framework\TestCase;
 
