@@ -13,13 +13,13 @@ class Customer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $name;
+    private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: Bill::class, mappedBy: 'customers')]
-    private $bills;
+    private Collection $bills;
 
     public function __construct()
     {

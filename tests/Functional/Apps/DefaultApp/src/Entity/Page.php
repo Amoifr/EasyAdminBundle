@@ -11,10 +11,10 @@ class Page
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $name;
+    private ?string $name = null;
 
     #[ORM\ManyToOne(targetEntity: Website::class, inversedBy: 'pages')]
     #[ORM\JoinColumn(nullable: false)]
@@ -42,7 +42,7 @@ class Page
         return $this->website;
     }
 
-    public function setWebsite(?Website $website)
+    public function setWebsite(?Website $website): static
     {
         $this->website = $website;
 
