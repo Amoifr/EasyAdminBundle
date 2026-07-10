@@ -6,7 +6,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\MenuItemDto;
 use EasyCorp\Bundle\EasyAdminBundle\Menu\MenuItemMatcher;
-use EasyCorp\Bundle\EasyAdminBundle\Router\AdminRouteGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\ActionsCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\BlogPostCrudController;
@@ -24,8 +23,7 @@ class MenuItemMatcherTest extends KernelTestCase
 
         self::bootKernel();
         $adminUrlGenerator = self::getContainer()->get(AdminUrlGenerator::class);
-        $adminRouteGenerator = self::getContainer()->get(AdminRouteGenerator::class);
-        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator, $adminRouteGenerator);
+        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator);
         $menuItemDto = new MenuItemDto();
 
         $menuItemMatcher->markSelectedMenuItem([$menuItemDto], $request);
@@ -39,8 +37,7 @@ class MenuItemMatcherTest extends KernelTestCase
 
         self::bootKernel();
         $adminUrlGenerator = self::getContainer()->get(AdminUrlGenerator::class);
-        $adminRouteGenerator = self::getContainer()->get(AdminRouteGenerator::class);
-        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator, $adminRouteGenerator);
+        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator);
         $menuItemDto = new MenuItemDto();
         $menuItemDto->setType(MenuItemDto::TYPE_SECTION);
 
@@ -53,8 +50,7 @@ class MenuItemMatcherTest extends KernelTestCase
     {
         self::bootKernel();
         $adminUrlGenerator = self::getContainer()->get(AdminUrlGenerator::class);
-        $adminRouteGenerator = self::getContainer()->get(AdminRouteGenerator::class);
-        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator, $adminRouteGenerator);
+        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator);
 
         // with pretty URLs, we need to use actual generated URLs for matching
         // generate the category index URL to use as the request path
@@ -159,8 +155,7 @@ class MenuItemMatcherTest extends KernelTestCase
 
         self::bootKernel();
         $adminUrlGenerator = self::getContainer()->get(AdminUrlGenerator::class);
-        $adminRouteGenerator = self::getContainer()->get(AdminRouteGenerator::class);
-        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator, $adminRouteGenerator);
+        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator);
         $menuItemDto = $this->getMenuItemDto(routeName: 'some_route');
 
         $menuItemMatcher->markSelectedMenuItem([$menuItemDto], $request);
@@ -202,8 +197,7 @@ class MenuItemMatcherTest extends KernelTestCase
 
         self::bootKernel();
         $adminUrlGenerator = self::getContainer()->get(AdminUrlGenerator::class);
-        $adminRouteGenerator = self::getContainer()->get(AdminRouteGenerator::class);
-        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator, $adminRouteGenerator);
+        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator);
         $menuItemDto = new MenuItemDto();
 
         $menuItemMatcher->markSelectedMenuItem([$menuItemDto], $request);
@@ -243,8 +237,7 @@ class MenuItemMatcherTest extends KernelTestCase
 
         self::bootKernel();
         $adminUrlGenerator = self::getContainer()->get(AdminUrlGenerator::class);
-        $adminRouteGenerator = self::getContainer()->get(AdminRouteGenerator::class);
-        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator, $adminRouteGenerator);
+        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator);
         $menuItems = $menuItemMatcher->markSelectedMenuItem($menuItems, $request);
 
         $this->assertSame('item2', $this->getSelectedMenuItemLabel($menuItems), 'Perfect match: Dashboard item');
@@ -254,8 +247,7 @@ class MenuItemMatcherTest extends KernelTestCase
     {
         self::bootKernel();
         $adminUrlGenerator = self::getContainer()->get(AdminUrlGenerator::class);
-        $adminRouteGenerator = self::getContainer()->get(AdminRouteGenerator::class);
-        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator, $adminRouteGenerator);
+        $menuItemMatcher = new MenuItemMatcher($adminUrlGenerator);
 
         // generate proper pretty URL paths for the requests
         $categoryIndexPath = parse_url($adminUrlGenerator->unsetAll()->setDashboard(DashboardController::class)->setController(CategoryCrudController::class)->setAction(Action::INDEX)->generateUrl(), \PHP_URL_PATH);
