@@ -309,6 +309,37 @@ The arguments of the ``addTab()`` method are:
     so you don't need to take any additional steps to use FontAwesome icons. Alternatively,
     you can :ref:`use your own icon sets <icon-customization>` instead of FontAwesome.
 
+Tabs can display a small badge next to their label (e.g. to show the number of
+related items in a tab) with the ``setBadge()`` method::
+
+    use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+
+    // a static value with the default 'secondary' style
+    FormField::addTab('Contact')->setBadge('New');
+
+    // a value with one of the predefined Bootstrap styles: 'primary', 'secondary',
+    // 'success', 'danger', 'warning', 'info', 'light', 'dark'
+    FormField::addTab('Invoices')->setBadge(7, 'warning');
+
+    // the badge value can also be a callable that receives the current entity
+    // instance, so you can compute dynamic values such as collection counts
+    FormField::addTab('Orders')->setBadge(fn (Customer $customer) => $customer->getOrders()->count());
+
+The arguments of the ``setBadge()`` method are:
+
+* ``$content``: (type: ``\Stringable|string|int|float|bool|callable|null``) the
+  value displayed inside the badge. When it's a callable, it receives the current
+  entity instance and must return the value to display. A ``null``, ``false`` or
+  empty string value hides the badge (the value ``0`` is displayed);
+* ``$style``: (type: ``string``, default: ``'secondary'``) one of the predefined
+  Bootstrap styles listed above; any other value is applied "as is" to the ``style``
+  HTML attribute of the badge (e.g. ``'background-color: purple;'``);
+* ``$htmlAttributes``: (type: ``array``) an optional list of HTML attributes to add
+  to the badge element.
+
+If the tab also contains fields with validation errors, both the red error badge
+and your custom badge are displayed.
+
 Inside tabs you can include not only form fields but all the other form layout
 fields explained in the following sections: columns, fieldsets and rows. This
 is how a form using all those elements looks like:

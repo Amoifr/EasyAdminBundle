@@ -3,6 +3,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Field;
 
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\FormTabBadgeDto;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Layout\EaFormColumnOpenType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Layout\EaFormFieldsetOpenType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Layout\EaFormRowType;
@@ -24,6 +25,7 @@ final class FormField implements FieldInterface
     public const OPTION_TAB_ID = 'tabId';
     public const OPTION_TAB_IS_ACTIVE = 'tabIsActive';
     public const OPTION_TAB_ERROR_COUNT = 'tabErrorCount';
+    public const OPTION_TAB_BADGE = 'tabBadge';
     public const OPTION_FIELDSET_ERROR_COUNT = 'fieldsetErrorCount';
 
     /**
@@ -101,6 +103,7 @@ final class FormField implements FieldInterface
             ->setFormTypeOptions(['mapped' => false, 'required' => false])
             ->setCustomOption(self::OPTION_ICON, $icon)
             ->setCustomOption(self::OPTION_TAB_ERROR_COUNT, 0)
+            ->setCustomOption(self::OPTION_TAB_BADGE, null)
             ->setValue(true);
     }
 
@@ -130,6 +133,31 @@ final class FormField implements FieldInterface
     public function setIcon(string $iconCssClass): self
     {
         $this->setCustomOption(self::OPTION_ICON, $iconCssClass);
+
+        return $this;
+    }
+
+    /**
+     * Displays a badge next to the tab label (e.g. to show a count of related items).
+     * This method can only be used on form tabs created with FormField::addTab().
+     *
+     * @param \Stringable|string|int|float|bool|callable|null $content        The badge value. It can be anything that can be cast to a string
+     *                                                                        (numbers, stringable objects, etc.) or a callable that receives
+     *                                                                        the current entity instance and returns the value to display
+     *                                                                        (e.g. fn (Foo $foo) => $foo->getBars()->count()).
+     * @param string                                          $style          Pass one of these values for predefined styles: 'primary', 'secondary',
+     *                                                                        'success', 'danger', 'warning', 'info', 'light', 'dark'. Otherwise, the
+     *                                                                        passed value is applied "as is" to the `style` attribute of the HTML
+     *                                                                        element of the badge.
+     * @param array<string, mixed>                            $htmlAttributes
+     */
+    public function setBadge(\Stringable|string|int|float|bool|callable|null $content, string $style = 'secondary', array $htmlAttributes = []): self
+    {
+        if ('ea_form_tab' !== $this->dto->getProperty()) {
+            throw new \InvalidArgumentException(sprintf('The %s() method can only be used on form tabs created with the "FormField::addTab()" method.', __METHOD__));
+        }
+
+        $this->setCustomOption(self::OPTION_TAB_BADGE, new FormTabBadgeDto($content, trim($style), $htmlAttributes));
 
         return $this;
     }
