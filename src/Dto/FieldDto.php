@@ -31,16 +31,14 @@ final class FieldDto
     private mixed $formattedValue = null;
     /** @var callable|null */
     private $formatValueCallable;
-    /** @var TranslatableInterface|string|false|null */
-    private $label;
+    private TranslatableInterface|string|false|null $label = null;
     private ?string $formType = null;
     private KeyValueStore $formTypeOptions;
     private ?bool $sortable = null;
     private ?bool $virtual = null;
     private string|Expression|null $permission = null;
     private ?string $textAlign = null;
-    /** @var TranslatableInterface|string|null */
-    private $help;
+    private TranslatableInterface|string|null $help = null;
     private string $cssClass = '';
     // how many columns the field takes when rendering
     // (defined as Bootstrap 5 grid classes; e.g. 'col-md-6 col-xxl-3')
@@ -58,10 +56,8 @@ final class FieldDto
     private KeyValueStore $doctrineMetadata;
     /**
      * @internal
-     *
-     * @var string|Ulid
      */
-    private $uniqueId;
+    private Ulid|string $uniqueId;
     private KeyValueStore $displayedOn;
     /** @var array<string, bool|int|float|string> */
     private array $htmlAttributes = [];

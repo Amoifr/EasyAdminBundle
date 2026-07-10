@@ -241,7 +241,7 @@ final class ActionDto
     /**
      * @return array<string, mixed>|callable
      */
-    public function getRouteParameters()/* : array|callable */
+    public function getRouteParameters(): array|callable
     {
         return $this->routeParameters;
     }
@@ -254,10 +254,7 @@ final class ActionDto
         $this->routeParameters = $routeParameters;
     }
 
-    /**
-     * @return string|callable|null
-     */
-    public function getUrl()
+    public function getUrl(): callable|string|null
     {
         return $this->url;
     }
