@@ -71,7 +71,9 @@ final class ArrayFilter implements FilterInterface
         $parameterName = $filterDataDto->getParameterName();
         $value = $filterDataDto->getValue();
 
-        $useQuotes = Types::SIMPLE_ARRAY === $fieldDto->getDoctrineMetadata()->get('type');
+        // the filtered property is not necessarily configured as a displayed field
+        // of the current page, so $fieldDto can be null
+        $useQuotes = Types::SIMPLE_ARRAY === $fieldDto?->getDoctrineMetadata()->get('type');
 
         if (null === $value || [] === $value) {
             $queryBuilder->andWhere(sprintf('%s.%s %s', $alias, $property, $comparison));
