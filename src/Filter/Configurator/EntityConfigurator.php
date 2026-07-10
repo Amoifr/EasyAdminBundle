@@ -19,7 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 final class EntityConfigurator implements FilterConfiguratorInterface
 {
     public function __construct(
-        private AdminUrlGeneratorInterface $adminUrlGenerator,
+        private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
     ) {
     }
 
