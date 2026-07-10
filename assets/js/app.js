@@ -561,10 +561,27 @@ class App {
             return false;
         };
 
-        const navigateToUrl = (url) => {
+        const navigateToUrl = (url, event) => {
             // create a temporary link and click it to let Turbo (or other libraries) intercept the navigation
             const link = document.createElement('a');
             link.href = url;
+
+            // middle-click or ctrl/cmd-click opens the row in a new tab, like a real link.
+            // Setting target="_blank" on the link (instead of using window.open()) opens the
+            // new tab as a regular link navigation, which isn't stopped by the popup blocker;
+            // Firefox blocks window.open() when it's called from a middle-click handler.
+            if (event && (event.metaKey || event.ctrlKey || 1 === event.button)) {
+                link.target = '_blank';
+                link.rel = 'noopener';
+
+                // clear the cell/text selection that Firefox creates on ctrl/cmd-click so it
+                // doesn't linger highlighted after the new tab opens
+                const selection = window.getSelection();
+                if (null !== selection) {
+                    selection.removeAllRanges();
+                }
+            }
+
             link.style.display = 'none';
             document.body.appendChild(link);
             link.click();
@@ -579,7 +596,7 @@ class App {
 
             const url = row.dataset.defaultActionUrl;
             if (url) {
-                navigateToUrl(url);
+                navigateToUrl(url, event);
             }
         };
 
@@ -606,10 +623,29 @@ class App {
                     return;
                 }
 
-                if (userIsSelectingTextInRow(row)) {
+                // a middle-click or ctrl/cmd-click opens a new tab; it's not a text-selection
+                // gesture, so skip the selection guard. Firefox selects the clicked table cell
+                // on ctrl/cmd-click, which would otherwise be mistaken for a text selection and
+                // cancel the navigation.
+                const opensNewTab = event.metaKey || event.ctrlKey || 1 === event.button;
+                if (!opensNewTab && userIsSelectingTextInRow(row)) {
                     return;
                 }
 
+                handleRowActivation(row, event);
+            });
+
+            // handle middle-click (auxclick) to open the row in a new tab
+            row.addEventListener('auxclick', (event) => {
+                if (1 !== event.button) {
+                    return;
+                }
+
+                if (isInteractiveElement(event.target)) {
+                    return;
+                }
+
+                event.preventDefault();
                 handleRowActivation(row, event);
             });
 
