@@ -4,6 +4,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Form\Type;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ReplacedFileBehavior;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\FileUploadType;
+use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Model\FlysystemFile;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\Exception\TransformationFailedException;
@@ -67,6 +68,42 @@ class FileUploadTypeFlysystemTest extends TypeTestCase
         ]);
 
         $this->assertStringEndsWith('/', $form->getConfig()->getOption('upload_dir'));
+    }
+
+    public function testDataClassIsNullForSingleFileFlysystem(): void
+    {
+        $fs = $this->createMock(FilesystemOperator::class);
+
+        // for a single file (multiple => false) with Flysystem storage, the
+        // data_class must NOT be File::class, because the model transformer
+        // produces a FlysystemFile (which does not extend File). See issue #7694.
+        $form = $this->factory->create(FileUploadType::class, null, [
+            'upload_dir' => 'remote/uploads',
+            'flysystem_storage' => $fs,
+        ]);
+
+        $this->assertNull($form->getConfig()->getOption('data_class'));
+    }
+
+    public function testSingleFileFlysystemAcceptsExistingFlysystemFileAsData(): void
+    {
+        $fs = $this->createMock(FilesystemOperator::class);
+        $fs->method('fileExists')->willReturn(true);
+        $fs->method('fileSize')->willReturn(1234);
+
+        $form = $this->factory->create(FileUploadType::class, null, [
+            'upload_dir' => 'remote/uploads',
+            'flysystem_storage' => $fs,
+        ]);
+
+        // setting an existing stored path triggers the model transformer to
+        // build a FlysystemFile as the form's norm data. Before the fix, Symfony
+        // rejected it because data_class was File::class. This must now succeed.
+        $form->setData('some/existing.pdf');
+
+        $normData = $form->getNormData();
+        $this->assertInstanceOf(FlysystemFile::class, $normData);
+        $this->assertSame('some/existing.pdf', $normData->getPathname());
     }
 
     public function testKeepOrFailFlysystemFileDoesNotExistReturnsFilename(): void
