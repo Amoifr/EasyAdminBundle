@@ -16,7 +16,7 @@
 .alert:has(> .alert-icon) {
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: var(--ea-sp-2);
 }
 .alert > .alert-icon {
     flex-shrink: 0;
@@ -31,8 +31,8 @@
 }
 .alert .alert-actions {
     display: flex;
-    gap: 8px;
-    margin-block-start: 8px;
+    gap: var(--ea-sp-2);
+    margin-block-start: var(--ea-sp-2);
 }
 
 .alert-dismissible .btn-close {

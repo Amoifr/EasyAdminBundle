@@ -19,7 +19,7 @@
     background: var(--button-bg);
     border: var(--button-border-width, .0625rem) solid;
     border-color: var(--button-border-color);
-    border-radius: var(--button-border-radius, .375rem);
+    border-radius: var(--button-border-radius, calc(var(--ea-radius) * 1.5)); /* .375rem */
     box-shadow: var(--button-box-shadow);
     color: var(--button-color);
     cursor: pointer;
@@ -27,7 +27,7 @@
     font-family: inherit;
     font-size: var(--button-font-size, .875rem);
     font-weight: var(--button-font-weight, 500);
-    gap: var(--button-icon-gap, .375rem);
+    gap: var(--button-icon-gap, var(--ea-sp-1-5));
     min-block-size: var(--button-height, 2rem);
     justify-content: space-between;
     line-height: var(--button-line-height);
@@ -411,7 +411,7 @@
     --button-font-size: var(--button-font-size-sm);
     --button-padding-y: var(--button-padding-y-sm);
     --button-padding-x: var(--button-padding-x-sm);
-    --button-icon-gap: .25rem;
+    --button-icon-gap: var(--ea-sp-1);
     --button-height: 1.75rem;
 }
 
@@ -497,8 +497,8 @@ fieldset:disabled a.btn {
 }
 .btn-group > .btn.dropdown-toggle.dropdown-toggle-split {
     margin-inline-start: -1px;
-    padding-inline-end: .5625rem;
-    padding-inline-start: .5625rem;
+    padding-inline-end: calc(var(--ea-spacing) * 2.25); /* .5625rem */
+    padding-inline-start: calc(var(--ea-spacing) * 2.25); /* .5625rem */
 }
 .dropdown-menu .dropdown-submenu .dropdown-toggle.dropdown-toggle-split {
     border: 0;

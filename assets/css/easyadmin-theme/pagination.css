@@ -6,7 +6,7 @@
     border-end-start-radius: var(--border-radius);
     border-end-end-radius: var(--border-radius);
     color: var(--pagination-color);
-    padding: 15px 0;
+    padding: calc(var(--ea-spacing) * 3.75) 0; /* 15px 0 */
 }
 @media (min-width: 768px) {
     .list-pagination {
@@ -28,7 +28,7 @@
 }
 @media (max-width: 992px) {
     .pager .pagination {
-        margin-block-start: 15px;
+        margin-block-start: calc(var(--ea-spacing) * 3.75); /* 15px */
     }
 }
 .page-item .page-link {

@@ -1,0 +1,53 @@
+/* Global design tokens */
+/* ------------------------------------------------------------------------- */
+
+/* The few global knobs of the design system (--ea- prefix), modeled on the
+   shadcn/ui system. Changing these values re-themes the whole backend.
+
+   IMPORTANT: tokens derived from other tokens must be declared on
+   `:root, .ea-dark-scheme` (not just `:root`). Unregistered custom properties
+   resolve their var()/calc() references on the element where they cascade and
+   then inherit as resolved values; since the dark scheme class lives on <body>,
+   a derived token declared only on :root would keep its light-mode value in
+   dark mode. */
+:root {
+    /* base border radius; all --border-radius-* values derive from it */
+    --ea-radius: 0.25rem; /* 4px */
+
+    /* base spacing unit; all padding/margin/gap values are multiples of it */
+    --ea-spacing: 0.25rem; /* 4px */
+
+    /* the accent color of interactive and highlighted elements */
+    --ea-primary: hsl(230, 61%, 58%); /* custom shade between indigo-400 and indigo-500 */
+}
+
+.ea-dark-scheme {
+    --ea-primary: hsl(213deg, 94%, 71%);
+}
+
+:root,
+.ea-dark-scheme {
+    /* derived border-radius scale (multiplicative, so --ea-radius scales all of them) */
+    --border-radius-none: 0;
+    --border-radius-sm: calc(var(--ea-radius) * 0.5); /* 2px */
+    --border-radius: var(--ea-radius); /* 4px */
+    --border-radius-lg: calc(var(--ea-radius) * 2); /* 8px */
+    --border-radius-xl: calc(var(--ea-radius) * 3); /* 12px */
+    --border-radius-full: 50rem; /* fixed on purpose: pills and circles must not scale */
+
+    /* named spacing steps; prefer these over ad-hoc calc() multiples when the
+       value falls on the 4px grid (off-grid multiples like `* 3.75` are legacy
+       values pending a future snap-to-grid cleanup) */
+    --ea-sp-0-5: calc(var(--ea-spacing) * 0.5); /*  2px */
+    --ea-sp-1: calc(var(--ea-spacing) * 1); /*  4px */
+    --ea-sp-1-5: calc(var(--ea-spacing) * 1.5); /*  6px */
+    --ea-sp-2: calc(var(--ea-spacing) * 2); /*  8px */
+    --ea-sp-2-5: calc(var(--ea-spacing) * 2.5); /* 10px */
+    --ea-sp-3: calc(var(--ea-spacing) * 3); /* 12px */
+    --ea-sp-4: calc(var(--ea-spacing) * 4); /* 16px */
+    --ea-sp-5: calc(var(--ea-spacing) * 5); /* 20px */
+    --ea-sp-6: calc(var(--ea-spacing) * 6); /* 24px */
+    --ea-sp-8: calc(var(--ea-spacing) * 8); /* 32px */
+    --ea-sp-10: calc(var(--ea-spacing) * 10); /* 40px */
+    --ea-sp-12: calc(var(--ea-spacing) * 12); /* 48px */
+}

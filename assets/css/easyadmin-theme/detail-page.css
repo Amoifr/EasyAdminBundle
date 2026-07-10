@@ -1,24 +1,24 @@
 /* Detail Page styles
 /* ------------------------------------------------------------------------- */
 .ea-detail .form-column .form-fieldset-body {
-    padding-block-end: 7px;
-    padding-block-start: 5px;
+    padding-block-end: calc(var(--ea-spacing) * 1.75); /* 7px */
+    padding-block-start: calc(var(--ea-spacing) * 1.25); /* 5px */
 }
 .ea-detail .form-column .form-fieldset-body.without-header {
-    padding-block-end: 10px;
+    padding-block-end: var(--ea-sp-2-5);
     padding-block-start: var(--bs-gutter-x);
 }
 
 .ea-detail .field-group {
     display: flex;
-    margin-block-end: 12px;
+    margin-block-end: var(--ea-sp-3);
 }
 
 .ea-detail .field-group .field-label {
     color: var(--form-label-color);
     font-size: var(--font-size-base);
     font-weight: 500;
-    margin: 0 15px 0 0;
+    margin: 0 calc(var(--ea-spacing) * 3.75) 0 0; /* 0 15px 0 0 */
     padding: 0 0 1px 0;
     text-align: right;
     inline-size: 130px;
@@ -67,7 +67,7 @@
 .ea-detail .field-group.field-boolean .field-label {
     flex: 1;
     min-inline-size: 66%;
-    margin: 0 0 0 15px;
+    margin: 0 0 0 calc(var(--ea-spacing) * 3.75); /* 0 0 0 15px */
     text-align: left;
 }
 .ea-detail .field-group.field-boolean .field-value {

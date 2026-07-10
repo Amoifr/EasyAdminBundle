@@ -35,8 +35,8 @@ body.page-login #flash-messages {
 }
 .login-wrapper .main-header #header-logo {
     border-block-end: var(--border-width) var(--border-style) var(--border-secondary-color);
-    margin: 1.5rem 0 1rem;
-    padding-block-end: 1rem;
+    margin: var(--ea-sp-6) 0 var(--ea-sp-4);
+    padding-block-end: var(--ea-sp-4);
 }
 @media (min-width: 576px) {
     .login-wrapper .main-header #header-logo {
@@ -56,7 +56,7 @@ body.page-login #flash-messages {
 }
 .login-wrapper .content {
     background-color: var(--body-bg);
-    padding: 15px 30px;
+    padding: calc(var(--ea-spacing) * 3.75) calc(var(--ea-spacing) * 7.5); /* 15px 30px */
     inline-size: 100%;
 }
 @media (min-width: 576px) {
@@ -64,7 +64,7 @@ body.page-login #flash-messages {
         background: var(--page-login-form-bg);
         border-radius: var(--border-radius-lg);
         box-shadow: var(--shadow-lg);
-        padding: 2.5rem 3rem;
+        padding: var(--ea-sp-10) var(--ea-sp-12);
     }
 }
 .login-wrapper .form-widget input {
@@ -80,9 +80,9 @@ body.page-login #flash-messages {
 .login-wrapper .btn-primary {
     background-color: var(--page-login-form-control-button-bg);
     font-size: var(--font-size-base);
-    margin-block-start: 1rem;
+    margin-block-start: var(--ea-sp-4);
 }
 .login-wrapper .form-text {
     font-size: inherit;
-    margin-block-start: 5px;
+    margin-block-start: calc(var(--ea-spacing) * 1.25); /* 5px */
 }

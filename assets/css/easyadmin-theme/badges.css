@@ -2,14 +2,14 @@
 /* ------------------------------------------------------------------------- */
 
 .badge + .badge {
-    margin-inline-start: 8px;
+    margin-inline-start: var(--ea-sp-2);
 }
 
 .badge.badge-pill {
-    border-radius: 20px;
+    border-radius: var(--border-radius-full);
     font-size: var(--font-size-xs);
     line-height: 16px;
-    padding: 1px 6px;
+    padding: 1px var(--ea-sp-1-5);
 }
 
 .badge {
@@ -19,12 +19,12 @@
 
 .badge:has(> .icon) {
     display: inline-flex;
-    gap: 4px;
+    gap: var(--ea-sp-1);
     align-items: center;
 }
 
 .badge.badge-sm {
-    --bs-badge-padding-x: 4px;
+    --bs-badge-padding-x: var(--ea-sp-1);
     --bs-badge-padding-y: 0;
     --bs-badge-font-size: 11px;
 }

@@ -1,4 +1,5 @@
 @import "./color-palette.css";
+@import "./design-tokens.css";
 @import "./variables-theme.css";
 
 @import "./base.css";
