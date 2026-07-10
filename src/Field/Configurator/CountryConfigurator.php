@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CountryField;
 use Symfony\Component\Intl\Countries;
 use Symfony\Component\Intl\Exception\MissingResourceException;
 use Twig\Environment;
+use Twig\TemplateWrapper;
 
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
@@ -96,6 +97,11 @@ final readonly class CountryConfigurator implements FieldConfiguratorInterface
         $usesAlpha3Codes = CountryField::FORMAT_ISO_3166_ALPHA3 === $countryCodeFormat;
         $choices = [];
 
+        // create the choice label template only once and render it with different variables
+        // for each country; compiling a different template per country would be very
+        // expensive because there are ~250 countries
+        $labelTemplate = $this->createChoiceLabelTemplate($showFlag, $showName);
+
         $countries = $usesAlpha3Codes ? Countries::getAlpha3Names() : Countries::getNames();
         foreach ($countries as $countryCode => $countryName) {
             if (null !== $countryCodesToKeep && !\in_array($countryCode, $countryCodesToKeep, true)) {
@@ -107,7 +113,9 @@ final readonly class CountryConfigurator implements FieldConfiguratorInterface
             }
 
             $countryCodeAlpha2 = $usesAlpha3Codes ? Countries::getAlpha2Code($countryCode) : $countryCode;
-            $choiceKey = $this->generateChoiceLabel($countryCodeAlpha2, $countryName, $showFlag, $showName);
+            $choiceKey = null === $labelTemplate
+                ? $countryName
+                : $labelTemplate->render(['countryCode' => $countryCodeAlpha2, 'countryName' => $countryName]);
 
             $choices[$choiceKey] = $countryCode;
         }
@@ -115,12 +123,12 @@ final readonly class CountryConfigurator implements FieldConfiguratorInterface
         return $choices;
     }
 
-    private function generateChoiceLabel(string $countryCodeAlpha2, string $countryName, bool $showFlag, bool $showName): string
+    private function createChoiceLabelTemplate(bool $showFlag, bool $showName): ?TemplateWrapper
     {
         return match ([$showFlag, $showName]) {
-            [true, true] => $this->twig->createTemplate(sprintf('<div class="country-name-flag"><twig:ea:Flag countryCode="%s" /> <span>%s</span></div>', $countryCodeAlpha2, $countryName))->render(),
-            [true, false] => $this->twig->createTemplate(sprintf('<div class="country-name-flag"><twig:ea:Flag countryCode="%s" /></div>', $countryCodeAlpha2))->render(),
-            default => $countryName,
+            [true, true] => $this->twig->createTemplate('<div class="country-name-flag"><twig:ea:Flag countryCode="{{ countryCode }}" /> <span>{{ countryName }}</span></div>'),
+            [true, false] => $this->twig->createTemplate('<div class="country-name-flag"><twig:ea:Flag countryCode="{{ countryCode }}" /></div>'),
+            default => null,
         };
     }
 }
