@@ -18,9 +18,9 @@ final class InsufficientEntityPermissionException extends BaseException
         ];
 
         if (null !== $entityId) {
-            $debugMessage = sprintf('You don\'t have enough permissions to access this instance of the "%s" entity.', $parameters['entity_fqcn']);
+            $debugMessage = sprintf('You don\'t have enough permissions to access the instance of the "%s" entity with id = %s.', $parameters['entity_fqcn'], $entityId);
         } else {
-            $debugMessage = sprintf('You don\'t have enough permissions to access the instance of the "%s" entity with id  = %s.', $parameters['entity_fqcn'], $entityId);
+            $debugMessage = sprintf('You don\'t have enough permissions to access this instance of the "%s" entity.', $parameters['entity_fqcn']);
         }
 
         $exceptionContext = new ExceptionContext(
