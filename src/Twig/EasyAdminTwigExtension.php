@@ -225,8 +225,12 @@ class EasyAdminTwigExtension extends AbstractExtension implements GlobalsInterfa
                 return $value->trans($this->translator);
             }
 
-            if ($value instanceof \Stringable) {
-                return (string) $value;
+            try {
+                if ($value instanceof \Stringable) {
+                    return (string) $value;
+                }
+            } catch (\Throwable) {
+                return '';
             }
 
             if (method_exists($value, 'getId')) {
