@@ -5,7 +5,6 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Contr
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\BatchActionDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -57,7 +56,7 @@ class BatchActionTestEntityCrudController extends AbstractCrudController
     }
 
     #[AdminRoute('/batch-activate', 'batch_activate', options: ['methods' => ['POST']])]
-    public function batchActivate(AdminContext $context, BatchActionDto $batchActionDto): Response
+    public function batchActivate(BatchActionDto $batchActionDto): Response
     {
         $entityManager = $this->container->get('doctrine')->getManagerForClass($batchActionDto->getEntityFqcn());
         $repository = $entityManager->getRepository($batchActionDto->getEntityFqcn());
@@ -78,7 +77,7 @@ class BatchActionTestEntityCrudController extends AbstractCrudController
     }
 
     #[AdminRoute('/batch-deactivate', 'batch_deactivate', options: ['methods' => ['POST']])]
-    public function batchDeactivate(AdminContext $context, BatchActionDto $batchActionDto): Response
+    public function batchDeactivate(BatchActionDto $batchActionDto): Response
     {
         $entityManager = $this->container->get('doctrine')->getManagerForClass($batchActionDto->getEntityFqcn());
         $repository = $entityManager->getRepository($batchActionDto->getEntityFqcn());

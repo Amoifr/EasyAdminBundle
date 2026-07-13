@@ -227,7 +227,7 @@ class EasyAdminTwigExtensionTest extends KernelTestCase
             }
         }, 'foo bar'];
         yield [new class {
-            public function getId()
+            public function getId(): int
             {
                 return 1234;
             }
@@ -235,7 +235,7 @@ class EasyAdminTwigExtensionTest extends KernelTestCase
 
         yield ['foo', 'foo bar', false, static fn ($value) => $value.' bar'];
         yield [new class {
-            public function someMethod()
+            public function someMethod(): string
             {
                 return 'foo';
             }

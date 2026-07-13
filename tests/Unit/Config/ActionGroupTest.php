@@ -5,7 +5,6 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Config;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\ActionGroup;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\ActionDto;
-use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use PHPUnit\Framework\TestCase;
 use function Symfony\Component\Translation\t;
 

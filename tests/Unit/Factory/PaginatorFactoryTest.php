@@ -50,7 +50,7 @@ class PaginatorFactoryTest extends TestCase
         $this->entityPaginator
             ->expects($this->once())
             ->method('paginate')
-            ->willReturnCallback(function (PaginatorDto $dto, $qb) use (&$capturedDto) {
+            ->willReturnCallback(function (PaginatorDto $dto) use (&$capturedDto) {
                 $capturedDto = $dto;
 
                 return $this->entityPaginator;
@@ -87,7 +87,7 @@ class PaginatorFactoryTest extends TestCase
         $this->entityPaginator
             ->expects($this->once())
             ->method('paginate')
-            ->willReturnCallback(function (PaginatorDto $dto, $qb) use (&$capturedDto) {
+            ->willReturnCallback(function (PaginatorDto $dto) use (&$capturedDto) {
                 $capturedDto = $dto;
 
                 return $this->entityPaginator;
@@ -122,7 +122,7 @@ class PaginatorFactoryTest extends TestCase
         $this->entityPaginator
             ->expects($this->once())
             ->method('paginate')
-            ->willReturnCallback(function (PaginatorDto $dto, $qb) use (&$capturedDto) {
+            ->willReturnCallback(function (PaginatorDto $dto) use (&$capturedDto) {
                 $capturedDto = $dto;
 
                 return $this->entityPaginator;
@@ -157,7 +157,7 @@ class PaginatorFactoryTest extends TestCase
         $this->entityPaginator
             ->expects($this->once())
             ->method('paginate')
-            ->willReturnCallback(function (PaginatorDto $dto, $qb) use (&$capturedDto) {
+            ->willReturnCallback(function (PaginatorDto $dto) use (&$capturedDto) {
                 $capturedDto = $dto;
 
                 return $this->entityPaginator;
@@ -192,7 +192,7 @@ class PaginatorFactoryTest extends TestCase
         $this->entityPaginator
             ->expects($this->once())
             ->method('paginate')
-            ->willReturnCallback(function (PaginatorDto $dto, $qb) use (&$capturedDto) {
+            ->willReturnCallback(function (PaginatorDto $dto) use (&$capturedDto) {
                 $capturedDto = $dto;
 
                 return $this->entityPaginator;
