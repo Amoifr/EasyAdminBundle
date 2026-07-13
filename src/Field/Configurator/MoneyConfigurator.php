@@ -75,8 +75,12 @@ final class MoneyConfigurator implements FieldConfiguratorInterface
         $numDecimals = $field->getCustomOption(MoneyField::OPTION_NUM_DECIMALS);
         $field->setFormTypeOption('scale', $numDecimals);
 
-        // Money objects always store amounts in smallest units, so divisor is always 100
-        $field->setFormTypeOptionIfNotSet('divisor', self::DEFAULT_DIVISOR);
+        // Money objects store amounts in the smallest unit of their currency; the scale of that
+        // unit depends on the currency (e.g. 2 fraction digits for USD/EUR, 0 for JPY, 3 for BHD)
+        $divisor = null !== $currencyCode && CurrencyField::CURRENCY_NONE !== $currencyCode
+            ? 10 ** Currencies::getFractionDigits($currencyCode)
+            : self::DEFAULT_DIVISOR;
+        $field->setFormTypeOptionIfNotSet('divisor', $divisor);
 
         if (null === $value) {
             return;
