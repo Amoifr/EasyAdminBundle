@@ -126,6 +126,7 @@
     {% set tab_id_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_TAB_ID') %}
     {% set tab_is_active_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_TAB_IS_ACTIVE') %}
     {% set tab_error_count_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_TAB_ERROR_COUNT') %}
+    {% set tab_badge_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_TAB_BADGE') %}
 
     <div class="nav-tabs-custom form-tabs-tablist">
         <ul class="nav nav-tabs">
@@ -140,6 +141,12 @@
                         {% set tab_error_count = tab.getCustomOption(tab_error_count_option_name) %}
                         {%- if tab_error_count > 0 -%}
                             <twig:ea:Badge variant="danger" title="{{ 'form.tab.error_badge_title'|trans({'%count%': tab_error_count}, 'EasyAdminBundle') }}">{{ tab_error_count }}</twig:ea:Badge>
+                        {%- endif -%}
+
+                        {% set tab_badge = tab.getCustomOption(tab_badge_option_name) %}
+                        {%- if tab_badge is not null and tab_badge.hasVisibleContent -%}
+                            {%- set tab_badge_attributes = tab_badge.htmlStyle ? tab_badge.htmlAttributes|merge({style: tab_badge.htmlStyle}) : tab_badge.htmlAttributes -%}
+                            <twig:ea:Badge variant="{{ tab_badge.cssClass|replace({'badge-': ''}) }}" class="tab-nav-item-badge" {{ ...tab_badge_attributes }}>{{ tab_badge.content }}</twig:ea:Badge>
                         {%- endif -%}
                     </a>
                 </li>
