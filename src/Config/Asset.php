@@ -97,6 +97,13 @@ final readonly class Asset implements \Stringable
         return $this;
     }
 
+    public function reprisePackageName(?string $packageName = null): self
+    {
+        $this->dto->setReprisePackageName($packageName);
+
+        return $this;
+    }
+
     public function htmlAttr(string $attrName, string $attrValue): self
     {
         $this->dto->setHtmlAttribute($attrName, $attrValue);

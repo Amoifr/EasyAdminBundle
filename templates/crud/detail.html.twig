@@ -26,12 +26,14 @@
     {{ parent() }}
     {{ include('@EasyAdmin/includes/_css_assets.html.twig', {assets: ea_field_assets.cssAssets}, with_context: false) }}
     {{ include('@EasyAdmin/includes/_encore_link_tags.html.twig', {assets: ea_field_assets.webpackEncoreAssets}, with_context: false) }}
+    {{ include('@EasyAdmin/includes/_reprise_link_tags.html.twig', {assets: ea_field_assets.repriseAssets}, with_context: false) }}
 {% endblock %}
 
 {% block configured_javascripts %}
     {{ parent() }}
     {{ include('@EasyAdmin/includes/_js_assets.html.twig', {assets: ea_field_assets.jsAssets}, with_context: false) }}
     {{ include('@EasyAdmin/includes/_encore_script_tags.html.twig', {assets: ea_field_assets.webpackEncoreAssets}, with_context: false) }}
+    {{ include('@EasyAdmin/includes/_reprise_script_tags.html.twig', {assets: ea_field_assets.repriseAssets}, with_context: false) }}
 {% endblock %}
 
 {% block content_title %}

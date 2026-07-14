@@ -33,4 +33,13 @@ class AssetsTest extends TestCase
         $this->assertSame(IconSet::Custom, $assetsConfig->getAsDto()->getIconSet());
         $this->assertSame('some-prefix', $assetsConfig->getAsDto()->getDefaultIconPrefix());
     }
+
+    public function testAddRepriseEntryThrowsWhenRepriseNotInstalled(): void
+    {
+        // Symfony Reprise is not a dependency of this package, so the guard must throw.
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('composer require symfony/reprise');
+
+        Assets::new()->addRepriseEntry('admin');
+    }
 }

@@ -27,4 +27,13 @@ class FieldTraitTest extends TestCase
         $this->assertSame('foo', $formTypeOptions['entry_options']['attr']['class']);
         $this->assertSame('bar', $formTypeOptions['entry_options']['attr']['id']);
     }
+
+    public function testAddRepriseEntriesThrowsWhenRepriseNotInstalled(): void
+    {
+        // Symfony Reprise is not a dependency of this package, so the guard must throw.
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('composer require symfony/reprise');
+
+        TextField::new('test')->addRepriseEntries('admin');
+    }
 }

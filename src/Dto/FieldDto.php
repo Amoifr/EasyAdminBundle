@@ -436,6 +436,11 @@ final class FieldDto
         $this->assets->addWebpackEncoreAsset($assetDto);
     }
 
+    public function addRepriseAsset(AssetDto $assetDto): void
+    {
+        $this->assets->addRepriseAsset($assetDto);
+    }
+
     public function addCssAsset(AssetDto $assetDto): void
     {
         $this->assets->addCssAsset($assetDto);

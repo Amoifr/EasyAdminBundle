@@ -295,6 +295,23 @@ trait FieldTrait
         return $this;
     }
 
+    public function addRepriseEntries(Asset|string ...$entryNamesOrAssets): self
+    {
+        if (!class_exists('Symfony\\Reprise\\Twig\\AssetExtension')) {
+            throw new \RuntimeException('You are trying to add Reprise entries in a field but Symfony Reprise is not installed in your project. Try running "composer require symfony/reprise"');
+        }
+
+        foreach ($entryNamesOrAssets as $entryNameOrAsset) {
+            if (\is_string($entryNameOrAsset)) {
+                $this->dto->addRepriseAsset(new AssetDto($entryNameOrAsset));
+            } else {
+                $this->dto->addRepriseAsset($entryNameOrAsset->getAsDto());
+            }
+        }
+
+        return $this;
+    }
+
     public function addAssetMapperEntries(Asset|string ...$entryNamesOrAssets): self
     {
         if (!class_exists('Symfony\\Component\\AssetMapper\\AssetMapper')) {

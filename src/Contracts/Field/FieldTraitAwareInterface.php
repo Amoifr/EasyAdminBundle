@@ -72,6 +72,8 @@ interface FieldTraitAwareInterface extends FieldInterface
 
     public function addWebpackEncoreEntries(Asset|string ...$entryNamesOrAssets): self;
 
+    public function addRepriseEntries(Asset|string ...$entryNamesOrAssets): self;
+
     public function addCssFiles(Asset|string ...$pathsOrAssets): self;
 
     public function addJsFiles(Asset|string ...$pathsOrAssets): self;

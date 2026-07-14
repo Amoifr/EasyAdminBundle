@@ -328,6 +328,7 @@ class AdminContextFactoryTest extends KernelTestCase
         $this->assertIsArray($assets->getJsAssets());
         $this->assertIsArray($assets->getWebpackEncoreAssets());
         $this->assertIsArray($assets->getAssetMapperAssets());
+        $this->assertIsArray($assets->getRepriseAssets());
     }
 
     public function testCreateWithCrudControllerPreservesIconSetFromDashboard(): void

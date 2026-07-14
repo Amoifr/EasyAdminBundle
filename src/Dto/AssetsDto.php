@@ -13,6 +13,8 @@ final class AssetsDto
     /** @var AssetDto[] */
     private array $webpackEncoreAssets = [];
     /** @var AssetDto[] */
+    private array $repriseAssets = [];
+    /** @var AssetDto[] */
     private array $assetMapperAssets = [];
     /** @var AssetDto[] */
     private array $cssAssets = [];
@@ -36,6 +38,15 @@ final class AssetsDto
         }
 
         $this->webpackEncoreAssets[$entryName] = $assetDto;
+    }
+
+    public function addRepriseAsset(AssetDto $assetDto): void
+    {
+        if (\array_key_exists($entryName = $assetDto->getValue(), $this->repriseAssets)) {
+            throw new \InvalidArgumentException(sprintf('The "%s" Reprise entry has been added more than once via the addRepriseEntry() method, but each entry can only be added once (to not overwrite its configuration).', $entryName));
+        }
+
+        $this->repriseAssets[$entryName] = $assetDto;
     }
 
     public function addAssetMapperAsset(AssetDto $assetDto): void
@@ -104,6 +115,14 @@ final class AssetsDto
     public function getWebpackEncoreAssets(): array
     {
         return $this->webpackEncoreAssets;
+    }
+
+    /**
+     * @return AssetDto[]
+     */
+    public function getRepriseAssets(): array
+    {
+        return $this->repriseAssets;
     }
 
     /**
@@ -186,6 +205,11 @@ final class AssetsDto
                 $filteredAssets->addWebpackEncoreAsset($webpackEncoreAsset);
             }
         }
+        foreach ($this->repriseAssets as $repriseAsset) {
+            if ($repriseAsset->getLoadedOn()->has($pageName)) {
+                $filteredAssets->addRepriseAsset($repriseAsset);
+            }
+        }
         foreach ($this->headContents as $headContent) {
             $filteredAssets->addHtmlContentToHead($headContent);
         }
@@ -200,6 +224,7 @@ final class AssetsDto
     {
         $this->assetMapperAssets = array_merge($this->assetMapperAssets, $assetsDto->getAssetMapperAssets());
         $this->webpackEncoreAssets = array_merge($this->webpackEncoreAssets, $assetsDto->getWebpackEncoreAssets());
+        $this->repriseAssets = array_merge($this->repriseAssets, $assetsDto->getRepriseAssets());
         $this->cssAssets = array_merge($this->cssAssets, $assetsDto->getCssAssets());
         $this->jsAssets = array_merge($this->jsAssets, $assetsDto->getJsAssets());
         $this->headContents = array_merge($this->headContents, $assetsDto->getHeadContents());
