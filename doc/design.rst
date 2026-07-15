@@ -353,6 +353,11 @@ the :doc:`CRUD controllers </crud>` to add your own CSS and JavaScript files::
                 // {{ encore_entry_link_tags('...') }} and {{ encore_entry_script_tags('...') }}
                 ->addWebpackEncoreEntry('admin-app')
 
+                // adds the CSS and JS assets associated to the given Symfony Reprise entry
+                // it's equivalent to adding these inside the <head> element:
+                // {{ reprise_entry_link_tags('...') }} and {{ reprise_entry_script_tags('...') }}
+                ->addRepriseEntry('admin-app')
+
                 // it's equivalent to adding this inside the <head> element:
                 // <link rel="stylesheet" href="{{ asset('...') }}">
                 ->addCssFile('build/admin.css')
@@ -374,7 +379,7 @@ the :doc:`CRUD controllers </crud>` to add your own CSS and JavaScript files::
 
 If you need to customize the HTML attributes or other features of the ``<link>``
 and ``<script>`` tags, pass an ``Asset`` object to the ``addCssFile()``,
-``addJsFile()`` and ``addWebpackEncoreEntry()`` methods::
+``addJsFile()``, ``addWebpackEncoreEntry()`` and ``addRepriseEntry()`` methods::
 
     use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
     // ...
@@ -388,6 +393,11 @@ and ``<script>`` tags, pass an ``Asset`` object to the ``addCssFile()``,
         ->addJsFile(Asset::new('build/admin.js')->htmlAttr('referrerpolicy', 'strict-origin'))
 
         ->addWebpackEncoreEntry(Asset::new('admin-app')->webpackEntrypointName('...'))
+
+        // Symfony Reprise entries only support defining the Symfony Asset package
+        // that they belong to; the HTML attributes of their <link> and <script>
+        // tags are configured globally in the Symfony Reprise bundle configuration
+        ->addRepriseEntry(Asset::new('admin-app')->reprisePackageName('...'))
 
         // adding full Asset objects for AssetMapper entries work too, but it's
         // useless because entries can't define any property, only their name

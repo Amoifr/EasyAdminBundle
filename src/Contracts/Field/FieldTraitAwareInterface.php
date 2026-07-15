@@ -5,6 +5,15 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Contracts\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
 use Symfony\Contracts\Translation\TranslatableInterface;
 
+/**
+ * These methods are provided by FieldTrait, but they are not declared explicitly
+ * in this interface because adding them would break backward compatibility
+ * for applications that implement this interface without using FieldTrait.
+ * They will be declared explicitly in the next major version.
+ *
+ * @method self addAssetMapperEntries(Asset|string ...$entryNamesOrAssets)
+ * @method self addRepriseEntries(Asset|string ...$entryNamesOrAssets)
+ */
 interface FieldTraitAwareInterface extends FieldInterface
 {
     public function setFieldFqcn(string $fieldFqcn): self;
@@ -71,8 +80,6 @@ interface FieldTraitAwareInterface extends FieldInterface
     public function addFormTheme(string ...$formThemePaths): self;
 
     public function addWebpackEncoreEntries(Asset|string ...$entryNamesOrAssets): self;
-
-    public function addRepriseEntries(Asset|string ...$entryNamesOrAssets): self;
 
     public function addCssFiles(Asset|string ...$pathsOrAssets): self;
 

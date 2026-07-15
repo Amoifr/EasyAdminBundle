@@ -878,13 +878,15 @@ Design Options
     ;
 
 Similar to the :ref:`CRUD design options <crud-design-custom-web-assets>`, fields
-can also load CSS files, Javascript files and Webpack Encore entries, and add HTML
-contents to the ``<head>`` and/or ``<body>`` elements of the backend pages::
+can also load CSS files, Javascript files, Webpack Encore entries and Symfony
+Reprise entries, and add HTML contents to the ``<head>`` and/or ``<body>``
+elements of the backend pages::
 
     TextField::new('firstName', 'Name')
         ->addCssFiles('bundle/some-bundle/foo.css', 'some-custom-styles.css')
         ->addJsFiles('admin/some-custom-code.js')
-        ->addWebpackEncoreEntry('admin-maps')
+        ->addWebpackEncoreEntries('admin-maps')
+        ->addRepriseEntries('admin-maps')
         ->addHtmlContentsToHead('<link rel="dns-prefetch" href="https://assets.example.com">')
         ->addHtmlContentsToBody('<!-- generated at '.time().' -->')
     ;
@@ -899,6 +901,9 @@ precise control, use the ``Asset`` class to define the assets::
         ->addCssFiles(Asset::new('bundle/some-bundle/foo.css')->ignoreOnForm()->htmlAttr('media', 'print'))
         ->addJsFiles(Asset::new('admin/some-custom-code.js')->onlyOnIndex()->defer())
         ->addWebpackEncoreEntries(Asset::new('admin-maps')->onlyWhenCreating()->preload())
+        // Symfony Reprise entries use reprisePackageName() to define the Symfony
+        // Asset package they belong to
+        ->addRepriseEntries(Asset::new('admin-maps')->onlyWhenCreating()->reprisePackageName('legacy_assets'))
         // you can even define the Symfony Asset package which the asset belongs to
         ->addCssFiles(Asset::new('some-path/bar.css')->package('legacy_assets'))
     ;
