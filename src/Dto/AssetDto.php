@@ -18,6 +18,7 @@ final class AssetDto implements \Stringable
     private bool $nopush = false;
     private ?string $webpackPackageName = null;
     private string $webpackEntrypointName = '_default';
+    private ?string $reprisePackageName = null;
     /** @var array<string, string> */
     private array $htmlAttributes = [];
     private KeyValueStore $loadedOn;
@@ -110,6 +111,16 @@ final class AssetDto implements \Stringable
     public function getWebpackEntrypointName(): string
     {
         return $this->webpackEntrypointName;
+    }
+
+    public function setReprisePackageName(?string $packageName): void
+    {
+        $this->reprisePackageName = $packageName;
+    }
+
+    public function getReprisePackageName(): ?string
+    {
+        return $this->reprisePackageName;
     }
 
     public function setHtmlAttribute(string $attrName, string $attrValue): void

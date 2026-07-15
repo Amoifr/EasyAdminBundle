@@ -37,6 +37,21 @@ final readonly class Assets
         return $this;
     }
 
+    public function addRepriseEntry(Asset|string $entryNameOrAsset): self
+    {
+        if (!class_exists('Symfony\\Reprise\\RepriseBundle')) {
+            throw new \RuntimeException(sprintf('You are trying to add a Reprise entry called "%s" but Symfony Reprise is not installed in your project. Try running "composer require symfony/reprise"', $entryNameOrAsset));
+        }
+
+        if (\is_string($entryNameOrAsset)) {
+            $this->dto->addRepriseAsset(new AssetDto($entryNameOrAsset));
+        } else {
+            $this->dto->addRepriseAsset($entryNameOrAsset->getAsDto());
+        }
+
+        return $this;
+    }
+
     public function addAssetMapperEntry(Asset|string ...$entryNameOrAsset): self
     {
         if (!class_exists('Symfony\\Component\\AssetMapper\\AssetMapper')) {
