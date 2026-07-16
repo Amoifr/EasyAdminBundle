@@ -1,7 +1,14 @@
-@import "~bootstrap/dist/css/bootstrap.min.css";
+/* All styles are assigned to cascade layers so that any unlayered CSS added by
+   backend applications always overrides EasyAdmin styles, no matter its
+   specificity or loading order. The layer order is defined in layers.css,
+   which must be the first import */
+@import "./layers.css";
 
-@import "~@fortawesome/fontawesome-free/css/all.css";
-@import "~@fortawesome/fontawesome-free/css/v4-shims.css";
-@import "~@fortawesome/fontawesome-free/css/v5-font-face.css";
+@import "~bootstrap/dist/css/bootstrap.min.css" layer(vendor.bootstrap);
 
-@import "./easyadmin-theme/theme.css";
+@import "~@fortawesome/fontawesome-free/css/all.css" layer(vendor.fontawesome);
+@import "~@fortawesome/fontawesome-free/css/v4-shims.css" layer(vendor.fontawesome);
+@import "~@fortawesome/fontawesome-free/css/v5-font-face.css" layer(vendor.fontawesome);
+
+@import "./easyadmin-theme/vendor-overrides.css" layer(ea-overrides);
+@import "./easyadmin-theme/theme.css" layer(ea);

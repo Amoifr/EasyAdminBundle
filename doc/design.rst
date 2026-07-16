@@ -468,6 +468,26 @@ Then, load this CSS file in your dashboard and/or resource admin::
     the value of some `Sass`_ variables (which are defined in the
     ``assets/css/easyadmin-theme/variables-bootstrap.scss`` file).
 
+CSS Cascade Layers
+~~~~~~~~~~~~~~~~~~
+
+In addition to redefining CSS variables, you can override any style with your
+own CSS rules. All backend styles are assigned to `CSS cascade layers`_:
+``vendor`` for third-party styles (Bootstrap, Font Awesome, etc.) and ``ea``
+for the EasyAdmin styles (with ``ea.tokens``, ``ea.base``, ``ea.components``
+and ``ea.utilities`` sublayers).
+
+Unlayered CSS always wins over layered CSS, so any rule in your own CSS files
+overrides the backend styles, no matter its specificity or loading order.
+You don't need ``!important`` flags or artificially specific selectors:
+
+.. code-block:: css
+
+    /* public/css/admin.css */
+    .sidebar {
+        background: linear-gradient(180deg, #1e293b, #0f172a);
+    }
+
 CSS Selectors
 ~~~~~~~~~~~~~
 
@@ -561,3 +581,4 @@ is not installed.
 .. _`NelmioSecurityBundle`: https://github.com/nelmio/NelmioSecurityBundle
 .. _`Twig Components`: https://symfony.com/bundles/ux-twig-component/current/index.html
 .. _`flash messages`: https://symfony.com/doc/current/session.html#flash-messages
+.. _`CSS cascade layers`: https://developer.mozilla.org/en-US/docs/Web/CSS/@layer
