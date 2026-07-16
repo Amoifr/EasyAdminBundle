@@ -30,10 +30,9 @@ class FormLayoutTabsCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('id')->hideOnForm();
-
         // tab 1: Basic Information
         yield FormField::addTab('Basic Info', 'fa fa-info-circle');
+        yield IdField::new('id')->hideOnForm();
         yield TextField::new('name');
         yield TextareaField::new('description');
 
