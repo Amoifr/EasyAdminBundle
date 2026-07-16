@@ -124,7 +124,7 @@ class LayoutTest extends AbstractCrudTestCase
         // verify the main layout structure
         static::assertGreaterThan(0, $crawler->filter('.wrapper')->count(), 'Wrapper should exist');
         static::assertGreaterThan(0, $crawler->filter('.sidebar-wrapper')->count(), 'Sidebar wrapper should exist');
-        static::assertGreaterThan(0, $crawler->filter('.sidebar')->count(), 'Sidebar should exist');
+        static::assertGreaterThan(0, $crawler->filter('.ea-sidebar')->count(), 'Sidebar should exist');
         static::assertGreaterThan(0, $crawler->filter('.main-content')->count(), 'Main content should exist');
     }
 

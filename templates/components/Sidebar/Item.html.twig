@@ -1,0 +1,46 @@
+{% props
+    label, # item text (pass it already translated; it may contain HTML)
+    href = null, # link URL; ignored when hasSubmenu is true (parent items only toggle their submenu)
+    icon = null, # optional icon name
+    active = false, # true when this item matches the current page
+    expanded = false, # true when the item submenu is open (only meaningful with hasSubmenu)
+    hasSubmenu = false, # true renders a non-clickable <button> that toggles/reveals the submenu
+    keepOpen = false, # true renders the submenu always expanded and not collapsible (pass expanded=true too)
+    target = null, # link target attribute
+    rel = null, # link rel attribute
+    cssClass = null, # extra CSS class(es) for the <a>/<button> element
+    htmlAttributes = {}, # extra HTML attributes for the <a>/<button> element
+%}
+
+{% set item_class = html_classes('ea-sidebar-item', {
+    'has-submenu': hasSubmenu,
+    'is-active': active,
+    'is-expanded': expanded,
+    'is-kept-open': keepOpen,
+}) %}
+{% set link_tag = hasSubmenu ? 'button' : 'a' %}
+
+<li {{ attributes.defaults({class: item_class}) }}>
+    <{{ link_tag }} class="{{ html_classes('ea-sidebar-item-link', cssClass) }}"
+        {# keep-open items are not a disclosure widget, so they don't announce aria-expanded #}
+        {%- if hasSubmenu %} type="button"{% if not keepOpen %} aria-expanded="{{ expanded ? 'true' : 'false' }}"{% endif %}
+        {%- else %} href="{{ href }}" referrerpolicy="origin-when-cross-origin"
+            {%- if active %} aria-current="page"{% endif %}
+            {%- if target %} target="{{ target }}"{% endif %}
+            {%- if rel %} rel="{{ rel }}"{% endif %}
+        {%- endif %}
+        {%- for attribute_name, attribute_value in htmlAttributes %} {{ attribute_name }}="{{ attribute_value|e('html') }}"{% endfor %}>
+        {% if icon %}<span class="ea-sidebar-item-icon"><twig:ea:Icon name="{{ icon }}" /></span>{% endif %}
+        <span class="ea-sidebar-item-label">{{ label|raw }}</span>
+        <twig:block name="badge"></twig:block>
+        {% if hasSubmenu %}<twig:ea:Icon name="internal:chevron-right" class="ea-sidebar-item-chevron" />{% endif %}
+    </{{ link_tag }}>
+
+    {% if not hasSubmenu %}
+        {# mirrors the label so the compact (icon rail) mode can show it as a pure-CSS
+           tooltip; the <a> element already provides the accessible name #}
+        <span class="ea-sidebar-item-tooltip" aria-hidden="true">{{ label|raw }}</span>
+    {% endif %}
+
+    <twig:block name="submenu"></twig:block>
+</li>

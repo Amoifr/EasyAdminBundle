@@ -260,7 +260,7 @@ class MultipleDashboardsTest extends WebTestCase
         static::assertResponseIsSuccessful();
 
         // count menu items in second dashboard (should have fewer items)
-        $menuItems = $crawler->filter('.menu-item');
+        $menuItems = $crawler->filter('.ea-sidebar-item');
         // second dashboard has: Home, Manage Categories, Help Center = fewer items than first dashboard
         static::assertGreaterThan(0, $menuItems->count());
         static::assertLessThan(10, $menuItems->count());

@@ -44,7 +44,11 @@ body.page-login #flash-messages {
     }
 }
 .login-wrapper .main-header #header-logo a {
+    color: var(--sidebar-logo-color);
+    display: block;
     font-size: var(--font-size-lg);
+    font-weight: 500;
+    line-height: 24px;
     text-align: center;
     margin: 0;
     padding: 0;

@@ -64,7 +64,7 @@ class MenuDashboardController extends AbstractDashboardController
         yield MenuItem::subMenu('Settings', 'fas fa-cog')->setSubItems([
             MenuItem::linkToUrl('General', 'fas fa-sliders-h', 'https://example.com/settings/general'),
             MenuItem::linkToUrl('Security', 'fas fa-shield-alt', 'https://example.com/settings/security'),
-        ]);
+        ])->keepOpen();
 
         // external link section
         yield MenuItem::section('External Links');

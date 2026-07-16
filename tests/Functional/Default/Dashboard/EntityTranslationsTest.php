@@ -68,7 +68,7 @@ class EntityTranslationsTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // when menu item label is null, it should use the entity's plural translation
-        $menuItems = $crawler->filter('.menu-item a');
+        $menuItems = $crawler->filter('.ea-sidebar-item a');
         $menuTexts = [];
         $menuItems->each(static function ($node) use (&$menuTexts) {
             $menuTexts[] = trim($node->text());
