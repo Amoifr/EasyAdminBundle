@@ -15,7 +15,7 @@
     border: 1px solid transparent;
     border-radius: var(--border-radius);
     max-block-size: 300px;
-    padding: 8px;
+    padding: var(--ea-sp-2);
 }
 .ea-detail .field-image img:hover {
     border-color: var(--datalist-border-color);
@@ -106,7 +106,7 @@
 }
 .basicLightbox__placeholder img {
     background: white;
-    padding: 25px;
+    padding: calc(var(--ea-spacing) * 6.25); /* 25px */
 }
 .basicLightbox__placeholder img:hover {
     cursor: zoom-out;

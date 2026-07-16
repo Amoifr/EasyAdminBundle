@@ -37,7 +37,7 @@
 
     --zindex-modal-backdrop: 2020;
 
-    --form-tabs-gutter-x: 5px;
+    --form-tabs-gutter-x: calc(var(--ea-spacing) * 1.25); /* 5px */
 
     --text-primary-color: var(--text-color);
     --text-secondary-color: var(--text-muted);
@@ -60,10 +60,10 @@
     --sidebar-bg: var(--gray-50);
     --sidebar-border-color: var(--gray-200);
     --sidebar-logo-color: var(--gray-800);
-    --sidebar-padding-left: 10px;
-    --sidebar-padding-right: 10px;
-    --sidebar-menu-items-padding-left: 6px;
-    --sidebar-menu-items-padding-right: 10px;
+    --sidebar-padding-left: var(--ea-sp-2-5);
+    --sidebar-padding-right: var(--ea-sp-2-5);
+    --sidebar-menu-items-padding-left: var(--ea-sp-1-5);
+    --sidebar-menu-items-padding-right: var(--ea-sp-2-5);
     --sidebar-menu-color: var(--gray-700);
     --sidebar-menu-badge-bg: var(--indigo-100);
     --sidebar-menu-badge-color: var(--gray-500);
@@ -86,11 +86,11 @@
     --content-search-reset-button-hover-color: var(--gray-200);
     --content-top-border-color: var(--gray-200);
     --content-bg: var(--white);
-    --content-padding-left: 15px;
-    --content-padding-right: 15px;
-    --lg-content-padding-left: 35px;
-    --lg-content-padding-right: 25px;
-    --lg-content-padding-bottom: 45px;
+    --content-padding-left: calc(var(--ea-spacing) * 3.75); /* 15px */
+    --content-padding-right: calc(var(--ea-spacing) * 3.75); /* 15px */
+    --lg-content-padding-left: calc(var(--ea-spacing) * 8.75); /* 35px */
+    --lg-content-padding-right: calc(var(--ea-spacing) * 6.25); /* 25px */
+    --lg-content-padding-bottom: calc(var(--ea-spacing) * 11.25); /* 45px */
     --user-avatar-icon-bg: var(--gray-200);
     --user-avatar-icon-color: var(--gray-500);
     --user-name-color: var(--gray-500);
@@ -273,13 +273,13 @@
     --alert-dark-border-color: var(--gray-500);
 
     --button-padding-y-sm: 0px;
-    --button-padding-x-sm: 10px;
+    --button-padding-x-sm: var(--ea-sp-2-5);
     --button-padding-y-md: 0;
-    --button-padding-x-md: 12px;
+    --button-padding-x-md: var(--ea-sp-3);
     /* vertical padding is 0 for every size: the height comes from --button-height, so large
        buttons are taller but not inflated by padding */
     --button-padding-y-lg: 0;
-    --button-padding-x-lg: 16px;
+    --button-padding-x-lg: var(--ea-sp-4);
     --button-font-size-sm: 12px;
     --button-font-size-md: 14px;
     /* large buttons are taller than medium ones but keep the same font size (like shadcn) */
@@ -431,7 +431,7 @@
     --text-red-600: hsl(338, 71%, 37%);
     --text-yellow-600: hsl(20, 94%, 30%);
 
-    --color-primary: hsl(230, 61%, 58%); /* custom shade between indigo-400 and indigo-500 */
+    --color-primary: var(--ea-primary);
     --color-success: hsl(157, 69%, 38%);
     --color-info: hsl(201, 94%, 37%);
     --color-warning: hsl(30, 81%, 47%);
@@ -452,12 +452,7 @@
     --link-danger-color: var(--red-600);
     --link-danger-hover-color: var(--red-500);
 
-    --border-radius-none: 0;
-    --border-radius-sm: 2px;
-    --border-radius: 4px;
-    --border-radius-lg: 8px;
-    --border-radius-xl: 12px;
-    --border-radius-full: 50rem;
+    /* the --border-radius-* scale is defined in design-tokens.css, derived from --ea-radius */
     --border-width: 1px;
     --border-style: solid;
     --border-color: hsl(213, 24%, 91%);
@@ -829,7 +824,7 @@
     --text-red-600: hsl(338, 71%, 37%);
     --text-yellow-600: hsl(20, 94%, 30%);
 
-    --color-primary: hsl(213deg 94% 71%);
+    --color-primary: var(--ea-primary);
     --color-success: hsl(157, 69%, 38%);
     --color-info: hsl(201, 94%, 37%);
     --color-warning: hsl(30, 81%, 47%);
@@ -892,8 +887,8 @@
     --bs-warning: var(--color-warning);
 }
 .btn {
-    --bs-btn-padding-x: 8px;
-    --bs-btn-padding-y: 4px;
+    --bs-btn-padding-x: var(--ea-sp-2);
+    --bs-btn-padding-y: var(--ea-sp-1);
     --bs-btn-font-size: 0.875rem;
     --bs-btn-font-weight: 400;
     --bs-btn-border-width: 0;
@@ -912,8 +907,8 @@
     --bs-table-hover-color: var(--table-cell-color);
 }
 .pagination {
-    --bs-pagination-padding-y: 4px;
-    --bs-pagination-padding-x: 10px;
+    --bs-pagination-padding-y: var(--ea-sp-1);
+    --bs-pagination-padding-x: var(--ea-sp-2-5);
     --bs-pagination-color: var(--pagination-color);
     --bs-pagination-line-height: 1.5;
     --bs-pagination-bg: var(--body-bg);
@@ -931,8 +926,8 @@
 .modal {
     --bs-modal-zindex: 2040;
     --bs-modal-width: 380px;
-    --bs-modal-padding: 1rem 1.25rem;
-    --bs-modal-margin: 0.5rem;
+    --bs-modal-padding: var(--ea-sp-4) var(--ea-sp-5);
+    --bs-modal-margin: var(--ea-sp-2);
     --bs-modal-color: var(--text-color);
     --bs-modal-bg: var(--modal-bg);
     --bs-modal-border-color: var(--modal-border-color);
@@ -940,13 +935,13 @@
     --bs-modal-border-radius: var(--border-radius-xl);
     --bs-modal-box-shadow: var(--box-shadow-lg);
     --bs-modal-inner-border-radius: calc(var(--border-radius-xl) - (var(--border-width)));
-    --bs-modal-header-padding-x: 1.25rem;
-    --bs-modal-header-padding-y: 1rem;
-    --bs-modal-header-padding: 1rem 1.25rem;
+    --bs-modal-header-padding-x: var(--ea-sp-5);
+    --bs-modal-header-padding-y: var(--ea-sp-4);
+    --bs-modal-header-padding: var(--ea-sp-4) var(--ea-sp-5);
     --bs-modal-header-border-color: var(--modal-border-color);
     --bs-modal-header-border-width: var(--border-width);
     --bs-modal-title-line-height: 1.2;
-    --bs-modal-footer-gap: 0.5rem;
+    --bs-modal-footer-gap: var(--ea-sp-2);
     --bs-modal-footer-bg: var(--modal-footer-bg);
     --bs-modal-footer-border-color: var(--modal-border-color);
     --bs-modal-footer-border-width: var(--border-width);
@@ -961,7 +956,7 @@
     --bs-nav-tabs-link-active-border-color: var(--border-color) var(--border-color) transparent var(--border-color);
 }
 .badge {
-    --bs-badge-padding-x: 5px;
+    --bs-badge-padding-x: calc(var(--ea-spacing) * 1.25); /* 5px */
     --bs-badge-padding-y: 1px;
     --bs-badge-font-size: var(--font-size-xs);
     --bs-badge-font-weight: 500;
@@ -974,12 +969,12 @@
 .offcanvas-lg,
 .offcanvas-md,
 .offcanvas-sm {
-    --bs-offcanvas-padding-x: 20px;
-    --bs-offcanvas-padding-y: 15px;
+    --bs-offcanvas-padding-x: var(--ea-sp-5);
+    --bs-offcanvas-padding-y: calc(var(--ea-spacing) * 3.75); /* 15px */
 }
 .alert {
-    --bs-alert-padding-x: 1rem;
-    --bs-alert-padding-y: 1rem;
+    --bs-alert-padding-x: var(--ea-sp-4);
+    --bs-alert-padding-y: var(--ea-sp-4);
     --bs-alert-margin-block-end: 0;
     --bs-alert-border-radius: 0;
     --bs-alert-link-color: inherit;

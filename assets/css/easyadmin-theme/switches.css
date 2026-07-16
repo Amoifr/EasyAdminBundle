@@ -42,7 +42,7 @@
 .ea-switch-track {
     position: absolute;
     inset: 0;
-    border-radius: 999px;
+    border-radius: var(--border-radius-full);
     background-color: var(--switch-bg);
     transition: background-color 0.15s ease-in-out;
     pointer-events: none;
@@ -107,6 +107,6 @@
 .ea-switch-check .form-check-label {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--ea-sp-2);
     cursor: pointer;
 }
