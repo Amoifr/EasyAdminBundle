@@ -19,14 +19,47 @@
 
     /* the accent color of interactive and highlighted elements */
     --ea-primary: hsl(230, 61%, 58%); /* custom shade between indigo-400 and indigo-500 */
+
+    /* the color of text and icons that sit ON a solid --ea-primary fill (primary
+       buttons, active pagination...). White suits the default indigo; a light
+       themed primary (e.g. yellow) would need this set to a dark color, so it is
+       its own per-scheme token ready for a future setTheme() to compute from the
+       primary's luminance, rather than a hardcoded white. */
+    --ea-primary-foreground: var(--white);
+
+    /* how thick the focus indicator is, for every focusable element. Keep it at
+       2px or more: WCAG 2.2 requires focus to stay clearly perceivable */
+    --ea-focus-ring-width: 3px;
+
+    /* the two references the --ea-primary-* recipes below are mixed against:
+       -mix-base is the surface a tint sits on, -contrast-base is the direction
+       "more emphasis" moves in. Both flip per scheme, which is what lets one
+       set of recipes serve light and dark. */
+    --ea-primary-mix-base: var(--white);
+    --ea-primary-contrast-base: var(--black);
 }
 
 .ea-dark-scheme {
-    --ea-primary: hsl(213deg, 94%, 71%);
+    /* the fill color, as in light: accent *text* is derived from it via
+       --ea-primary-text, which lightens against the dark surface */
+    --ea-primary: hsl(224, 84%, 49%);
+    --ea-primary-foreground: var(--white);
+    --ea-primary-mix-base: var(--gray-900);
+    --ea-primary-contrast-base: var(--white);
 }
 
 :root,
 .ea-dark-scheme {
+    /* shades derived from --ea-primary, so setting that one knob re-tints every
+       accent surface. Tints use oklab to stay perceptually even as the hue
+       changes; the ring mixes in srgb because it fades to transparent. */
+    --ea-primary-subtle: color-mix(in oklab, var(--ea-primary) 8%, var(--ea-primary-mix-base));
+    --ea-primary-soft: color-mix(in oklab, var(--ea-primary) 16%, var(--ea-primary-mix-base));
+    --ea-primary-muted: color-mix(in oklab, var(--ea-primary) 30%, var(--ea-primary-mix-base));
+    --ea-primary-text: color-mix(in oklab, var(--ea-primary) 55%, var(--ea-primary-contrast-base));
+    --ea-primary-strong: color-mix(in oklab, var(--ea-primary) 80%, var(--ea-primary-contrast-base));
+    --ea-primary-ring: color-mix(in srgb, var(--ea-primary) 35%, transparent);
+
     /* derived border-radius scale (multiplicative, so --ea-radius scales all of them) */
     --border-radius-none: 0;
     --border-radius-sm: calc(var(--ea-radius) * 0.5); /* 2px */
@@ -35,19 +68,26 @@
     --border-radius-xl: calc(var(--ea-radius) * 3); /* 12px */
     --border-radius-full: 50rem; /* fixed on purpose: pills and circles must not scale */
 
-    /* named spacing steps; prefer these over ad-hoc calc() multiples when the
-       value falls on the 4px grid (off-grid multiples like `* 3.75` are legacy
-       values pending a future snap-to-grid cleanup) */
+    /* named spacing steps: the only spacing values allowed in this theme.
+       Every padding/margin/gap must use one of these, so that changing
+       --ea-spacing rescales the whole backend coherently. Ad-hoc multiples
+       like `calc(var(--ea-spacing) * 3.75)` are off the grid: don't add them. */
     --ea-sp-0-5: calc(var(--ea-spacing) * 0.5); /*  2px */
     --ea-sp-1: calc(var(--ea-spacing) * 1); /*  4px */
     --ea-sp-1-5: calc(var(--ea-spacing) * 1.5); /*  6px */
     --ea-sp-2: calc(var(--ea-spacing) * 2); /*  8px */
     --ea-sp-2-5: calc(var(--ea-spacing) * 2.5); /* 10px */
     --ea-sp-3: calc(var(--ea-spacing) * 3); /* 12px */
+    --ea-sp-3-5: calc(var(--ea-spacing) * 3.5); /* 14px */
     --ea-sp-4: calc(var(--ea-spacing) * 4); /* 16px */
     --ea-sp-5: calc(var(--ea-spacing) * 5); /* 20px */
     --ea-sp-6: calc(var(--ea-spacing) * 6); /* 24px */
+    --ea-sp-7: calc(var(--ea-spacing) * 7); /* 28px */
     --ea-sp-8: calc(var(--ea-spacing) * 8); /* 32px */
+    --ea-sp-9: calc(var(--ea-spacing) * 9); /* 36px */
     --ea-sp-10: calc(var(--ea-spacing) * 10); /* 40px */
+    --ea-sp-11: calc(var(--ea-spacing) * 11); /* 44px */
     --ea-sp-12: calc(var(--ea-spacing) * 12); /* 48px */
+    --ea-sp-14: calc(var(--ea-spacing) * 14); /* 56px */
+    --ea-sp-16: calc(var(--ea-spacing) * 16); /* 64px */
 }

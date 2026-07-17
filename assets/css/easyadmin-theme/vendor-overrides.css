@@ -16,10 +16,10 @@
 }
 
 .border-primary {
-    border: 1px solid var(--border-primary-color) !important;
+    border: var(--border-width) solid var(--border-primary-color) !important;
 }
 .border-secondary {
-    border: 1px solid var(--border-secondary-color) !important;
+    border: var(--border-width) solid var(--border-secondary-color) !important;
 }
 
 @media (max-width: 767px) {

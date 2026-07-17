@@ -426,9 +426,54 @@ Customizing the Backend Design
 ------------------------------
 
 The design of the backend is created with lots of CSS variables. This makes it
-easier to customize it to your own needs. You'll find all variables in the
-``vendor/easycorp/easyadmin-bundle/assets/css/easyadmin-theme/variables-theme.scss`` file.
-To override any of them, create a CSS file and redefine the variable values:
+easier to customize it to your own needs. They are defined in two layers:
+
+* **Design tokens** are the few global knobs the rest of the design derives from.
+  They live in
+  ``vendor/easycorp/easyadmin-bundle/assets/css/easyadmin-theme/design-tokens.css``.
+  Changing one of them re-themes the whole backend at once.
+* **Theme variables** are the hundreds of specific values built on top of those
+  tokens (the sidebar background, the table border color, etc.). They live in
+  ``vendor/easycorp/easyadmin-bundle/assets/css/easyadmin-theme/variables-theme.css``.
+
+Start with the design tokens, because each one changes many things consistently:
+
+.. code-block:: text
+
+    /* public/css/admin.css */
+    :root,
+    .ea-dark-scheme {
+        /* the accent color of buttons, links, switches, etc. Pick one with
+           enough contrast on white, because it is also used for link text */
+        --ea-primary: #15803d;
+        /* the base of the spacing scale; increase it for a roomier backend,
+           decrease it for a denser one. All paddings, margins, gaps and the
+           height of buttons and switches are multiples of this value */
+        --ea-spacing: 0.25rem;
+        /* the base of the border radius scale; set it to 0 for square corners */
+        --ea-radius: 0.25rem;
+    }
+
+.. tip::
+
+    If your primary color is light (e.g. a yellow), the white text drawn on top
+    of it (button labels, etc.) becomes unreadable. Set ``--ea-primary-foreground``
+    to a dark color in that case::
+
+        :root, .ea-dark-scheme {
+            --ea-primary: #facc15;
+            --ea-primary-foreground: #1a1a1a;
+        }
+
+.. caution::
+
+    Override the design tokens on ``:root, .ea-dark-scheme``, not just on
+    ``:root``. The backend applies its dark scheme with a class on the
+    ``<body>`` element, and it defines its own value of these tokens there, so a
+    ``:root``-only override applies to the light scheme but is ignored in dark
+    mode. Use separate rules if you want a different value per scheme.
+
+Then override any of the more specific theme variables the same way:
 
 .. code-block:: text
 
@@ -440,8 +485,6 @@ To override any of them, create a CSS file and redefine the variable values:
         --body-bg: #f5f5f5;
         /* make the base font size smaller */
         --font-size-base: 13px;
-        /* remove all border radius to make corners straight */
-        --border-radius: 0px;
     }
 
 Then, load this CSS file in your dashboard and/or resource admin::
@@ -461,12 +504,12 @@ Then, load this CSS file in your dashboard and/or resource admin::
         }
     }
 
-.. note::
+.. tip::
 
-    Because of how Bootstrap styles are defined, it's not possible to use CSS
-    variables to override every style. Sometimes you may need to also override
-    the value of some `Sass`_ variables (which are defined in the
-    ``assets/css/easyadmin-theme/variables-bootstrap.scss`` file).
+    The backend styles some Bootstrap components by mapping Bootstrap's own
+    ``--bs-*`` variables onto the EasyAdmin ones (at the end of
+    ``variables-theme.css``). If some Bootstrap style resists your changes,
+    override the relevant ``--bs-*`` variable in your own CSS file.
 
 CSS Cascade Layers
 ~~~~~~~~~~~~~~~~~~
@@ -567,7 +610,6 @@ is available before using it, allowing graceful fallback when NelmioSecurityBund
 is not installed.
 
 .. _`Bootstrap 5`: https://github.com/twbs/bootstrap
-.. _`Sass`: https://sass-lang.com/
 .. _`Webpack`: https://webpack.js.org/
 .. _`Webpack Encore`: https://symfony.com/doc/current/frontend.html
 .. _`override templates from bundles`: https://symfony.com/doc/current/bundles/override.html#templates
