@@ -62,10 +62,10 @@ code,
 pre {
     color: var(--code-color);
     font-family: var(--font-family-monospace);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 pre {
-    line-height: 1.8;
+    line-height: var(--line-height-relaxed);
 }
 
 /* Needed to provide BC compatibility because
@@ -107,7 +107,7 @@ body:not(.ea-content-width-full) .content-wrapper {
     box-shadow: inset 0 -1px 0 var(--responsive-header-border-color);
     display: flex;
     justify-content: space-between;
-    padding: var(--ea-sp-2) calc(var(--ea-spacing) * 3.75); /* 8px 15px */
+    padding: var(--ea-sp-2) var(--ea-sp-4);
 }
 @media (min-width: 992px) {
     .responsive-header {
@@ -115,9 +115,9 @@ body:not(.ea-content-width-full) .content-wrapper {
     }
 }
 .responsive-header #responsive-header-logo {
-    padding: 0 calc(var(--ea-spacing) * 3.75); /* 15px */
+    padding: 0 var(--ea-sp-4);
     font-size: var(--font-size-base);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     margin: 0;
 }
 .responsive-header #responsive-header-logo a {
@@ -148,9 +148,9 @@ body:not(.ea-content-width-full) .content-wrapper {
     color: var(--sidebar-logo-color);
     display: block;
     font-size: var(--font-size-lg);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     line-height: 24px;
-    padding: calc(var(--ea-spacing) * 4.25) 0 calc(var(--ea-spacing) * 7) 0; /* 17px 28px */
+    padding: var(--ea-sp-4) 0 var(--ea-sp-7) 0;
 }
 .main-header #header-logo img,
 .main-header #header-logo svg {
@@ -191,10 +191,10 @@ body:not(.ea-content-width-full) .content-wrapper {
     inset-inline-start: calc(0px - 2 * 20px - var(--sidebar-max-width));
     overflow-inline: hidden;
     overflow-block: auto;
-    padding: calc(var(--ea-spacing) * 3.75) var(--ea-sp-5); /* 15px 20px */
+    padding: var(--ea-sp-4) var(--ea-sp-5);
     position: fixed;
     inset-block-start: 0;
-    transition: left 0.3s;
+    transition: left var(--ea-duration-slower);
     z-index: calc(var(--zindex-modal-backdrop) + 1);
     inline-size: calc(2 * 20px + var(--sidebar-max-width));
     overscroll-behavior: contain; /* needed to not scroll the entire page when reaching the end of this element scroll */
@@ -211,7 +211,8 @@ body:not(.ea-content-width-full) .content-wrapper {
     }
 }
 body.ea-mobile-sidebar-visible .sidebar {
-    box-shadow: 20px 0 25px -5px rgba(0, 0, 0, 0.1), 10px 0 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 20px 0 25px -5px color-mix(in srgb, var(--black) 10%, transparent), 10px 0 10px -5px
+        color-mix(in srgb, var(--black) 4%, transparent);
     inset-inline-start: 0;
 }
 
@@ -233,7 +234,7 @@ a.user-menu-wrapper .user-details:hover {
 .user-menu-wrapper.user-is-impersonated a.user-details,
 .user-menu-wrapper.user-is-impersonated a.user-details:hover {
     color: var(--user-menu-impersonated-link-color);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
 }
 .user-menu-wrapper .user-details .user-name {
     margin-inline-start: var(--ea-sp-1-5);
@@ -260,7 +261,7 @@ a.user-menu-wrapper .user-details:hover {
 .user-menu-wrapper .dropdown-menu .dropdown-user-details {
     align-items: flex-start;
     display: flex;
-    padding: 0 calc(var(--ea-spacing) * 1.25); /* 5px */
+    padding: 0 var(--ea-sp-1);
 }
 .user-menu-wrapper .dropdown-menu .dropdown-user-details .user-avatar {
     block-size: 39px;
@@ -270,7 +271,7 @@ a.user-menu-wrapper .user-details:hover {
     inline-size: auto;
 }
 .user-menu-wrapper .dropdown-menu .dropdown-user-details .user-avatar .icon {
-    font-size: 25px;
+    font-size: var(--icon-size-lg);
 }
 .user-menu-wrapper .dropdown-menu .dropdown-user-details .user-label {
     color: var(--text-muted);
@@ -289,8 +290,8 @@ a.user-menu-wrapper .user-details:hover {
 }
 .dropdown-settings .dropdown-settings-button {
     color: var(--dropdown-settings-icon-color);
-    font-size: 16px;
-    padding-inline-start: calc(var(--ea-spacing) * 3.75); /* 15px */
+    font-size: var(--icon-size-md);
+    padding-inline-start: var(--ea-sp-4);
 }
 
 .dropdown-settings .dropdown-header {
@@ -310,7 +311,7 @@ a.user-menu-wrapper .user-details:hover {
 }
 
 .content-wrapper {
-    padding: 0 var(--content-padding-right) calc(var(--ea-spacing) * 3.75) var(--content-padding-left); /* 15px */
+    padding: 0 var(--content-padding-right) var(--ea-sp-4) var(--content-padding-left);
 }
 @media (min-width: 992px) {
     .content-wrapper {
@@ -331,9 +332,9 @@ a.user-menu-wrapper .user-details:hover {
     .resizer-handler {
         cursor: col-resize;
         display: block;
-        margin: 0 0 0 calc(var(--ea-spacing) * 1.75); /* 7px */
+        margin: 0 0 0 var(--ea-sp-2);
         min-block-size: 100vh;
-        transition: background 0.7s;
+        transition: background var(--ea-duration-slower);
         inline-size: 3px;
     }
     .resizer-handler:hover {
@@ -356,8 +357,7 @@ a.user-menu-wrapper .user-details:hover {
     align-items: center;
     box-shadow: 0 1px 0 var(--content-top-border-color);
     display: flex;
-    padding: calc(var(--ea-spacing) * 1.25) calc(var(--ea-spacing) * 3.75) calc(var(--ea-spacing) * 1.25)
-        var(--content-padding-left); /* 5px 15px 5px */
+    padding: var(--ea-sp-1) var(--ea-sp-4) var(--ea-sp-1) var(--content-padding-left); /* 5px 15px 5px */
 }
 @media (max-width: 992px) {
     .content-top.ea-search-disabled {
@@ -370,8 +370,8 @@ a.user-menu-wrapper .user-details:hover {
         display: flex;
         block-size: 56px;
         justify-content: space-between;
-        padding: calc(var(--ea-spacing) * 2.75) calc(var(--lg-content-padding-right) + var(--resize-handler-width))
-            calc(var(--ea-spacing) * 2.75) var(--lg-content-padding-left); /* 11px 11px */
+        padding: var(--ea-sp-3) calc(var(--lg-content-padding-right) + var(--resize-handler-width)) var(--ea-sp-3)
+            var(--lg-content-padding-left);
         position: relative;
     }
 }
@@ -410,7 +410,7 @@ a.user-menu-wrapper .user-details:hover {
     background: var(--content-search-reset-button-bg);
     border-radius: var(--border-radius);
     color: var(--content-search-reset-button-color);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     padding: 2px 2px;
 }
 .content-top .content-search .content-search-reset:hover {
@@ -467,7 +467,7 @@ a.user-menu-wrapper .user-details:hover {
 }
 
 .content-header {
-    padding: calc(var(--ea-spacing) * 6.5) 0 var(--ea-sp-4); /* 26px 16px */
+    padding: var(--ea-sp-6) 0 var(--ea-sp-4);
 }
 @media (min-width: 768px) {
     .content-header {
@@ -476,7 +476,7 @@ a.user-menu-wrapper .user-details:hover {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        padding: calc(var(--ea-spacing) * 9) 0 var(--ea-sp-4); /* 36px 16px */
+        padding: var(--ea-sp-9) 0 var(--ea-sp-4);
     }
 }
 
@@ -494,10 +494,10 @@ a.user-menu-wrapper .user-details:hover {
 }
 .content-header-title .title {
     font-size: var(--font-size-xxl);
-    font-weight: bold;
-    line-height: 1.2;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
     margin: 0;
-    padding-inline-end: calc(var(--ea-spacing) * 3.75); /* 15px */
+    padding-inline-end: var(--ea-sp-4);
 }
 @media (min-width: 992px) {
     .content-header-title .title {
@@ -507,7 +507,7 @@ a.user-menu-wrapper .user-details:hover {
 .content-header-title .title small {
     color: var(--gray-600);
     font-size: var(--font-size-lg);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     line-height: var(--font-size-lg);
 }
 
@@ -517,7 +517,7 @@ a.user-menu-wrapper .user-details:hover {
 
 .content-header-help i {
     color: var(--text-muted);
-    font-size: 21px;
+    font-size: var(--icon-size-md);
 }
 
 /* customizing Bootstrap's Saas variables for popovers doesn't work,
@@ -534,7 +534,7 @@ a.user-menu-wrapper .user-details:hover {
     border-radius: var(--border-radius);
     color: var(--popover-color);
     font-size: var(--font-size-base);
-    padding: calc(var(--ea-spacing) * 3.75); /* 15px */
+    padding: var(--ea-sp-4);
     text-align: left;
 }
 .popover.ea-content-help-popover.bs-popover-auto[data-popper-placement^="top"] > .popover-arrow:before,
@@ -587,7 +587,7 @@ a.user-menu-wrapper .user-details:hover {
     flex-direction: row;
 }
 .content-header .page-actions {
-    margin: var(--ea-sp-2-5) 0 calc(var(--ea-spacing) * 3.75); /* 10px 15px */
+    margin: var(--ea-sp-2-5) 0 var(--ea-sp-4);
 }
 @media (min-width: 768px) {
     .content-header .page-actions {
@@ -602,7 +602,7 @@ a.user-menu-wrapper .user-details:hover {
     display: flex;
 }
 .batch-actions .btn + .btn {
-    margin-inline-start: calc(var(--ea-spacing) * 3.75); /* 15px */
+    margin-inline-start: var(--ea-sp-4);
 }
 
 .with-rounded-top {
@@ -621,8 +621,8 @@ a.user-menu-wrapper .user-details:hover {
 }
 
 .content-footer {
-    margin-block-start: calc(var(--ea-spacing) * 3.75); /* 15px */
-    padding: calc(var(--ea-spacing) * 3.75) 0; /* 15px */
+    margin-block-start: var(--ea-sp-4);
+    padding: var(--ea-sp-4) 0;
 }
 
 .content-panel {
@@ -634,7 +634,7 @@ a.user-menu-wrapper .user-details:hover {
     font-size: var(--font-size-lg);
     line-height: 24px;
     margin: 0;
-    padding: calc(var(--ea-spacing) * 3.75) calc(var(--ea-spacing) * 4.25) calc(var(--ea-spacing) * 3.75) var(--ea-sp-5); /* 15px 17px 15px 20px */
+    padding: var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-5);
 }
 .content-panel-header.collapsible {
     padding: 0;
@@ -642,21 +642,21 @@ a.user-menu-wrapper .user-details:hover {
 .content-panel-header.collapsible > a {
     color: inherit;
     display: block;
-    padding: calc(var(--ea-spacing) * 3.75) calc(var(--ea-spacing) * 4.25) calc(var(--ea-spacing) * 3.75) var(--ea-sp-5); /* 15px 17px 15px 20px */
+    padding: var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-5);
 }
 .content-panel-header.collapsible.with-help > a {
-    padding: calc(var(--ea-spacing) * 3.75) calc(var(--ea-spacing) * 4.25) 1px var(--ea-sp-5); /* 15px 17px 20px */
+    padding: var(--ea-sp-4) var(--ea-sp-4) 1px var(--ea-sp-5);
 }
 .content-panel-header.collapsible .collapse-icon {
     color: var(--color-primary);
-    margin-inline-end: calc(var(--ea-spacing) * 1.25); /* 5px */
-    transition: all .1s linear;
+    margin-inline-end: var(--ea-sp-1);
+    transition: all var(--ea-duration-fast) linear;
 }
 .content-panel-collapse:not(.collapsed) .collapse-icon {
     transform: rotate(90deg);
 }
 .content-panel-header.collapsible.with-help .content-panel-header-help {
-    padding: 0 calc(var(--ea-spacing) * 4.25) calc(var(--ea-spacing) * 3.75) var(--ea-sp-5); /* 17px 15px 20px */
+    padding: 0 var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-5);
 }
 
 .content-panel-header-help {
@@ -666,11 +666,11 @@ a.user-menu-wrapper .user-details:hover {
 
 .content-panel-body {
     background: var(--white);
-    padding: calc(var(--ea-spacing) * 3.75) var(--ea-sp-5); /* 15px 20px */
+    padding: var(--ea-sp-4) var(--ea-sp-5);
 }
 @media (min-width: 992px) {
     .content-panel-body {
-        padding: calc(var(--ea-spacing) * 4.5) calc(var(--ea-spacing) * 6.25); /* 18px 25px */
+        padding: var(--ea-sp-4) var(--ea-sp-6);
     }
 }
 
@@ -697,7 +697,7 @@ a.user-menu-wrapper .user-details:hover {
     border-end-start-radius: var(--border-radius);
     border-end-end-radius: var(--border-radius);
     margin: 0;
-    padding: calc(var(--ea-spacing) * 3.75) calc(var(--ea-spacing) * 4.25) calc(var(--ea-spacing) * 3.75) var(--ea-sp-5); /* 15px 17px 15px 20px */
+    padding: var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-5);
 }
 .content-panel-footer.without-border {
     border-block-start: 0;
@@ -721,7 +721,7 @@ a.user-menu-wrapper .user-details:hover {
     padding: var(--dropdown-padding);
 }
 .dropdown-menu.dropdown-has-submenus {
-    padding-inline-start: calc(var(--ea-spacing) * 6.25); /* 25px */
+    padding-inline-start: var(--ea-sp-6);
 }
 .dropdown-menu li {
     border-radius: var(--dropdown-item-radius);
@@ -740,12 +740,12 @@ a.user-menu-wrapper .user-details:hover {
     color: var(--dropdown-icon-color);
     margin: 0;
     /* 14px (not 16px): FontAwesome's filled glyphs read heavier than icon sets with thin SVG strokes,
-       so a slightly smaller size matches the visual weight. */
+       so a slightly smaller size matches the visual weight. Off the icon scale on purpose. */
     font-size: 14px;
 }
 .dropdown-menu .icon i {
     margin: 0;
-    line-height: 1;
+    line-height: var(--line-height-none);
 }
 .dropdown-menu .icon {
     display: inline-flex;
@@ -756,10 +756,10 @@ a.user-menu-wrapper .user-details:hover {
        clipped, and labels line up. SVG icons are capped at 1em and centered in the same
        column. */
     inline-size: 1.25em;
-    block-size: 16px;
+    block-size: var(--icon-size-sm);
     flex-shrink: 0;
     /* reset the item's 20px line-height so glyphs aren't inflated vertically */
-    line-height: 1;
+    line-height: var(--line-height-none);
 }
 
 .dropdown-menu .dropdown-item,
@@ -772,13 +772,13 @@ a.user-menu-wrapper .user-details:hover {
     overflow: hidden;
     padding: var(--ea-sp-1) var(--ea-sp-1-5);
     font-size: var(--font-size-base);
-    line-height: 1.25rem; /* 28px */
+    line-height: 1.25rem;
     text-overflow: ellipsis;
 }
 .dropdown-menu .dropdown-divider {
     background: transparent;
     border: 0;
-    border-radius: 0;
+    border-radius: var(--border-radius-none);
     box-shadow: 0 -1px 0 var(--dropdown-border-color);
     block-size: 1px;
     margin: var(--ea-sp-1-5) calc(-1 * var(--dropdown-padding));
@@ -799,7 +799,7 @@ a.user-menu-wrapper .user-details:hover {
 }
 .dropdown-menu .dropdown-item-color-scheme select {
     background: var(--dropdown-bg);
-    border: 1px solid var(--dropdown-border-color);
+    border: var(--border-width) solid var(--dropdown-border-color);
     border-radius: var(--border-radius);
     color: var(--dropdown-color);
     margin-inline-start: var(--ea-sp-2-5);
@@ -826,7 +826,7 @@ a.user-menu-wrapper .user-details:hover {
 }
 
 .border-tertiary {
-    border: 1px solid var(--border-tertiary-color) !important;
+    border: var(--border-width) solid var(--border-tertiary-color) !important;
 }
 
 .background-primary {

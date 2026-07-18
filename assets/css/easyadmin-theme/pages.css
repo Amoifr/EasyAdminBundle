@@ -56,7 +56,7 @@ body.page-login #flash-messages {
 }
 .login-wrapper .content {
     background-color: var(--body-bg);
-    padding: calc(var(--ea-spacing) * 3.75) calc(var(--ea-spacing) * 7.5); /* 15px 30px */
+    padding: var(--ea-sp-4) var(--ea-sp-8);
     inline-size: 100%;
 }
 @media (min-width: 576px) {
@@ -84,5 +84,5 @@ body.page-login #flash-messages {
 }
 .login-wrapper .form-text {
     font-size: inherit;
-    margin-block-start: calc(var(--ea-spacing) * 1.25); /* 5px */
+    margin-block-start: var(--ea-sp-1);
 }

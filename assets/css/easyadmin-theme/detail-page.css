@@ -1,8 +1,8 @@
 /* Detail Page styles
 /* ------------------------------------------------------------------------- */
 .ea-detail .form-column .form-fieldset-body {
-    padding-block-end: calc(var(--ea-spacing) * 1.75); /* 7px */
-    padding-block-start: calc(var(--ea-spacing) * 1.25); /* 5px */
+    padding-block-end: var(--ea-sp-2);
+    padding-block-start: var(--ea-sp-1);
 }
 .ea-detail .form-column .form-fieldset-body.without-header {
     padding-block-end: var(--ea-sp-2-5);
@@ -17,8 +17,8 @@
 .ea-detail .field-group .field-label {
     color: var(--form-label-color);
     font-size: var(--font-size-base);
-    font-weight: 500;
-    margin: 0 calc(var(--ea-spacing) * 3.75) 0 0; /* 0 15px 0 0 */
+    font-weight: var(--font-weight-medium);
+    margin: 0 var(--ea-sp-4) 0 0;
     padding: 0 0 1px 0;
     text-align: right;
     inline-size: 130px;
@@ -43,7 +43,7 @@
     --bs-tooltip-opacity: 1;
 }
 .tooltip.ea-detail-label-tooltip .tooltip-inner {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     text-align: start;
 }
 
@@ -67,7 +67,7 @@
 .ea-detail .field-group.field-boolean .field-label {
     flex: 1;
     min-inline-size: 66%;
-    margin: 0 0 0 calc(var(--ea-spacing) * 3.75); /* 0 0 0 15px */
+    margin: 0 0 0 var(--ea-sp-4);
     text-align: left;
 }
 .ea-detail .field-group.field-boolean .field-value {

@@ -34,8 +34,8 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
         display: none;
     }
     table.datagrid:not(.datagrid-empty) tr {
-        border: 1px solid var(--responsive-table-row-border-color);
-        margin-block-end: calc(var(--ea-spacing) * 7.5); /* 30px */
+        border: var(--border-width) solid var(--responsive-table-row-border-color);
+        margin-block-end: var(--ea-sp-8);
     }
     table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td {
         box-shadow: inset 0 1px 0 var(--table-cell-border-color);
@@ -69,7 +69,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
         inset-block-end: 0;
         inset-inline-start: 0;
         inline-size: 35%;
-        font-weight: 500;
+        font-weight: var(--font-weight-medium);
         padding: var(--ea-sp-2);
         overflow: hidden;
         text-overflow: ellipsis;
@@ -81,7 +81,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     }
     table.datagrid:not(.datagrid-empty) td.field-boolean::before {
         color: var(--table-cell-color);
-        font-weight: 400;
+        font-weight: var(--font-weight-normal);
         inset-inline-start: 0;
         /* needed to truncate text when the switch label is too long */
         overflow: hidden;
@@ -102,8 +102,8 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 .datagrid thead span:not(.icon) {
     color: var(--table-thead-color);
     display: block;
-    font-weight: 500;
-    line-height: 1.357;
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-snug);
     padding: var(--ea-sp-3) var(--ea-sp-2);
     white-space: nowrap;
 }
@@ -125,7 +125,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 .datagrid thead .sorted a,
 .datagrid thead .sorted span {
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
 }
 .datagrid thead i,
 .datagrid thead .icon {
@@ -188,7 +188,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 .datagrid td.actions a:not(.dropdown-item) {
     font-size: var(--font-size-sm);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
 }
 .datagrid td.actions a:not(.dropdown-item) + a:not(.dropdown-item) {
     margin-inline-start: var(--ea-sp-2-5);
@@ -254,17 +254,17 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     display: inline-block;
 }
 .datagrid .dropdown-actions .dropdown-toggle {
-    border: 1px solid transparent;
+    border: var(--border-width) solid transparent;
     border-radius: var(--border-radius);
     color: var(--dropdown-toggle-color);
     display: block;
-    padding: 1px calc(var(--ea-spacing) * 1.25); /* 1px 5px */
+    padding: 1px var(--ea-sp-1);
     overflow: visible;
 }
 
 .datagrid .dropdown-actions .dropdown-toggle .icon {
     display: block;
-    font-size: 21px;
+    font-size: var(--icon-size-md);
     inline-size: unset;
 }
 
@@ -288,7 +288,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     margin-inline-start: 0;
 }
 .datagrid .dropdown-actions .dropdown-menu .dropstart:has(.dropdown-toggle-split) > .dropdown-menu {
-    margin-inline-end: calc(var(--ea-spacing) * 4.5); /* 1.125rem */
+    margin-inline-end: var(--ea-sp-4);
 }
 
 /* Submenus without toggle-split */
@@ -323,7 +323,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 
 .datagrid .ea-lightbox-thumbnail img {
     background: var(--white);
-    border: 1px solid transparent;
+    border: var(--border-width) solid transparent;
     border-radius: var(--border-radius);
     max-block-size: 50px;
     max-inline-size: 100px;
@@ -334,7 +334,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 
 .datagrid mark {
-    border-radius: 0;
+    border-radius: var(--border-radius-none);
     background: var(--highlight-bg);
     color: var(--highlight-color);
     padding: 0;
@@ -398,7 +398,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     border-radius: var(--border-radius);
     display: block;
     block-size: 10px;
-    margin: calc(var(--ea-spacing) * 3.25) 0; /* 13px 0 */
+    margin: var(--ea-sp-3) 0;
     inline-size: 100%;
 }
 
@@ -416,8 +416,8 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
         transparent 100%
     );
     background-size: 40px 40px;
-    padding-block-start: calc(var(--ea-spacing) * 3.75); /* 15px */
-    padding-block-end: calc(var(--ea-spacing) * 3.75); /* 15px */
+    padding-block-start: var(--ea-sp-4);
+    padding-block-end: var(--ea-sp-4);
 }
 .datagrid-row-empty-message {
     background: var(--body-bg);
@@ -427,12 +427,12 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 
 .datagrid-header-tools {
     display: flex;
-    padding: 0px 0px var(--ea-sp-2-5);
+    padding: 0 0 var(--ea-sp-2-5);
 }
 .datagrid-header-tools .datagrid-search {
     flex: 1;
     max-inline-size: 480px;
-    margin-inline-end: calc(var(--ea-spacing) * 3.75); /* 15px */
+    margin-inline-end: var(--ea-sp-4);
 }
 .datagrid-header-tools .datagrid-search .form-group,
 .datagrid-header-tools .datagrid-search .form-group .form-widget {
@@ -456,7 +456,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 .datagrid-header-tools .datagrid-search a.action-search-reset {
     color: var(--gray-500);
-    padding: var(--ea-sp-1) calc(var(--ea-spacing) * 1.75); /* 4px 7px */
+    padding: var(--ea-sp-1) var(--ea-sp-2);
     position: absolute;
     inset-inline-end: 1px;
     inset-block-start: 1px;
@@ -471,7 +471,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 #modal-filters .modal-content {
     background: var(--modal-bg);
-    border: 1px solid var(--modal-border-color);
+    border: var(--border-width) solid var(--modal-border-color);
     border-radius: var(--border-radius-xl);
     /* the filters layout manages its own spacing, so opt out of the modal
        component's default content padding/gap and render the sections flush */
@@ -481,7 +481,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 #modal-filters .modal-header {
     background: var(--modal-header-bg);
     border-block-end-color: transparent;
-    padding: var(--ea-sp-2-5) calc(var(--ea-spacing) * 3.75); /* 10px 15px */
+    padding: var(--ea-sp-2-5) var(--ea-sp-4);
 }
 #modal-filters .modal-title {
     color: var(--modal-title-color);
@@ -491,7 +491,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     background: var(--modal-bg);
     border-block-end: 0;
     border-radius: var(--border-radius-xl);
-    padding: calc(var(--ea-spacing) * 3.75); /* 15px */
+    padding: var(--ea-sp-4);
 }
 .action-filters-button .icon {
     color: var(--text-color-light);
@@ -501,13 +501,13 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 .action-filters-button .action-filters-button-count {
     color: var(--color-primary);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
 }
 .action-filters-reset i {
     color: var(--text-color-light);
 }
 .filter-field {
-    border-block-start: 1px solid var(--modal-border-color);
+    border-block-start: var(--border-width) solid var(--modal-border-color);
 }
 .filter-heading {
     align-items: center;
@@ -518,10 +518,10 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     color: var(--link-color);
     cursor: pointer;
     flex: 1;
-    margin-inline-start: calc(var(--ea-spacing) * 1.75); /* 7px */
+    margin-inline-start: var(--ea-sp-2);
 }
 .filter-content {
-    margin: -5px 0 0 calc(var(--ea-spacing) * 3.75); /* -5px 0 0 15px */
+    margin: -5px 0 0 var(--ea-sp-4);
     padding: 0 0 var(--ea-sp-2-5);
 }
 .filter-content .form-group,

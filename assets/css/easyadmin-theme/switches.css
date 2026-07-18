@@ -6,10 +6,12 @@
 /* defined in variables-theme.css (light + dark schemes). */
 
 .ea-switch {
-    --ea-switch-width: 32px;
-    --ea-switch-height: 18px;
-    --ea-switch-thumb-size: 14px;
-    --ea-switch-thumb-inset: 2px;
+    --ea-switch-width: var(--ea-sp-8);
+    --ea-switch-thumb-size: var(--ea-sp-3-5);
+    --ea-switch-thumb-inset: var(--ea-sp-0-5);
+    /* the track hugs the thumb, so the height follows from it instead of being
+       a magic number that has to be kept in sync with the two above */
+    --ea-switch-height: calc(var(--ea-switch-thumb-size) + 2 * var(--ea-switch-thumb-inset));
 
     position: relative;
     display: inline-flex;
@@ -21,9 +23,8 @@
 }
 
 .ea-switch-sm {
-    --ea-switch-width: 24px;
-    --ea-switch-height: 14px;
-    --ea-switch-thumb-size: 10px;
+    --ea-switch-width: var(--ea-sp-6);
+    --ea-switch-thumb-size: var(--ea-sp-2-5);
 }
 
 /* the real checkbox sits on top of the visuals, fully transparent, so it stays
@@ -44,7 +45,7 @@
     inset: 0;
     border-radius: var(--border-radius-full);
     background-color: var(--switch-bg);
-    transition: background-color 0.15s ease-in-out;
+    transition: background-color var(--ea-duration-default) var(--ea-ease-in-out);
     pointer-events: none;
 }
 
@@ -56,8 +57,8 @@
     block-size: var(--ea-switch-thumb-size);
     border-radius: 50%;
     background-color: var(--switch-thumb-bg);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-    transition: transform 0.15s ease-in-out;
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--black) 15%, transparent);
+    transition: transform var(--ea-duration-default) var(--ea-ease-in-out);
 }
 
 .ea-switch-input:checked ~ .ea-switch-track {
@@ -69,7 +70,7 @@
 }
 
 .ea-switch-input:focus-visible ~ .ea-switch-track {
-    box-shadow: 0 0 0 3px var(--switch-focus-ring);
+    box-shadow: 0 0 0 var(--ea-focus-ring-width) var(--switch-focus-ring);
 }
 
 /* color variants: only the checked track + focus ring change, reusing the same

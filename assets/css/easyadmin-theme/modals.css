@@ -4,10 +4,10 @@
 .modal-backdrop {
     --bs-backdrop-bg: transparent;
     --bs-backdrop-opacity: 1;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: color-mix(in srgb, var(--black) 10%, transparent);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    transition: opacity 0.1s ease;
+    transition: opacity var(--ea-duration-fast) var(--ea-ease-in-out);
 }
 
 /* Always center the dialog vertically and horizontally on screen.
@@ -44,7 +44,8 @@
 .modal.fade .modal-dialog {
     transform: scale(0.95);
     opacity: 0;
-    transition: transform 0.1s ease, opacity 0.1s ease;
+    transition: transform var(--ea-duration-fast) var(--ea-ease-in-out), opacity var(--ea-duration-fast)
+        var(--ea-ease-in-out);
 }
 .modal.show .modal-dialog {
     transform: scale(1);
@@ -96,7 +97,7 @@
     color: var(--text-color);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    line-height: var(--line-height-normal);
 }
 .modal-body p {
     color: var(--text-muted);
@@ -124,8 +125,8 @@
     color: var(--modal-icon-color);
 }
 .modal-icon .icon {
-    font-size: 20px;
-    line-height: 1;
+    font-size: var(--icon-size-md);
+    line-height: var(--line-height-none);
 }
 .modal-icon .icon svg {
     inline-size: 1em;
@@ -150,7 +151,7 @@
     block-size: 48px;
 }
 .modal-icon--top .icon {
-    font-size: 24px;
+    font-size: var(--icon-size-lg);
 }
 
 /* Seamless footer: no background, no separating border, right-aligned buttons. */

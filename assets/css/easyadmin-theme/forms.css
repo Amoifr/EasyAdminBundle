@@ -20,7 +20,7 @@ input[disabled] {
 .form-group legend.col-form-label {
     color: var(--form-label-color);
     font-size: var(--font-size-base);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     margin: 0;
     padding: 0 0 var(--ea-sp-2) 0;
 }
@@ -36,13 +36,13 @@ input[disabled] {
 /* Used in checkbox and radio buttons */
 label.form-check-label {
     cursor: pointer;
-    font-weight: normal;
+    font-weight: var(--font-weight-normal);
 }
 .form-group label.form-check-label.required:after {
     display: none;
 }
 .form-widget .form-check + .form-check {
-    margin-block-start: calc(var(--ea-spacing) * 1.25); /* 5px */
+    margin-block-start: var(--ea-sp-1);
 }
 
 .form-group label.required:after,
@@ -65,8 +65,8 @@ label.form-check-label {
     color: var(--form-help-color);
     display: block;
     font-size: var(--font-size-sm);
-    margin-block-start: calc(var(--ea-spacing) * 1.25); /* 5px */
-    transition: color 0.5s ease;
+    margin-block-start: var(--ea-sp-1);
+    transition: color var(--ea-duration-slower) var(--ea-ease-in-out);
 }
 .form-widget:focus-within .form-help {
     color: var(--form-help-active-color);
@@ -77,15 +77,15 @@ label.form-check-label {
 .form-widget .form-select {
     background-color: var(--form-control-bg);
     background-repeat: no-repeat; /* see https://github.com/EasyCorp/EasyAdminBundle/issues/5197 */
-    border: 1px solid var(--form-input-border-color);
+    border: var(--border-width) solid var(--form-input-border-color);
     box-shadow: var(--form-input-shadow);
     color: var(--form-input-text-color);
-    font-size: .875rem;
+    font-size: var(--font-size-base);
     block-size: 30px;
-    padding: calc(var(--ea-spacing) * 0.75) calc(var(--ea-spacing) * 1.75) var(--ea-sp-1); /* 3px 7px 4px */
+    padding: var(--ea-sp-1) var(--ea-sp-2) var(--ea-sp-1);
     white-space: nowrap;
     word-break: keep-all;
-    transition: box-shadow .08s ease-in, color .08s ease-in;
+    transition: box-shadow var(--ea-duration-fast) var(--ea-ease-in), color var(--ea-duration-fast) var(--ea-ease-in);
 }
 .form-widget input.form-control.is-invalid,
 .form-widget textarea.form-control.is-invalid,
@@ -96,11 +96,11 @@ label.form-check-label {
 .form-widget .form-select.is-invalid:focus,
 .field-collection-item.field-collection-item-complex.is-invalid:focus {
     background-image: none;
-    border: 1px solid var(--form-input-error-border-color);
+    border: var(--border-width) solid var(--form-input-error-border-color);
     box-shadow: var(--form-input-error-shadow);
 }
 .form-widget input.form-check-input.is-invalid {
-    border: 1px solid var(--form-input-error-border-color);
+    border: var(--border-width) solid var(--form-input-error-border-color);
     box-shadow: var(--form-input-error-shadow);
 }
 
@@ -124,7 +124,7 @@ body.ea-dark-scheme .form-widget .form-select {
     padding: 0;
 }
 .form-widget input.form-check-input {
-    border: 1px solid var(--form-type-check-input-border-color);
+    border: var(--border-width) solid var(--form-type-check-input-border-color);
     box-shadow: var(--form-type-check-input-box-shadow);
 }
 .form-widget input.form-control:focus,
@@ -154,18 +154,18 @@ body.ea-dark-scheme .form-widget .form-select {
     text-align: right;
 }
 .form-widget input.form-control.is-invalid[data-ea-align="right"] {
-    padding-inline-end: calc(var(--ea-spacing) * 7.5); /* 30px */
+    padding-inline-end: var(--ea-sp-8);
 }
 
 .form-widget textarea.form-control {
     block-size: auto;
-    line-height: 1.6;
+    line-height: var(--line-height-relaxed);
     white-space: pre-wrap;
 }
 
 .form-widget .form-select {
     background-position: right 5px center;
-    padding: calc(var(--ea-spacing) * 0.75) calc(var(--ea-spacing) * 7) var(--ea-sp-1) calc(var(--ea-spacing) * 1.75); /* 3px 28px 4px 7px */
+    padding: var(--ea-sp-1) var(--ea-sp-7) var(--ea-sp-1) var(--ea-sp-2);
 }
 .ts-dropdown.form-select {
     block-size: auto;
@@ -178,7 +178,7 @@ body.ea-dark-scheme .form-widget .form-select {
 }
 label.form-check-label {
     margin: 0;
-    padding-inline-start: calc(var(--ea-spacing) * 1.25); /* 5px */
+    padding-inline-start: var(--ea-sp-1);
 }
 .form-check .form-check-input {
     float: none;
@@ -186,7 +186,7 @@ label.form-check-label {
     margin-block-start: 2px;
 }
 .form-check-inline + .form-check-inline {
-    margin-inline-start: calc(var(--ea-spacing) * 3.75); /* 15px */
+    margin-inline-start: var(--ea-sp-4);
 }
 
 /* Date-time widgets */
@@ -230,7 +230,7 @@ label.form-check-label {
 }
 
 .large .input.form-control {
-    font-size: 18px !important;
+    font-size: var(--font-size-xl) !important;
 }
 
 .large textarea.form-control {
@@ -260,8 +260,8 @@ label.form-check-label {
     background: transparent;
     border: 0;
     box-shadow: 0 2px 0 var(--form-tabs-border-color);
-    margin: 0px 0px var(--ea-sp-5);
-    padding-inline-start: 0px;
+    margin: 0 0 var(--ea-sp-5);
+    padding-inline-start: 0;
 }
 
 .form-tabs-tablist .nav-tabs a,
@@ -269,9 +269,9 @@ label.form-check-label {
     border: 0;
     color: var(--text-color);
     font-size: var(--font-size-base);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     margin: 0;
-    padding: var(--ea-sp-1) calc(var(--ea-spacing) * 3.5) var(--ea-sp-2); /* 4px 14px 8px */
+    padding: var(--ea-sp-1) var(--ea-sp-3-5) var(--ea-sp-2);
 }
 .form-tabs-tablist .nav-tabs .nav-item:first-child a,
 .form-tabs-tablist .nav-tabs .nav-item:first-child a:hover {
@@ -280,7 +280,7 @@ label.form-check-label {
 
 .form-tabs-tablist .nav-tabs .tab-nav-item-icon {
     color: var(--text-muted);
-    margin-inline-end: calc(var(--ea-spacing) * 1.25); /* 5px */
+    margin-inline-end: var(--ea-sp-1);
 }
 
 .form-tabs-tablist .nav-tabs .nav-link:focus-visible {
@@ -319,29 +319,29 @@ label.form-check-label {
 }
 
 .form-tabs-tablist .nav-tabs .nav-item .badge {
-    line-height: 1;
+    line-height: var(--line-height-none);
     margin-inline-start: var(--ea-sp-1);
-    padding: calc(var(--ea-spacing) * 0.75) var(--ea-sp-1-5); /* 3px 6px */
+    padding: var(--ea-sp-1) var(--ea-sp-1-5);
 }
 
 .form-tabs-content .tab-help {
     color: var(--form-tabs-help-color);
     margin-block-start: -10px;
-    margin-block-end: calc(var(--ea-spacing) * 3.75); /* 15px */
+    margin-block-end: var(--ea-sp-4);
 }
 
 /* Form columns */
 .form-column .form-column-title {
     display: flex;
     flex-direction: column;
-    margin-block-end: calc(var(--ea-spacing) * 3.75); /* 15px */
+    margin-block-end: var(--ea-sp-4);
 }
 .form-column .form-column-title .form-column-title-content {
     align-items: center;
     display: flex;
     color: var(--form-column-header-color);
-    font-size: 17px;
-    font-weight: bold;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
     padding: 0 0 2px;
 }
 
@@ -379,7 +379,7 @@ label.form-check-label {
 }
 
 .form-column .form-fieldset-body {
-    padding: calc(var(--ea-spacing) * 1.25) var(--bs-gutter-x) 0; /* 5px */
+    padding: var(--ea-sp-1) var(--bs-gutter-x) 0;
 }
 .form-column .form-fieldset-body.without-header {
     padding: var(--bs-gutter-x) var(--bs-gutter-x) 0;
@@ -391,14 +391,14 @@ label.form-check-label {
 }
 
 .form-section-empty {
-    padding: calc(var(--ea-spacing) * 6.25) var(--ea-sp-2-5) calc(var(--ea-spacing) * 6.25); /* 25px 10px 25px */
+    padding: var(--ea-sp-6) var(--ea-sp-2-5) var(--ea-sp-6);
 }
 
 .form-fieldset-header {
     align-items: flex-start;
     display: flex;
     flex-wrap: nowrap;
-    padding: 0 0 calc(var(--ea-spacing) * 3.75); /* 15px */
+    padding: 0 0 var(--ea-sp-4);
     position: relative;
 }
 .form-fieldset-header .form-fieldset-collapse-marker {
@@ -406,7 +406,7 @@ label.form-check-label {
     font-size: 90%;
     margin: 0 var(--ea-sp-2-5) 0 2px;
     transform: rotate(90deg);
-    transition: transform 0.2s ease-out;
+    transition: transform var(--ea-duration-slow) var(--ea-ease-out);
 }
 
 .form-fieldset-header .form-fieldset-title {
@@ -417,9 +417,9 @@ label.form-check-label {
     box-shadow: 0 1px 0 var(--form-fieldset-header-border-color);
     display: flex;
     color: var(--form-fieldset-header-color);
-    font-size: 17px;
-    font-weight: bold;
-    padding: 0 0 calc(var(--ea-spacing) * 1.25); /* 5px */
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    padding: 0 0 var(--ea-sp-1);
 }
 .form-fieldset-header .form-fieldset-title .form-fieldset-title-content.not-collapsible {
     cursor: default;
@@ -451,7 +451,7 @@ label.form-check-label {
 }
 
 .form-fieldset.has-fieldset-error {
-    border: 1px solid var(--form-input-error-border-color);
+    border: var(--border-width) solid var(--form-input-error-border-color);
     border-radius: var(--border-radius);
     box-shadow: var(--form-input-error-shadow);
 }
@@ -460,7 +460,7 @@ label.form-check-label {
 .form-fieldset-body {
     display: grid;
     grid-template-rows: 1fr;
-    transition: grid-template-rows 0.2s ease-out;
+    transition: grid-template-rows var(--ea-duration-slow) var(--ea-ease-out);
     overflow: clip;
 }
 
@@ -549,14 +549,14 @@ label.form-check-label {
     border: var(--form-global-error-border);
     border-radius: var(--border-radius);
     color: var(--form-global-error-color);
-    font-size: 14px;
-    margin: calc(var(--ea-spacing) * 1.25) 0; /* 5px 0 */
+    font-size: var(--font-size-base);
+    margin: var(--ea-sp-1) 0;
     padding: var(--ea-sp-1-5) var(--ea-sp-3);
 }
 form .invalid-feedback {
     color: var(--color-danger);
     font-size: 1em;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     padding-block-start: var(--ea-sp-1-5);
 }
 .form-check-input.is-invalid ~ .form-check-label,
@@ -565,22 +565,22 @@ form .invalid-feedback {
 }
 
 form .invalid-feedback .badge-danger {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-xs);
     margin-inline-end: 2px;
-    padding: calc(var(--ea-spacing) * 0.75) var(--ea-sp-1); /* 3px 4px */
+    padding: var(--ea-sp-1) var(--ea-sp-1);
 }
 form .invalid-feedback > .d-block + .d-block {
-    margin-block-start: calc(var(--ea-spacing) * 1.25); /* 5px */
+    margin-block-start: var(--ea-sp-1);
 }
 
 /* Form group inputs */
 .input-group-text {
     background-color: var(--form-input-group-text-bg);
-    border: 1px solid var(--form-input-group-text-border-color);
+    border: var(--border-width) solid var(--form-input-group-text-border-color);
     box-shadow: var(--form-input-box-shadow);
     color: var(--form-input-text-color);
     block-size: 30px;
-    padding: calc(var(--ea-spacing) * 0.75) var(--ea-sp-2-5) calc(var(--ea-spacing) * 1.25); /* 3px 10px 5px */
+    padding: var(--ea-sp-1) var(--ea-sp-2-5) var(--ea-sp-1);
 }
 .input-group button,
 .input-group button:hover,
@@ -614,9 +614,9 @@ form .invalid-feedback > .d-block + .d-block {
     display: inline-flex;
     align-items: center;
     gap: var(--ea-sp-1-5);
-    font-size: 0.875rem;
-    font-weight: 500;
-    padding: var(--ea-sp-1-5) calc(var(--ea-spacing) * 3.5); /* 0.375rem 0.875rem */
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    padding: var(--ea-sp-1-5) var(--ea-sp-3-5);
 }
 .ea-fileupload-add-btn .btn-icon {
     inline-size: 0.875rem;
@@ -627,8 +627,8 @@ form .invalid-feedback > .d-block + .d-block {
     background: none;
     border: none;
     color: var(--text-color);
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
     cursor: pointer;
     padding: var(--ea-sp-1-5) 0;
 }
@@ -651,7 +651,7 @@ form .invalid-feedback > .d-block + .d-block {
     display: flex;
     align-items: center;
     gap: var(--ea-sp-2-5);
-    border: 1px solid var(--border-tertiary-color);
+    border: var(--border-width) solid var(--border-tertiary-color);
     border-radius: var(--border-radius);
     padding: var(--ea-sp-2) var(--ea-sp-3);
 }
@@ -669,7 +669,7 @@ form .invalid-feedback > .d-block + .d-block {
     inline-size: 2.25rem;
     block-size: 2.25rem;
     object-fit: cover;
-    border-radius: calc(var(--border-radius) * 0.5);
+    border-radius: var(--border-radius-sm);
 }
 .ea-fileupload-card .ea-fileupload-card-icon {
     inline-size: 2rem;
@@ -690,17 +690,17 @@ form .invalid-feedback > .d-block + .d-block {
     flex-direction: column;
 }
 .ea-fileupload-card-name {
-    font-weight: 600;
-    font-size: 0.875rem;
-    line-height: 1.3;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-tight);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--text-color);
 }
 .ea-fileupload-card-size {
-    font-size: 0.75rem;
-    line-height: 1.3;
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-tight);
     color: var(--text-secondary-color);
 }
 
@@ -722,7 +722,7 @@ form .invalid-feedback > .d-block + .d-block {
     padding: 0.5em;
     border-radius: var(--border-radius);
     text-decoration: none;
-    line-height: 1;
+    line-height: var(--line-height-none);
 }
 .ea-fileupload-card-actions .ea-fileupload-action-btn:hover {
     color: var(--text-color);
@@ -753,7 +753,7 @@ form .invalid-feedback > .d-block + .d-block {
 }
 
 .ea-vich-file-name .fa {
-    font-size: 18px;
+    font-size: var(--icon-size-md);
 }
 
 /* this element should use 'display: flex', but that doesn't work with
@@ -791,7 +791,7 @@ form .invalid-feedback > .d-block + .d-block {
 .input-file-container [type="file"] {
     cursor: inherit;
     display: block;
-    font-size: 999px;
+    font-size: 999px; /* hides the native file input text without hiding the control */
     filter: opacity(0);
     min-block-size: 100%;
     min-inline-size: 100%;

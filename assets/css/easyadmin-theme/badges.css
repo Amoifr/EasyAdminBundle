@@ -26,7 +26,7 @@
 .badge.badge-sm {
     --bs-badge-padding-x: var(--ea-sp-1);
     --bs-badge-padding-y: 0;
-    --bs-badge-font-size: 11px;
+    --bs-badge-font-size: var(--font-size-xs);
 }
 
 .badge.badge-success {
