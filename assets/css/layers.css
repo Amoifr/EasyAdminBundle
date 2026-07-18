@@ -1,0 +1,10 @@
+/* The cascade layer order used by all EasyAdmin styles. This statement must be
+   the first CSS emitted in every compiled file (layer order is set by the first
+   occurrence of each layer name), so this file must be the first import of every
+   entry point; a plain '@layer' statement written in the entry file itself would
+   be emitted after the imported files by the bundler.
+
+   The 'ea-overrides' layer is declared first because for '!important'
+   declarations the layer order is inverted; see easyadmin-theme/vendor-overrides.css */
+@layer ea-overrides, vendor, ea;
+@layer ea.tokens, ea.base, ea.components, ea.utilities;

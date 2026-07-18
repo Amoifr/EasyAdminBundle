@@ -21,16 +21,16 @@ body {
 i.fa,
 i.fas,
 i.far {
-    font-family: "Font Awesome 6 Free", sans-serif !important;
+    font-family: "Font Awesome 6 Free", sans-serif;
 }
 i.fab {
-    font-family: "Font Awesome 6 Brands", sans-serif !important;
+    font-family: "Font Awesome 6 Brands", sans-serif;
 }
 i.fal {
-    font-family: "Font Awesome 6 Pro", sans-serif !important;
+    font-family: "Font Awesome 6 Pro", sans-serif;
 }
 i.fad {
-    font-family: "Font Awesome 6 Duotone", sans-serif !important;
+    font-family: "Font Awesome 6 Duotone", sans-serif;
 }
 span.icon {
     display: inline-block;
@@ -818,22 +818,13 @@ a.user-menu-wrapper .user-details:hover {
 }
 
 /* Utilities */
-.text-primary {
-    color: var(--text-primary-color) !important;
-}
-.text-secondary {
-    color: var(--text-secondary-color) !important;
-}
+/* .text-primary, .text-secondary, .border-primary and .border-secondary are
+   redefined in vendor-overrides.css because they collide with Bootstrap
+   utilities declared with '!important' */
 .text-tertiary {
     color: var(--text-tertiary-color) !important;
 }
 
-.border-primary {
-    border: 1px solid var(--border-primary-color) !important;
-}
-.border-secondary {
-    border: 1px solid var(--border-secondary-color) !important;
-}
 .border-tertiary {
     border: 1px solid var(--border-tertiary-color) !important;
 }

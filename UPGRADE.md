@@ -1,6 +1,33 @@
 Upgrade Guide
 =============
 
+## EasyAdmin 5.3.0
+
+### CSS Cascade Layers
+
+All CSS styles of the backend are now assigned to [cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer):
+`vendor` (Bootstrap, Font Awesome and other third-party styles), `ea` (the
+EasyAdmin styles, with the `ea.tokens`, `ea.base`, `ea.components` and
+`ea.utilities` sublayers) and `ea-overrides` (a few special rules explained below).
+
+Since unlayered CSS always wins over layered CSS, any custom styles you add
+(e.g. with `addCssFile()`) now override the backend styles regardless of their
+specificity or loading order. In practice this means:
+
+* Most custom styles keep working as before, and overriding backend styles no
+  longer requires `!important` or artificially specific selectors; you can
+  safely remove those workarounds.
+* If some global CSS of your application (e.g. a reset stylesheet or generic
+  rules like `button { ... }`) is loaded in the backend pages, it previously
+  lost against the more specific backend styles but now it wins. If the backend
+  looks different after upgrading, scope those global styles or assign them to
+  their own cascade layer.
+* For `!important` declarations the layer order is inverted, so the few
+  `!important` rules that the backend still needs (defined in the `ea-overrides`
+  layer) now win over `!important` declarations in your unlayered custom CSS.
+  If one of your `!important` overrides stopped working, remove the
+  `!important` flag: the normal declaration now wins.
+
 ## EasyAdmin 5.2.0
 
 ### HTML Markup Changes

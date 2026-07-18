@@ -1,0 +1,37 @@
+/* For '!important' declarations, the cascade layer order is inverted: earlier
+   layers win over later ones. This file is loaded into the 'ea-overrides' layer,
+   declared before the 'vendor' layer, so its '!important' rules can defeat the
+   '!important' rules of Bootstrap utilities (something the 'ea' layer can't do).
+   Only '!important' rules may live here: a normal declaration in this layer
+   loses to every other layer. */
+
+/* Bootstrap defines .text-primary, .text-secondary, .border-primary and
+   .border-secondary utilities with '!important'; redefine them to use the
+   EasyAdmin design tokens */
+.text-primary {
+    color: var(--text-primary-color) !important;
+}
+.text-secondary {
+    color: var(--text-secondary-color) !important;
+}
+
+.border-primary {
+    border: 1px solid var(--border-primary-color) !important;
+}
+.border-secondary {
+    border: 1px solid var(--border-secondary-color) !important;
+}
+
+@media (max-width: 767px) {
+    table.datagrid:not(.datagrid-empty) td {
+        /* because of how the contents are rendered in small screens, table contents must be left-aligned
+       the !important flag is needed to override the !important used by Bootstrap in .text-center, .text-right, etc. */
+        text-align: left !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .datagrid .field-country {
+        text-align: left !important;
+    }
+}
