@@ -3,6 +3,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Dto;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
 use PHPUnit\Framework\TestCase;
 
 class DashboardDtoTest extends TestCase
@@ -66,5 +67,19 @@ class DashboardDtoTest extends TestCase
         $result = $dashboard->useEntityTranslations();
 
         $this->assertSame($dashboard, $result);
+    }
+
+    public function testThemeDefaultsToNull(): void
+    {
+        $this->assertNull(Dashboard::new()->getAsDto()->getTheme());
+    }
+
+    public function testSetTheme(): void
+    {
+        $dashboard = Dashboard::new();
+        $result = $dashboard->setTheme(Theme::new()->primaryColor('#15803d'));
+
+        $this->assertSame($dashboard, $result);
+        $this->assertSame('#15803d', $dashboard->getAsDto()->getTheme()->getPrimaryColor());
     }
 }

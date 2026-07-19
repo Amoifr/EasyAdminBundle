@@ -29,6 +29,38 @@
         {% endguard %}
     {% endblock %}
 
+    {# the theme overrides must be emitted after the app.css stylesheet (unlayered
+       CSS, so it beats the layered design tokens) and before the stylesheets
+       configured by the user, so their CSS can override the theme #}
+    {# these lines are not indented on purpose: Twig removes the newline found
+       after each tag, so the CSS newlines must belong to the content lines #}
+    {% block head_theme %}
+        {% set theme = ea.dashboardTheme %}
+        {% if theme is not null and theme.hasCssVariables %}
+            {%- set themeCssVariables = theme.cssVariables %}
+            {%- guard function csp_nonce %}
+<style nonce="{{ csp_nonce('style') }}">
+{% else %}
+<style>
+{% endguard %}
+{% if themeCssVariables.common is not empty %}
+:root, .ea-dark-scheme {
+{% for name, value in themeCssVariables.common %}
+    {{ name }}: {{ value }};
+{% endfor %}
+}
+{% endif %}
+{% if themeCssVariables.dark is not empty %}
+.ea-dark-scheme {
+{% for name, value in themeCssVariables.dark %}
+    {{ name }}: {{ value }};
+{% endfor %}
+}
+{% endif %}
+</style>
+        {% endif %}
+    {% endblock %}
+
     {% block configured_stylesheets %}
         {{ include('@EasyAdmin/includes/_css_assets.html.twig', {assets: ea.assets.cssAssets ?? []}, with_context: false) }}
         {{ include('@EasyAdmin/includes/_encore_link_tags.html.twig', {assets: ea.assets.webpackEncoreAssets ?? []}, with_context: false) }}

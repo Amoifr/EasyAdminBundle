@@ -3,11 +3,11 @@
 body.error .error-message {
     max-inline-size: 500px;
     min-block-size: 400px;
-    padding: var(--ea-sp-11) var(--ea-sp-4);
+    padding: var(--ea-sp-22) var(--ea-sp-8);
 }
 @media (min-width: 992px) {
     body.error .error-message {
-        padding: var(--ea-sp-11);
+        padding: var(--ea-sp-22);
     }
 }
 body.error .error-message h1 {
@@ -19,7 +19,7 @@ body.error .error-message h1 {
     margin-block-end: 1em;
 }
 body.error .error-message h1 .icon {
-    margin-inline-end: var(--ea-sp-1-5);
+    margin-inline-end: var(--ea-sp-3);
     line-height: var(--line-height-none);
     font-size: 110%;
 }

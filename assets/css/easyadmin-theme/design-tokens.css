@@ -15,7 +15,7 @@
     --ea-radius: 0.25rem; /* 4px */
 
     /* base spacing unit; all padding/margin/gap values are multiples of it */
-    --ea-spacing: 0.25rem; /* 4px */
+    --ea-spacing: 0.125rem; /* 2px */
 
     /* the accent color of interactive and highlighted elements */
     --ea-primary: hsl(230, 61%, 58%); /* custom shade between indigo-400 and indigo-500 */
@@ -70,24 +70,25 @@
 
     /* named spacing steps: the only spacing values allowed in this theme.
        Every padding/margin/gap must use one of these, so that changing
-       --ea-spacing rescales the whole backend coherently. Ad-hoc multiples
-       like `calc(var(--ea-spacing) * 3.75)` are off the grid: don't add them. */
-    --ea-sp-0-5: calc(var(--ea-spacing) * 0.5); /*  2px */
-    --ea-sp-1: calc(var(--ea-spacing) * 1); /*  4px */
-    --ea-sp-1-5: calc(var(--ea-spacing) * 1.5); /*  6px */
-    --ea-sp-2: calc(var(--ea-spacing) * 2); /*  8px */
-    --ea-sp-2-5: calc(var(--ea-spacing) * 2.5); /* 10px */
-    --ea-sp-3: calc(var(--ea-spacing) * 3); /* 12px */
-    --ea-sp-3-5: calc(var(--ea-spacing) * 3.5); /* 14px */
-    --ea-sp-4: calc(var(--ea-spacing) * 4); /* 16px */
-    --ea-sp-5: calc(var(--ea-spacing) * 5); /* 20px */
-    --ea-sp-6: calc(var(--ea-spacing) * 6); /* 24px */
-    --ea-sp-7: calc(var(--ea-spacing) * 7); /* 28px */
-    --ea-sp-8: calc(var(--ea-spacing) * 8); /* 32px */
-    --ea-sp-9: calc(var(--ea-spacing) * 9); /* 36px */
-    --ea-sp-10: calc(var(--ea-spacing) * 10); /* 40px */
-    --ea-sp-11: calc(var(--ea-spacing) * 11); /* 44px */
-    --ea-sp-12: calc(var(--ea-spacing) * 12); /* 48px */
-    --ea-sp-14: calc(var(--ea-spacing) * 14); /* 56px */
-    --ea-sp-16: calc(var(--ea-spacing) * 16); /* 64px */
+       --ea-spacing rescales the whole backend coherently. Each step is an
+       integer multiple of the base unit (--ea-sp-N = N * --ea-spacing);
+       fractional multiples are off the grid: don't add them. */
+    --ea-sp-1: calc(var(--ea-spacing) * 1); /*  2px */
+    --ea-sp-2: calc(var(--ea-spacing) * 2); /*  4px */
+    --ea-sp-3: calc(var(--ea-spacing) * 3); /*  6px */
+    --ea-sp-4: calc(var(--ea-spacing) * 4); /*  8px */
+    --ea-sp-5: calc(var(--ea-spacing) * 5); /* 10px */
+    --ea-sp-6: calc(var(--ea-spacing) * 6); /* 12px */
+    --ea-sp-7: calc(var(--ea-spacing) * 7); /* 14px */
+    --ea-sp-8: calc(var(--ea-spacing) * 8); /* 16px */
+    --ea-sp-10: calc(var(--ea-spacing) * 10); /* 20px */
+    --ea-sp-12: calc(var(--ea-spacing) * 12); /* 24px */
+    --ea-sp-14: calc(var(--ea-spacing) * 14); /* 28px */
+    --ea-sp-16: calc(var(--ea-spacing) * 16); /* 32px */
+    --ea-sp-18: calc(var(--ea-spacing) * 18); /* 36px */
+    --ea-sp-20: calc(var(--ea-spacing) * 20); /* 40px */
+    --ea-sp-22: calc(var(--ea-spacing) * 22); /* 44px */
+    --ea-sp-24: calc(var(--ea-spacing) * 24); /* 48px */
+    --ea-sp-28: calc(var(--ea-spacing) * 28); /* 56px */
+    --ea-sp-32: calc(var(--ea-spacing) * 32); /* 64px */
 }

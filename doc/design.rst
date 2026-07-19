@@ -477,6 +477,16 @@ easier to customize it to your own needs. They are defined in two layers:
   tokens (the sidebar background, the table border color, etc.). They live in
   ``vendor/easycorp/easyadmin-bundle/assets/css/easyadmin-theme/variables-theme.css``.
 
+.. tip::
+
+    The most common design changes (primary color, border radius, spacing
+    density and gray scale) don't require writing any CSS: use the
+    ``Dashboard::setTheme()`` method explained in the
+    :doc:`dashboard configuration reference </dashboards>`. The CSS overrides
+    explained in this section are the way to customize everything else (fonts,
+    backgrounds, layout dimensions, etc.) and they always win over the
+    ``setTheme()`` values.
+
 Start with the design tokens, because each one changes many things consistently:
 
 .. code-block:: text
@@ -490,7 +500,7 @@ Start with the design tokens, because each one changes many things consistently:
         /* the base of the spacing scale; increase it for a roomier backend,
            decrease it for a denser one. All paddings, margins, gaps and the
            height of buttons and switches are multiples of this value */
-        --ea-spacing: 0.25rem;
+        --ea-spacing: 0.125rem;
         /* the base of the border radius scale; set it to 0 for square corners */
         --ea-radius: 0.25rem;
     }

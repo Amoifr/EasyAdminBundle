@@ -12,20 +12,20 @@
     display: flex;
     flex-direction: column;
     min-block-size: 100vh;
-    inset-inline-start: calc(0px - 2 * 20px - var(--sidebar-max-width));
+    inset-inline-start: calc(0px - 2 * var(--ea-sp-10) - var(--sidebar-max-width));
     overflow-inline: hidden;
     overflow-block: auto;
-    padding: var(--ea-sp-4) var(--ea-sp-5);
+    padding: var(--ea-sp-8) var(--ea-sp-10);
     position: fixed;
     inset-block-start: 0;
     transition: left var(--ea-duration-slower);
     z-index: calc(var(--zindex-modal-backdrop) + 1);
-    inline-size: calc(2 * 20px + var(--sidebar-max-width));
+    inline-size: calc(2 * var(--ea-sp-10) + var(--sidebar-max-width));
     overscroll-behavior: contain; /* needed to not scroll the entire page when reaching the end of this element scroll */
 }
 @media (min-width: 992px) {
     .ea-sidebar {
-        box-shadow: inset -1px 0 0 var(--sidebar-border-color);
+        box-shadow: inset calc(-1 * var(--border-width)) 0 0 var(--sidebar-border-color);
         max-inline-size: var(--sidebar-max-width);
         /* 'visible' is required so the sticky footer anchors to the viewport instead
            of the sidebar (any other value turns the sidebar into its scrollport) */
@@ -64,8 +64,8 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
     display: block;
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
-    line-height: 24px;
-    padding: var(--ea-sp-4) 0 var(--ea-sp-7) 0;
+    line-height: var(--line-height-normal);
+    padding: var(--ea-sp-8) 0 var(--ea-sp-14) 0;
 }
 .ea-sidebar-logo img,
 .ea-sidebar-logo svg {
@@ -82,7 +82,7 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
 /* Content
    ========================================================================= */
 .ea-sidebar-content {
-    padding: 0 0 20px;
+    padding: 0 0 var(--ea-sp-10);
 }
 
 /* Footer
@@ -92,23 +92,24 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
    with its contents, so keep them short or make them scrollable yourself) */
 .ea-sidebar-footer {
     background: var(--sidebar-bg);
-    box-shadow: 0 -1px 0 var(--sidebar-border-color);
+    box-shadow: 0 calc(-1 * var(--border-width)) 0 var(--sidebar-border-color);
     flex-shrink: 0;
     inset-block-end: 0;
-    margin-block-end: -15px;
+    margin-block-end: calc(-1 * var(--ea-sp-8));
     margin-block-start: auto;
-    margin-inline: -20px;
-    padding: 12px 20px;
+    margin-inline: calc(-1 * var(--ea-sp-10));
+    padding: var(--ea-sp-6) var(--ea-sp-10);
     position: sticky;
 }
 @media (min-width: 992px) {
     .ea-sidebar-footer {
         /* the inset shadow continues the sidebar right border that the footer overlaps */
-        box-shadow: 0 -1px 0 var(--sidebar-border-color), inset -1px 0 0 var(--sidebar-border-color);
+        box-shadow: 0 calc(-1 * var(--border-width)) 0 var(--sidebar-border-color), inset calc(-1 * var(--border-width))
+            0 0 var(--sidebar-border-color);
         margin-block-end: 0;
         margin-inline-start: calc(0px - var(--sidebar-padding-left));
         margin-inline-end: calc(0px - var(--sidebar-padding-right));
-        padding: 12px var(--sidebar-padding-right) 12px
+        padding: var(--ea-sp-6) var(--sidebar-padding-right) var(--ea-sp-6)
             calc(var(--sidebar-padding-left) + var(--sidebar-menu-items-padding-left));
     }
 }
@@ -125,11 +126,11 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
     align-items: center;
     color: var(--sidebar-menu-header-color);
     display: flex;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 15px;
-    margin-block-start: 15px;
-    padding: 7px 5px 7px var(--sidebar-menu-items-padding-left);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-tight);
+    margin-block-start: var(--ea-sp-8);
+    padding: var(--ea-sp-4) var(--ea-sp-2) var(--ea-sp-4) var(--sidebar-menu-items-padding-left);
     text-transform: uppercase;
 }
 .ea-sidebar-group:first-child .ea-sidebar-group-label {
@@ -137,7 +138,7 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
 }
 .ea-sidebar-group-icon {
     color: inherit;
-    margin-inline-end: 8px;
+    margin-inline-end: var(--ea-sp-4);
 }
 .ea-sidebar-group-label .ea-sidebar-badge {
     margin-inline-start: auto;
@@ -148,7 +149,7 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
 .ea-sidebar-item {
     border-radius: var(--border-radius);
     padding-inline-start: var(--sidebar-menu-items-padding-left);
-    padding-inline-end: 5px;
+    padding-inline-end: var(--ea-sp-2);
     position: relative;
 }
 .ea-sidebar-item.is-active {
@@ -173,12 +174,12 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
     display: flex;
     font: inherit;
     inline-size: 100%;
-    padding: 4px 0;
+    padding: var(--ea-sp-2) 0;
     text-align: start;
 }
 
 .ea-sidebar-item.is-active > .ea-sidebar-item-link .ea-sidebar-item-label {
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
 }
 .ea-sidebar-item.is-active:not(.is-expanded) > .ea-sidebar-item-link,
 .ea-sidebar-item.is-active:not(.is-expanded) > .ea-sidebar-item-link .ea-sidebar-item-icon {
@@ -195,7 +196,7 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
 .ea-sidebar-item-icon {
     color: var(--sidebar-menu-icon-color);
     flex-shrink: 0;
-    margin-inline-end: 10px;
+    margin-inline-end: var(--ea-sp-5);
     text-align: center;
     /* no explicit block-size: the natural line box keeps the baseline (and so the
        icon) aligned with the first line of the label */
@@ -203,8 +204,8 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
 }
 .ea-sidebar-item-icon svg {
     color: var(--sidebar-menu-icon-color);
-    max-block-size: 16px;
-    max-inline-size: 20px;
+    max-block-size: var(--icon-size-sm);
+    max-inline-size: var(--icon-size-md);
     vertical-align: sub;
 }
 
@@ -216,7 +217,7 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
 .ea-sidebar-item-chevron {
     color: var(--sidebar-menu-icon-color);
     flex-shrink: 0;
-    margin-inline-start: 8px;
+    margin-inline-start: var(--ea-sp-4);
     transition: rotate var(--ea-duration-slow) var(--ea-ease-in-out);
     inline-size: auto; /* this is needed to make it look better */
 }
@@ -240,22 +241,22 @@ span.icon.ea-sidebar-item-chevron svg {
 /* Badges
    ========================================================================= */
 .ea-sidebar-badge {
-    margin-inline-start: 8px;
-    min-inline-size: 25px;
+    margin-inline-start: var(--ea-sp-4);
+    min-inline-size: var(--ea-sp-12);
 }
 .ea-sidebar-badge.badge-secondary {
     background: var(--sidebar-menu-badge-bg);
     color: var(--sidebar-menu-badge-color);
 }
 .ea-light-scheme .ea-sidebar-item .ea-sidebar-badge {
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 0 var(--border-width) color-mix(in srgb, var(--black) 10%, transparent);
 }
 .ea-light-scheme .ea-sidebar-item.is-active .ea-sidebar-badge {
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 0 var(--border-width) color-mix(in srgb, var(--black) 20%, transparent);
 }
 .ea-dark-scheme .ea-sidebar-item.is-active .ea-sidebar-badge {
     background: var(--sidebar-bg);
-    box-shadow: inset 0 0 0 1px transparent;
+    box-shadow: inset 0 0 0 var(--border-width) transparent;
 }
 
 /* Submenus (inline accordion; becomes a flyout in compact mode)
@@ -280,33 +281,33 @@ span.icon.ea-sidebar-item-chevron svg {
 
 .ea-sidebar-submenu-items {
     /* the thin vertical line that visually relates the subitems to their parent item */
-    border-inline-start: 1px solid var(--sidebar-border-color);
+    border-inline-start: var(--border-width) var(--border-style) var(--sidebar-border-color);
     list-style: none;
-    margin-block: 5px;
-    margin-inline-start: 10px;
-    padding-inline-start: 12px;
+    margin-block: var(--ea-sp-2);
+    margin-inline-start: var(--ea-sp-5);
+    padding-inline-start: var(--ea-sp-6);
 }
 .ea-sidebar-submenu-items .ea-sidebar-item {
-    margin-block: 5px;
+    margin-block: var(--ea-sp-2);
     padding-inline-end: 0;
 }
 .ea-sidebar-submenu-items .ea-sidebar-item-link {
     color: var(--sidebar-menu-submenu-color);
-    padding: 3px 0;
+    padding: var(--ea-sp-2) 0;
 }
 .ea-sidebar-submenu-items .ea-sidebar-item-icon {
     font-size: var(--font-size-base);
-    margin-inline-end: 5px;
+    margin-inline-end: var(--ea-sp-2);
 }
 .ea-sidebar-submenu-items .ea-sidebar-badge {
-    margin-inline-end: 4px;
+    margin-inline-end: var(--ea-sp-2);
 }
 .ea-sidebar-submenu-header {
     color: var(--sidebar-menu-header-color);
-    font-size: 12px;
-    font-weight: 500;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
     list-style: none;
-    padding: 3px 0;
+    padding: var(--ea-sp-2) 0;
     text-transform: uppercase;
 }
 
@@ -323,10 +324,12 @@ span.icon.ea-sidebar-item-chevron svg {
         overflow: visible;
         padding: 0;
     }
-    /* align the logo with the icon column (the 24px icons centered in the 64px
-       rail leave a 20px gutter on each side) */
+    /* align the logo with the icon column: it derives from the fixed rail width
+       (64px, see .wrapper in base.css) and the fixed --icon-size-lg tile, so it
+       must NOT come from the spacing scale or the logo drifts off the icon
+       column as soon as --ea-spacing changes */
     body.ea-sidebar-width-compact .ea-sidebar-header {
-        padding-inline-start: 20px;
+        padding-inline-start: calc((64px - var(--icon-size-lg)) / 2);
     }
     body.ea-sidebar-width-compact .ea-sidebar-logo .logo-custom {
         display: none;
@@ -341,7 +344,7 @@ span.icon.ea-sidebar-item-chevron svg {
     }
 
     body.ea-sidebar-width-compact .ea-sidebar-group + .ea-sidebar-group {
-        margin-block-start: 15px;
+        margin-block-start: var(--ea-sp-8);
     }
     body.ea-sidebar-width-compact .ea-sidebar-group-label {
         block-size: 0;
@@ -367,7 +370,7 @@ span.icon.ea-sidebar-item-chevron svg {
 
     body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item {
         border-radius: 0;
-        padding: 6px 0;
+        padding: var(--ea-sp-3) 0;
     }
     /* center the icon tile in the rail, whatever the rail width is */
     body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item > .ea-sidebar-item-link {
@@ -382,12 +385,12 @@ span.icon.ea-sidebar-item-chevron svg {
         > .ea-sidebar-item-link
         .ea-sidebar-item-icon {
         align-items: center;
-        block-size: 24px;
+        block-size: var(--icon-size-lg);
         display: flex;
-        font-size: 16px;
-        inline-size: 24px;
+        font-size: var(--icon-size-sm);
+        inline-size: var(--icon-size-lg);
         justify-content: center;
-        line-height: 1;
+        line-height: var(--line-height-none);
         margin-inline-end: 0;
         position: relative;
     }
@@ -402,7 +405,7 @@ span.icon.ea-sidebar-item-chevron svg {
         background: transparent;
         border-radius: var(--border-radius);
         content: "";
-        inset: -4px;
+        inset: calc(-1 * var(--ea-sp-2));
         position: absolute;
         scale: 0.75;
         transition: background-color var(--ea-duration-fast) var(--ea-ease-out), scale var(--ea-duration-fast)
@@ -416,15 +419,15 @@ span.icon.ea-sidebar-item-chevron svg {
         > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge)
         .ea-sidebar-item-icon::after {
         background: var(--sidebar-badge-dot-bg);
-        block-size: 7px;
-        border: 1px solid var(--sidebar-badge-dot-border-color);
+        block-size: var(--ea-sp-4);
+        border: var(--border-width) var(--border-style) var(--sidebar-badge-dot-border-color);
         border-radius: var(--border-radius-full);
         /* the ring separates the dot from the icon strokes below it */
         box-shadow: 0 0 0 2px var(--sidebar-bg);
         content: "";
-        inline-size: 7px;
-        inset-block-start: -3px;
-        inset-inline-end: -3px;
+        inline-size: var(--ea-sp-4);
+        inset-block-start: calc(-1 * var(--ea-sp-2));
+        inset-inline-end: calc(-1 * var(--ea-sp-2));
         position: absolute;
     }
     /* tint the dot like the badge it replaces (its pale background as the fill and
@@ -534,14 +537,14 @@ span.icon.ea-sidebar-item-chevron svg {
         border-radius: var(--border-radius);
         color: var(--sidebar-tooltip-color);
         display: block;
-        font-size: 13px;
-        font-weight: 500;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
         inset-block-start: 50%;
         /* overlap the rail a bit so the tooltip feels attached to its icon */
         inset-inline-start: 100%;
-        margin-inline-start: -8px;
+        margin-inline-start: calc(-1 * var(--ea-sp-4));
         opacity: 0;
-        padding: 4px 10px;
+        padding: var(--ea-sp-2) var(--ea-sp-5);
         pointer-events: none;
         position: absolute;
         translate: 0 -50%;
@@ -577,7 +580,7 @@ span.icon.ea-sidebar-item-chevron svg {
         inline-size: max-content;
         inset-block-start: 0;
         inset-inline-start: 100%;
-        margin-inline-start: -8px;
+        margin-inline-start: calc(-1 * var(--ea-sp-4));
         max-inline-size: 320px;
         min-inline-size: 200px;
         opacity: 0;
@@ -601,20 +604,20 @@ span.icon.ea-sidebar-item-chevron svg {
         > .ea-sidebar-submenu
         > .ea-sidebar-submenu-inner {
         background: var(--dropdown-bg);
-        border: 1px solid var(--dropdown-border-color);
+        border: var(--border-width) var(--border-style) var(--dropdown-border-color);
         border-radius: var(--border-radius-lg);
         box-shadow: var(--popover-shadow);
-        max-block-size: calc(100vh - 24px);
+        max-block-size: calc(100vh - var(--ea-sp-12));
         overflow-block: auto;
-        padding: 8px;
+        padding: var(--ea-sp-4);
     }
 
     body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.has-submenu .ea-sidebar-submenu-title {
         color: var(--sidebar-menu-header-color);
         display: block;
-        font-size: 13px;
-        font-weight: 500;
-        padding: 4px 8px 6px;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        padding: var(--ea-sp-2) var(--ea-sp-4) var(--ea-sp-3);
     }
 
     /* no vertical guide line inside the flyout */
@@ -638,7 +641,7 @@ span.icon.ea-sidebar-item-chevron svg {
         .ea-sidebar-item-link {
         border-radius: var(--border-radius);
         color: var(--sidebar-menu-color);
-        padding: 5px 8px;
+        padding: var(--ea-sp-3) var(--ea-sp-4);
     }
     body.ea-sidebar-width-compact
         .ea-sidebar-group-items

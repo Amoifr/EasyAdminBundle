@@ -23,6 +23,7 @@ final class DashboardDto
     /** @var LocaleDto[] */
     private array $locales = [];
     private bool $useEntityTranslations = false;
+    private ?ThemeDto $theme = null;
 
     public function getRouteName(): string
     {
@@ -149,6 +150,16 @@ final class DashboardDto
     public function isUseEntityTranslations(): bool
     {
         return $this->useEntityTranslations;
+    }
+
+    public function getTheme(): ?ThemeDto
+    {
+        return $this->theme;
+    }
+
+    public function setTheme(?ThemeDto $theme): void
+    {
+        $this->theme = $theme;
     }
 
     public function setUseEntityTranslations(bool $useEntityTranslations): self

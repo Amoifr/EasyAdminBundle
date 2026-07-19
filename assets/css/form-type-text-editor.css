@@ -6,10 +6,10 @@
 @layer ea.components {
     .ea-text-editor-wrapper {
         background: var(--form-control-bg);
-        border: 1px solid var(--form-input-border-color);
+        border: var(--border-width) solid var(--form-input-border-color);
         border-radius: var(--border-radius);
         box-shadow: var(--form-input-shadow);
-        padding: 7px;
+        padding: var(--ea-sp-4);
     }
     .ea-text-editor-wrapper:focus,
     .ea-text-editor-wrapper:focus-within {
@@ -19,10 +19,10 @@
     }
     trix-toolbar {
         background: var(--form-type-text-editor-toolbar-bg);
-        border-block-end: 1px solid var(--form-input-border-color);
+        border-block-end: var(--border-width) solid var(--form-input-border-color);
         border-start-start-radius: var(--border-radius);
         border-start-end-radius: var(--border-radius);
-        margin: -7px -7px 10px;
+        margin: calc(-1 * var(--ea-sp-4)) calc(-1 * var(--ea-sp-4)) var(--ea-sp-5);
         padding: 0;
     }
     trix-toolbar .trix-button-row {
@@ -65,7 +65,7 @@
     }
     trix-editor {
         border: 0;
-        padding: 3px;
+        padding: var(--ea-sp-2);
     }
 
     /* Trix natively disables typing when [disabled] is set on <trix-editor>
@@ -84,7 +84,7 @@
         background: var(--form-type-text-editor-dialog-bg);
         box-shadow: var(--form-type-text-editor-dialog-box-shadow);
         border: 0;
-        font-size: 12px;
+        font-size: var(--font-size-xs);
     }
 
     trix-toolbar .trix-dialog .trix-input {

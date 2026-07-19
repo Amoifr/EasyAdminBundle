@@ -9,6 +9,18 @@ body {
     block-size: 100vh;
     margin: 0;
 }
+html {
+    scrollbar-gutter: stable;
+}
+/* Bootstrap adds inline body padding to compensate the scrollbar hidden while
+   a modal is open, but the stable gutter already keeps that space reserved.
+   Both inline sides are reset (instead of just the end one) because Bootstrap
+   always writes a *physical* 'padding-right', even in RTL, so it lands on the
+   inline start when the direction flips; the body has no padding of its own,
+   so zeroing both is harmless. */
+body.modal-open {
+    padding-inline: 0 !important;
+}
 body {
     background-color: var(--body-bg);
     color: var(--text-color);
@@ -107,7 +119,7 @@ body:not(.ea-content-width-full) .content-wrapper {
     box-shadow: inset 0 -1px 0 var(--responsive-header-border-color);
     display: flex;
     justify-content: space-between;
-    padding: var(--ea-sp-2) var(--ea-sp-4);
+    padding: var(--ea-sp-4) var(--ea-sp-8);
 }
 @media (min-width: 992px) {
     .responsive-header {
@@ -115,7 +127,7 @@ body:not(.ea-content-width-full) .content-wrapper {
     }
 }
 .responsive-header #responsive-header-logo {
-    padding: 0 var(--ea-sp-4);
+    padding: 0 var(--ea-sp-8);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
     margin: 0;
@@ -128,7 +140,7 @@ body:not(.ea-content-width-full) .content-wrapper {
     display: block;
 }
 #navigation-toggler {
-    margin-inline-start: -5px;
+    margin-inline-start: calc(-1 * var(--ea-sp-2));
 }
 @media (min-width: 992px) {
     #navigation-toggler {
@@ -157,7 +169,7 @@ a.user-menu-wrapper .user-details:hover {
     font-weight: var(--font-weight-medium);
 }
 .user-menu-wrapper .user-details .user-name {
-    margin-inline-start: var(--ea-sp-1-5);
+    margin-inline-start: var(--ea-sp-3);
 }
 
 .user-menu-wrapper .user-avatar {
@@ -181,13 +193,13 @@ a.user-menu-wrapper .user-details:hover {
 .user-menu-wrapper .dropdown-menu .dropdown-user-details {
     align-items: flex-start;
     display: flex;
-    padding: 0 var(--ea-sp-1);
+    padding: 0 var(--ea-sp-2);
 }
 .user-menu-wrapper .dropdown-menu .dropdown-user-details .user-avatar {
     block-size: 39px;
     max-inline-size: 39px;
-    margin-block-start: 2px;
-    margin-inline-end: var(--ea-sp-2-5);
+    margin-block-start: var(--ea-sp-1);
+    margin-inline-end: var(--ea-sp-5);
     inline-size: auto;
 }
 .user-menu-wrapper .dropdown-menu .dropdown-user-details .user-avatar .icon {
@@ -197,7 +209,7 @@ a.user-menu-wrapper .user-details:hover {
     color: var(--text-muted);
     display: block;
     font-size: var(--font-size-sm);
-    margin-block-end: 2px;
+    margin-block-end: var(--ea-sp-1);
 }
 
 .dropdown-settings {
@@ -211,7 +223,7 @@ a.user-menu-wrapper .user-details:hover {
 .dropdown-settings .dropdown-settings-button {
     color: var(--dropdown-settings-icon-color);
     font-size: var(--icon-size-md);
-    padding-inline-start: var(--ea-sp-4);
+    padding-inline-start: var(--ea-sp-8);
 }
 
 .dropdown-settings .dropdown-header {
@@ -231,7 +243,7 @@ a.user-menu-wrapper .user-details:hover {
 }
 
 .content-wrapper {
-    padding: 0 var(--content-padding-right) var(--ea-sp-4) var(--content-padding-left);
+    padding: 0 var(--content-padding-right) var(--ea-sp-8) var(--content-padding-left);
 }
 @media (min-width: 992px) {
     .content-wrapper {
@@ -252,7 +264,7 @@ a.user-menu-wrapper .user-details:hover {
     .resizer-handler {
         cursor: col-resize;
         display: block;
-        margin: 0 0 0 var(--ea-sp-2);
+        margin: 0 0 0 var(--ea-sp-4);
         min-block-size: 100vh;
         transition: background var(--ea-duration-slower);
         inline-size: 3px;
@@ -262,14 +274,14 @@ a.user-menu-wrapper .user-details:hover {
     }
 }
 #content-resizer-handler {
-    min-block-size: calc(100vh - 56px - var(--lg-content-padding-bottom));
+    min-block-size: calc(100vh - var(--ea-sp-28) - var(--lg-content-padding-bottom));
 }
 
 .content-top {
     align-items: center;
     box-shadow: 0 1px 0 var(--content-top-border-color);
     display: flex;
-    padding: var(--ea-sp-1) var(--ea-sp-4) var(--ea-sp-1) var(--content-padding-left); /* 5px 15px 5px */
+    padding: var(--ea-sp-2) var(--ea-sp-8) var(--ea-sp-2) var(--content-padding-left); /* 5px 15px 5px */
 }
 @media (max-width: 992px) {
     .content-top.ea-search-disabled {
@@ -282,7 +294,7 @@ a.user-menu-wrapper .user-details:hover {
         display: flex;
         block-size: 56px;
         justify-content: space-between;
-        padding: var(--ea-sp-3) calc(var(--lg-content-padding-right) + var(--resize-handler-width)) var(--ea-sp-3)
+        padding: var(--ea-sp-6) calc(var(--lg-content-padding-right) + var(--resize-handler-width)) var(--ea-sp-6)
             var(--lg-content-padding-left);
         position: relative;
     }
@@ -297,89 +309,11 @@ a.user-menu-wrapper .user-details:hover {
     }
 }
 
-.content-top .content-search {
-    flex: 1;
-}
-.content-top .content-search .form-group {
-    flex-basis: 100%;
-    padding: 2px 0;
-}
-.content-top .content-search .form-widget {
-    align-items: center;
-    display: flex;
-    flex: unset;
-}
-@media (min-width: 992px) {
-    .content-top .content-search .form-widget {
-        display: block;
-    }
-}
-.content-top .content-search .content-search-icon {
-    color: var(--content-search-icon-color);
-    margin-inline-end: 0;
-}
-.content-top .content-search .content-search-reset {
-    background: var(--content-search-reset-button-bg);
-    border-radius: var(--border-radius);
-    color: var(--content-search-reset-button-color);
-    font-size: var(--font-size-sm);
-    padding: 2px 2px;
-}
-.content-top .content-search .content-search-reset:hover {
-    background: var(--content-search-reset-button-hover-bg);
-    color: var(--content-search-reset-button-hover-color);
-}
-
-.content-top .content-search input[type="search"][name="query"] {
-    background: var(--content-search-input-bg);
-    border: 0;
-    box-shadow: none;
-    max-inline-size: unset;
-}
-/* needed to hide the default [X] mark showed by Webkit browsers in these fields */
-.content-top .content-search input[type="search"][name="query"]::-webkit-search-decoration,
-.content-top .content-search input[type="search"][name="query"]::-webkit-search-cancel-button,
-.content-top .content-search input[type="search"][name="query"]::-webkit-search-results-button,
-.content-top .content-search input[type="search"][name="query"]::-webkit-search-results-decoration {
-    -webkit-appearance: none;
-}
-
-.content-top .content-search input[type="search"][name="query"]:focus,
-.content-top .content-search input[type="search"][name="query"]:active {
-    box-shadow: none;
-    outline: none;
-}
-
-/* copied from https://css-tricks.com/auto-growing-inputs-textareas/#other-ideas */
-.content-top .content-search .content-search-label {
-    align-items: center;
-    display: inline-grid;
-    margin: 0;
-    padding: 0;
-
-    @media (min-width: 992px) {
-        max-inline-size: 600px;
-    }
-}
-.content-top .content-search .content-search-label::after,
-.content-top .content-search .content-search-label input {
-    grid-area: 1 / 2;
-    resize: none;
-    inline-size: auto;
-}
-.content-top .content-search .content-search-label input.is-blank {
-    min-inline-size: 300px;
-}
-.content-top .content-search .content-search-label::after {
-    /* the extra blank space is needed to make it look good */
-    content: attr(data-value) "    ";
-    block-size: 30px;
-    visibility: hidden;
-    white-space: pre-wrap;
-}
+/* the styles of the content header search input live in content-search.css:
+   they override generic form styles, so they must be in the components layer */
 
 .content-header {
-    padding: var(--ea-sp-6) 0 var(--ea-sp-4);
+    padding: var(--ea-sp-12) 0 var(--ea-sp-8);
 }
 @media (min-width: 768px) {
     .content-header {
@@ -388,7 +322,7 @@ a.user-menu-wrapper .user-details:hover {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        padding: var(--ea-sp-9) 0 var(--ea-sp-4);
+        padding: var(--ea-sp-18) 0 var(--ea-sp-8);
     }
 }
 
@@ -396,7 +330,7 @@ a.user-menu-wrapper .user-details:hover {
     body.ea-new .content-header,
     body.ea-edit .content-header {
         position: sticky;
-        inset-block-start: -20px;
+        inset-block-start: calc(-1 * var(--ea-sp-10));
         z-index: 999;
     }
 }
@@ -409,7 +343,7 @@ a.user-menu-wrapper .user-details:hover {
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
     margin: 0;
-    padding-inline-end: var(--ea-sp-4);
+    padding-inline-end: var(--ea-sp-8);
 }
 @media (min-width: 992px) {
     .content-header-title .title {
@@ -446,7 +380,7 @@ a.user-menu-wrapper .user-details:hover {
     border-radius: var(--border-radius);
     color: var(--popover-color);
     font-size: var(--font-size-base);
-    padding: var(--ea-sp-4);
+    padding: var(--ea-sp-8);
     text-align: left;
 }
 .popover.ea-content-help-popover.bs-popover-auto[data-popper-placement^="top"] > .popover-arrow:before,
@@ -467,7 +401,7 @@ a.user-menu-wrapper .user-details:hover {
 }
 .popover.ea-content-help-popover.bs-popover-auto[data-popper-placement^="bottom"] > .popover-arrow,
 .bs-popover-bottom > .popover-arrow {
-    inset-block-start: -.5rem;
+    inset-block-start: calc(-1 * var(--ea-sp-4));
 }
 .popover.ea-content-help-popover.bs-popover-auto[data-popper-placement^="bottom"] > .popover-arrow:before,
 .bs-popover-bottom > .popover-arrow:before {
@@ -494,16 +428,16 @@ a.user-menu-wrapper .user-details:hover {
 .content-header .page-actions {
     justify-content: right;
     flex-wrap: wrap;
-    gap: var(--ea-sp-2-5);
+    gap: var(--ea-sp-5);
     display: flex;
     flex-direction: row;
 }
 .content-header .page-actions {
-    margin: var(--ea-sp-2-5) 0 var(--ea-sp-4);
+    margin: var(--ea-sp-5) 0 var(--ea-sp-8);
 }
 @media (min-width: 768px) {
     .content-header .page-actions {
-        margin: 2px 1px 0 var(--ea-sp-2-5);
+        margin: var(--ea-sp-1) 1px 0 var(--ea-sp-5);
     }
 }
 .content-header .page-actions:empty {
@@ -514,7 +448,7 @@ a.user-menu-wrapper .user-details:hover {
     display: flex;
 }
 .batch-actions .btn + .btn {
-    margin-inline-start: var(--ea-sp-4);
+    margin-inline-start: var(--ea-sp-8);
 }
 
 .with-rounded-top {
@@ -533,20 +467,20 @@ a.user-menu-wrapper .user-details:hover {
 }
 
 .content-footer {
-    margin-block-start: var(--ea-sp-4);
-    padding: var(--ea-sp-4) 0;
+    margin-block-start: var(--ea-sp-8);
+    padding: var(--ea-sp-8) 0;
 }
 
 .content-panel {
-    margin-block-end: var(--ea-sp-5);
+    margin-block-end: var(--ea-sp-10);
 }
 
 .content-panel-header {
     border-block-end: var(--border-width) var(--border-style) var(--content-section-border-color);
     font-size: var(--font-size-lg);
-    line-height: 24px;
+    line-height: var(--line-height-normal);
     margin: 0;
-    padding: var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-5);
+    padding: var(--ea-sp-8) var(--ea-sp-8) var(--ea-sp-8) var(--ea-sp-10);
 }
 .content-panel-header.collapsible {
     padding: 0;
@@ -554,21 +488,21 @@ a.user-menu-wrapper .user-details:hover {
 .content-panel-header.collapsible > a {
     color: inherit;
     display: block;
-    padding: var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-5);
+    padding: var(--ea-sp-8) var(--ea-sp-8) var(--ea-sp-8) var(--ea-sp-10);
 }
 .content-panel-header.collapsible.with-help > a {
-    padding: var(--ea-sp-4) var(--ea-sp-4) 1px var(--ea-sp-5);
+    padding: var(--ea-sp-8) var(--ea-sp-8) 1px var(--ea-sp-10);
 }
 .content-panel-header.collapsible .collapse-icon {
     color: var(--color-primary);
-    margin-inline-end: var(--ea-sp-1);
+    margin-inline-end: var(--ea-sp-2);
     transition: all var(--ea-duration-fast) linear;
 }
 .content-panel-collapse:not(.collapsed) .collapse-icon {
     transform: rotate(90deg);
 }
 .content-panel-header.collapsible.with-help .content-panel-header-help {
-    padding: 0 var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-5);
+    padding: 0 var(--ea-sp-8) var(--ea-sp-8) var(--ea-sp-10);
 }
 
 .content-panel-header-help {
@@ -578,11 +512,11 @@ a.user-menu-wrapper .user-details:hover {
 
 .content-panel-body {
     background: var(--white);
-    padding: var(--ea-sp-4) var(--ea-sp-5);
+    padding: var(--ea-sp-8) var(--ea-sp-10);
 }
 @media (min-width: 992px) {
     .content-panel-body {
-        padding: var(--ea-sp-4) var(--ea-sp-6);
+        padding: var(--ea-sp-8) var(--ea-sp-12);
     }
 }
 
@@ -609,7 +543,7 @@ a.user-menu-wrapper .user-details:hover {
     border-end-start-radius: var(--border-radius);
     border-end-end-radius: var(--border-radius);
     margin: 0;
-    padding: var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-4) var(--ea-sp-5);
+    padding: var(--ea-sp-8) var(--ea-sp-8) var(--ea-sp-8) var(--ea-sp-10);
 }
 .content-panel-footer.without-border {
     border-block-start: 0;
@@ -619,7 +553,7 @@ a.user-menu-wrapper .user-details:hover {
 }
 
 .dropdown-menu {
-    --dropdown-padding: var(--ea-sp-1);
+    --dropdown-padding: var(--ea-sp-2);
     --dropdown-radius: var(--border-radius-lg); /* 8px */
     --dropdown-item-radius: var(--border-radius-lg); /* 8px */
 
@@ -633,7 +567,7 @@ a.user-menu-wrapper .user-details:hover {
     padding: var(--dropdown-padding);
 }
 .dropdown-menu.dropdown-has-submenus {
-    padding-inline-start: var(--ea-sp-6);
+    padding-inline-start: var(--ea-sp-12);
 }
 .dropdown-menu li {
     border-radius: var(--dropdown-item-radius);
@@ -653,7 +587,7 @@ a.user-menu-wrapper .user-details:hover {
     margin: 0;
     /* 14px (not 16px): FontAwesome's filled glyphs read heavier than icon sets with thin SVG strokes,
        so a slightly smaller size matches the visual weight. Off the icon scale on purpose. */
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 .dropdown-menu .icon i {
     margin: 0;
@@ -678,13 +612,13 @@ a.user-menu-wrapper .user-details:hover {
 .dropdown-menu .dropdown-header {
     align-items: center;
     display: flex;
-    gap: var(--ea-sp-1-5);
+    gap: var(--ea-sp-3);
     min-block-size: 28px;
     white-space: nowrap;
     overflow: hidden;
-    padding: var(--ea-sp-1) var(--ea-sp-1-5);
+    padding: var(--ea-sp-2) var(--ea-sp-3);
     font-size: var(--font-size-base);
-    line-height: 1.25rem;
+    line-height: 1.25rem; /* fixed length: pins the item height for the ellipsis clamp, not a type ratio */
     text-overflow: ellipsis;
 }
 .dropdown-menu .dropdown-divider {
@@ -693,7 +627,7 @@ a.user-menu-wrapper .user-details:hover {
     border-radius: var(--border-radius-none);
     box-shadow: 0 -1px 0 var(--dropdown-border-color);
     block-size: 1px;
-    margin: var(--ea-sp-1-5) calc(-1 * var(--dropdown-padding));
+    margin: var(--ea-sp-3) calc(-1 * var(--dropdown-padding));
     opacity: 1;
 }
 .dropdown-menu .dropdown-item-color-scheme {
@@ -714,14 +648,14 @@ a.user-menu-wrapper .user-details:hover {
     border: var(--border-width) solid var(--dropdown-border-color);
     border-radius: var(--border-radius);
     color: var(--dropdown-color);
-    margin-inline-start: var(--ea-sp-2-5);
+    margin-inline-start: var(--ea-sp-5);
     outline: none;
-    padding: 0 var(--ea-sp-1);
+    padding: 0 var(--ea-sp-2);
 }
 .dropdown-menu .dropdown-submenu .dropdown-item.dropdown-toggle {
     border: 0;
     display: flex;
-    padding: 0 var(--ea-sp-3) 0 var(--ea-sp-1-5);
+    padding: 0 var(--ea-sp-6) 0 var(--ea-sp-3);
     position: relative;
 }
 .dropdown-menu .dropdown-submenu .dropdown-item.dropdown-toggle:not(.dropdown-toggle-split):hover {

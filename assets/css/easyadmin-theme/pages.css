@@ -35,8 +35,8 @@ body.page-login #flash-messages {
 }
 .login-wrapper .main-header #header-logo {
     border-block-end: var(--border-width) var(--border-style) var(--border-secondary-color);
-    margin: var(--ea-sp-6) 0 var(--ea-sp-4);
-    padding-block-end: var(--ea-sp-4);
+    margin: var(--ea-sp-12) 0 var(--ea-sp-8);
+    padding-block-end: var(--ea-sp-8);
 }
 @media (min-width: 576px) {
     .login-wrapper .main-header #header-logo {
@@ -60,7 +60,7 @@ body.page-login #flash-messages {
 }
 .login-wrapper .content {
     background-color: var(--body-bg);
-    padding: var(--ea-sp-4) var(--ea-sp-8);
+    padding: var(--ea-sp-8) var(--ea-sp-16);
     inline-size: 100%;
 }
 @media (min-width: 576px) {
@@ -68,13 +68,14 @@ body.page-login #flash-messages {
         background: var(--page-login-form-bg);
         border-radius: var(--border-radius-lg);
         box-shadow: var(--shadow-lg);
-        padding: var(--ea-sp-10) var(--ea-sp-12);
+        padding: var(--ea-sp-20) var(--ea-sp-24);
     }
 }
 .login-wrapper .form-widget input {
     background-color: var(--page-login-form-control-bg);
     border-color: var(--page-login-form-control-border-color);
     font-size: var(--font-size-lg);
+    /* fixed height with matching line-height to center the text vertically */
     block-size: 38px;
     line-height: 38px;
 }
@@ -84,9 +85,9 @@ body.page-login #flash-messages {
 .login-wrapper .btn-primary {
     background-color: var(--page-login-form-control-button-bg);
     font-size: var(--font-size-base);
-    margin-block-start: var(--ea-sp-4);
+    margin-block-start: var(--ea-sp-8);
 }
 .login-wrapper .form-text {
     font-size: inherit;
-    margin-block-start: var(--ea-sp-1);
+    margin-block-start: var(--ea-sp-2);
 }

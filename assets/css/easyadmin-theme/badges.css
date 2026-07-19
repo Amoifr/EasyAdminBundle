@@ -2,14 +2,15 @@
 /* ------------------------------------------------------------------------- */
 
 .badge + .badge {
-    margin-inline-start: var(--ea-sp-2);
+    margin-inline-start: var(--ea-sp-4);
 }
 
 .badge.badge-pill {
     border-radius: var(--border-radius-full);
     font-size: var(--font-size-xs);
+    /* fixed line-height and 1px padding: they pin the pill height, not a type ratio */
     line-height: 16px;
-    padding: 1px var(--ea-sp-1-5);
+    padding: 1px var(--ea-sp-3);
 }
 
 .badge {
@@ -19,12 +20,12 @@
 
 .badge:has(> .icon) {
     display: inline-flex;
-    gap: var(--ea-sp-1);
+    gap: var(--ea-sp-2);
     align-items: center;
 }
 
 .badge.badge-sm {
-    --bs-badge-padding-x: var(--ea-sp-1);
+    --bs-badge-padding-x: var(--ea-sp-2);
     --bs-badge-padding-y: 0;
     --bs-badge-font-size: var(--font-size-xs);
 }

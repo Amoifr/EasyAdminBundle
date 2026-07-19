@@ -16,11 +16,11 @@
 .alert:has(> .alert-icon) {
     display: flex;
     align-items: flex-start;
-    gap: var(--ea-sp-2);
+    gap: var(--ea-sp-4);
 }
 .alert > .alert-icon {
     flex-shrink: 0;
-    margin-block-start: 2px;
+    margin-block-start: var(--ea-sp-1);
 }
 .alert > .alert-content {
     flex: 1;
@@ -31,8 +31,8 @@
 }
 .alert .alert-actions {
     display: flex;
-    gap: var(--ea-sp-2);
-    margin-block-start: var(--ea-sp-2);
+    gap: var(--ea-sp-4);
+    margin-block-start: var(--ea-sp-4);
 }
 
 .alert-dismissible .btn-close {
@@ -42,7 +42,7 @@
     /* Bootstrap positions this button absolutely, but its rule lives in the 'vendor' layer and
        the 'ea' layer's '.btn { position: relative }' would win, leaving the button inline */
     position: absolute;
-    inset-block-start: 10px;
+    inset-block-start: var(--ea-sp-5);
     inset-inline-end: 5px;
     padding: var(--button-padding-y-md) var(--button-padding-x-md);
 }

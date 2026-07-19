@@ -117,6 +117,13 @@ final class Dashboard
         return $this;
     }
 
+    public function setTheme(Theme $theme): self
+    {
+        $this->dto->setTheme($theme->getAsDto());
+
+        return $this;
+    }
+
     public function useEntityTranslations(bool $useEntityTranslations = true): self
     {
         $this->dto->setUseEntityTranslations($useEntityTranslations);

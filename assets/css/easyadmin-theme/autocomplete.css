@@ -7,7 +7,7 @@
 :root {
     --ts-pr-clear-button: 0;
     --ts-pr-caret: 0;
-    --ts-pr-min: .75rem;
+    --ts-pr-min: var(--ea-sp-6);
 }
 .ts-wrapper.single .ts-control,
 .ts-wrapper.single .ts-control input {
@@ -31,7 +31,7 @@
     box-shadow: 0 2px 5px color-mix(in srgb, var(--black) 20%, transparent);
 }
 .plugin-checkbox_options .option input {
-    margin-inline-end: var(--ea-sp-2);
+    margin-inline-end: var(--ea-sp-4);
 }
 .plugin-clear_button {
     --ts-pr-clear-button: 1em;
@@ -42,14 +42,14 @@
     margin-inline-end: 0 !important;
     opacity: 0;
     position: absolute;
-    inset-inline-end: calc(.75rem - 5px);
+    inset-inline-end: var(--ea-sp-4);
     inset-block-start: 50%;
     transform: translateY(-50%);
     transition: opacity var(--ea-duration-slower);
 }
 .plugin-clear_button.form-select .clear-button,
 .plugin-clear_button.single .clear-button {
-    inset-inline-end: max(var(--ts-pr-caret), .75rem);
+    inset-inline-end: max(var(--ts-pr-caret), var(--ea-sp-6));
 }
 .plugin-clear_button.focus.has-items .clear-button,
 .plugin-clear_button:not(.disabled):hover.has-items .clear-button {
@@ -59,17 +59,17 @@
     background: var(--gray-50);
     border-block-end: var(--border-width) solid var(--border-color);
     border-radius: var(--border-radius) var(--border-radius) 0 0;
-    padding: var(--ea-sp-1-5) var(--ea-sp-3);
+    padding: var(--ea-sp-3) var(--ea-sp-6);
     position: relative;
 }
 .ts-wrapper .dropdown-header-close {
     color: var(--text-color);
     font-size: var(--icon-size-md) !important;
-    line-height: 20px;
-    margin-block-start: -12px;
+    line-height: var(--line-height-none);
+    margin-block-start: calc(-1 * var(--ea-sp-6));
     opacity: 0.4;
     position: absolute;
-    inset-inline-end: .75rem;
+    inset-inline-end: var(--ea-sp-6);
     inset-block-start: 50%;
 }
 .ts-wrapper .dropdown-header-close:hover {
@@ -86,7 +86,7 @@
     border-width: 0 0 var(--border-width);
     box-shadow: none;
     display: block;
-    padding: var(--ea-sp-1-5) var(--ea-sp-3);
+    padding: var(--ea-sp-3) var(--ea-sp-6);
     inline-size: 100%;
 }
 .plugin-dropdown_input.focus .ts-dropdown .dropdown-input {
@@ -145,7 +145,7 @@
     box-sizing: border-box;
     color: inherit;
     display: inline-block;
-    padding: 0 var(--ea-sp-1);
+    padding: 0 var(--ea-sp-2);
     text-decoration: none;
     vertical-align: middle;
 }
@@ -163,7 +163,7 @@
 }
 .ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
     border-inline-start: var(--border-width) solid var(--border-color);
-    margin-inline-start: var(--ea-sp-1);
+    margin-inline-start: var(--ea-sp-2);
 }
 .ts-wrapper.plugin-remove_button:not(.rtl) .item.active .remove {
     border-inline-start-color: transparent;
@@ -173,7 +173,7 @@
 }
 .ts-wrapper.plugin-remove_button.rtl .item .remove {
     border-inline-end: var(--border-width) solid var(--border-color);
-    margin-inline-end: var(--ea-sp-1);
+    margin-inline-end: var(--ea-sp-2);
 }
 .ts-wrapper.plugin-remove_button.rtl .item.active .remove {
     border-inline-end-color: transparent;
@@ -205,13 +205,13 @@
     box-sizing: border-box;
     flex-wrap: wrap;
     overflow: hidden;
-    padding: var(--ea-sp-1-5) var(--ea-sp-3);
+    padding: var(--ea-sp-3) var(--ea-sp-6);
     position: relative;
     inline-size: 100%;
     z-index: 1;
 }
 .ts-wrapper.multi.has-items .ts-control {
-    padding: calc(var(--ea-sp-1-5) - 1px) var(--ea-sp-3) calc(var(--ea-sp-1-5) - 4px);
+    padding: calc(var(--ea-sp-3) - var(--border-width)) var(--ea-sp-6) var(--ea-sp-1);
 }
 .full .ts-control {
     background-color: var(--form-control-bg);
@@ -232,8 +232,8 @@
     border: 0 solid var(--border-color);
     color: var(--text-color);
     cursor: pointer;
-    margin: 0 var(--ea-sp-1) var(--ea-sp-1) 0;
-    padding: 1px var(--ea-sp-1);
+    margin: 0 var(--ea-sp-2) var(--ea-sp-2) 0;
+    padding: 1px var(--ea-sp-2);
 }
 .ts-wrapper.multi .ts-control > div.active {
     background: var(--ea-primary);
@@ -272,17 +272,17 @@
     outline: none !important;
 }
 .has-items .ts-control > input {
-    margin: 0 var(--ea-sp-1) !important;
+    margin: 0 var(--ea-sp-2) !important;
 }
 .ts-control.rtl {
     text-align: right;
 }
 .ts-control.rtl.single .ts-control:after {
-    inset-inline-start: calc(.75rem + 5px);
+    inset-inline-start: var(--ea-sp-8);
     inset-inline-end: auto;
 }
 .ts-control.rtl .ts-control > input {
-    margin: 0 var(--ea-sp-1) 0 -2px !important;
+    margin: 0 var(--ea-sp-2) 0 calc(-1 * var(--ea-sp-1)) !important;
 }
 .disabled .ts-control {
     background-color: var(--form-control-disabled-bg);
@@ -301,7 +301,7 @@
     box-shadow: 0 1px 3px color-mix(in srgb, var(--black) 10%, transparent);
     box-sizing: border-box;
     inset-inline-start: 0;
-    margin: var(--ea-sp-1) 0 0;
+    margin: var(--ea-sp-2) 0 0;
     position: absolute;
     inset-block-start: 100%;
     inline-size: 100%;
@@ -319,7 +319,7 @@
 .ts-dropdown .no-results,
 .ts-dropdown .optgroup-header,
 .ts-dropdown .option {
-    padding: var(--ea-sp-1) var(--ea-sp-3);
+    padding: var(--ea-sp-2) var(--ea-sp-6);
 }
 .ts-dropdown .option,
 .ts-dropdown [data-disabled],
@@ -351,21 +351,21 @@
 }
 .ts-dropdown .spinner {
     display: inline-block;
-    block-size: 30px;
-    margin: var(--ea-sp-1) var(--ea-sp-3);
-    inline-size: 30px;
+    block-size: var(--ea-sp-16);
+    margin: var(--ea-sp-2) var(--ea-sp-6);
+    inline-size: var(--ea-sp-16);
 }
 .ts-dropdown .spinner:after {
     animation: lds-dual-ring 1.2s linear infinite;
     border-color: var(--border-color) transparent;
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     border-style: solid;
     border-width: 5px;
     content: " ";
     display: block;
-    block-size: 24px;
-    margin: var(--ea-sp-1);
-    inline-size: 24px;
+    block-size: var(--icon-size-lg);
+    margin: var(--ea-sp-2);
+    inline-size: var(--icon-size-lg);
 }
 @keyframes lds-dual-ring {
     0% {
@@ -423,14 +423,14 @@
     content: " ";
     display: block;
     block-size: 0;
-    margin: var(--ea-sp-2) calc(var(--ea-sp-3) * -1);
+    margin: var(--ea-sp-4) calc(var(--ea-sp-6) * -1);
     overflow: hidden;
 }
 .ts-dropdown .create {
-    padding-inline-start: var(--ea-sp-3);
+    padding-inline-start: var(--ea-sp-6);
 }
 .ts-dropdown-content {
-    padding: var(--ea-sp-1) 0;
+    padding: var(--ea-sp-2) 0;
 }
 .ts-control {
     align-items: center;
@@ -538,8 +538,8 @@
     padding-block-start: calc(.75em - .40625rem - 1px) !important;
 }
 .ts-wrapper.multi.has-items .ts-control {
-    --ts-pr-min: calc(0.75rem - 5px);
-    padding-inline-start: calc(var(--ea-sp-3) - 5px);
+    --ts-pr-min: var(--ea-sp-4);
+    padding-inline-start: var(--ea-sp-4);
 }
 .ts-wrapper.multi .ts-control > div {
     border-radius: calc(var(--border-radius) - var(--border-width));
@@ -570,7 +570,7 @@
 }
 .ts-wrapper.form-select,
 .ts-wrapper.single {
-    --ts-pr-caret: 2.25rem;
+    --ts-pr-caret: var(--ea-sp-18);
 }
 .ts-wrapper.form-control .ts-control,
 .ts-wrapper.form-control.single.input-active .ts-control,
@@ -602,7 +602,7 @@
 .ts-wrapper .ts-control {
     block-size: unset;
     min-block-size: 28px;
-    padding: var(--ea-sp-1) var(--ea-sp-7) var(--ea-sp-1) var(--ea-sp-2);
+    padding: var(--ea-sp-2) var(--ea-sp-14) var(--ea-sp-2) var(--ea-sp-4);
 }
 .ts-wrapper.input-active {
     border-color: var(--form-input-hover-border-color);
@@ -619,7 +619,7 @@
     border-block-end: var(--border-width) solid var(--form-input-border-color);
     border-start-start-radius: var(--border-radius);
     border-start-end-radius: var(--border-radius);
-    padding: var(--ea-sp-2) var(--ea-sp-2-5);
+    padding: var(--ea-sp-4) var(--ea-sp-5);
 }
 .dropdown-input,
 .plugin-dropdown_input.focus .dropdown-input {
@@ -628,7 +628,7 @@
     border-radius: var(--border-radius);
     box-shadow: var(--form-input-box-shadow);
     color: var(--form-input-text-color);
-    block-size: 30px;
+    block-size: 30px; /* matches the fixed form-control height in forms.css */
     position: relative;
 }
 .dropdown-input:focus {
@@ -664,11 +664,11 @@
 }
 
 .ts-dropdown-content {
-    padding: var(--ea-sp-1) var(--ea-sp-1);
+    padding: var(--ea-sp-2) var(--ea-sp-2);
 }
 .ts-dropdown [data-selectable].option {
     border-radius: var(--border-radius);
-    margin: var(--ea-sp-0-5) 0;
+    margin: var(--ea-sp-1) 0;
 }
 
 .ts-dropdown .optgroup-header {
@@ -684,18 +684,18 @@
 }
 .ts-wrapper.multi .ts-control,
 .ts-wrapper.multi.has-items .ts-control {
-    padding: var(--ea-sp-0-5) var(--ea-sp-4) var(--ea-sp-1) var(--ea-sp-2);
+    padding: var(--ea-sp-1) var(--ea-sp-8) var(--ea-sp-2) var(--ea-sp-4);
 }
 .ts-wrapper.plugin-remove_button.multi.has-items .ts-control {
-    padding-inline-end: var(--ea-sp-14);
+    padding-inline-end: var(--ea-sp-28);
 }
 .ts-wrapper.multi .ts-control > div {
     background: var(--form-type-autocomplete-multi-item-bg);
     border-radius: var(--border-radius);
     box-shadow: 0 0 0 1px var(--form-type-autocomplete-multi-item-border-color);
     color: var(--form-input-text-color);
-    margin: var(--ea-sp-0-5) var(--ea-sp-1) var(--ea-sp-0-5) 0;
-    padding: 0 var(--ea-sp-1);
+    margin: var(--ea-sp-1) var(--ea-sp-2) var(--ea-sp-1) 0;
+    padding: 0 var(--ea-sp-2);
 }
 .ts-wrapper.plugin-remove_button .item .remove,
 .ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
@@ -709,7 +709,7 @@
 .plugin-clear_button.ts-wrapper .clear-button,
 .plugin-clear_button.ts-wrapper.multi .clear-button {
     background: var(--form-type-autocomplete-close-button-bg) !important;
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     color: var(--white);
     cursor: pointer;
     display: flex;
@@ -717,18 +717,18 @@
     justify-content: center;
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
-    block-size: 14px;
+    block-size: var(--ea-sp-7);
     line-height: 0.65;
     padding: 0;
-    inset-inline-end: 32px;
-    inset-block-start: calc(50% - 2px);
-    inline-size: 14px;
+    inset-inline-end: var(--ea-sp-16);
+    inset-block-start: calc(50% - var(--ea-sp-1));
+    inline-size: var(--ea-sp-7);
 }
 .ts-wrapper.plugin-clear_button.multi .clear-button {
-    inset-inline-end: 10px;
+    inset-inline-end: var(--ea-sp-5);
 }
 .ts-wrapper.plugin-remove_button.plugin-clear_button.multi.has-items .clear-button {
-    inset-inline-end: 32px;
+    inset-inline-end: var(--ea-sp-16);
 }
 .plugin-clear_button.ts-wrapper .clear-button:hover,
 .plugin-clear_button.ts-wrapper.multi .clear-button:hover {

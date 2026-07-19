@@ -138,6 +138,7 @@ explained later)::
 
     use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
     use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
     use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
     use EasyCorp\Bundle\EasyAdminBundle\Dto\LocaleDto;
 
@@ -188,6 +189,35 @@ explained later)::
                 ->setDefaultColorScheme('dark')
                 // instead of magic strings, you can use constants as the value of
                 // this option: EasyCorp\Bundle\EasyAdminBundle\Config\Option\ColorScheme::DARK
+
+                // use this option to create a custom theme for the backend without
+                // writing any CSS (all Theme options are optional; you can call only
+                // the ones you need)
+                ->setTheme(Theme::new()
+                    // the accent color of buttons, links, switches, etc. Use the
+                    // hexadecimal, rgb(), hsl() or oklch() formats (no alpha channel).
+                    // The color of the text/icons displayed on top of primary-colored
+                    // elements is computed automatically based on this color.
+                    // The optional 'dark' argument sets a different primary color for
+                    // the dark color scheme (if not set, the same color is used in both)
+                    ->primaryColor('#15803d', dark: 'oklch(0.6 0.2 150)')
+                    // the base border radius from which all border radius values of the
+                    // backend derive. Use a CSS length in 'px' or 'rem' units or one of
+                    // these presets: 'none', 'xs', 'sm', 'md' (the default look), 'lg', 'xl'
+                    ->radius('0.5rem')
+                    // the base spacing unit from which all paddings, margins, gaps and
+                    // control sizes derive; it defines the density of the whole interface.
+                    // Use a CSS length in 'px' or 'rem' units or one of these presets:
+                    // 'xs', 'sm', 'md' (the default look), 'lg', 'xl'
+                    ->spacing('md')
+                    // the gray scale used by all neutral surfaces, borders and text
+                    // colors: 'neutral', 'stone' (warmer), 'zinc', 'gray' or 'slate'
+                    // (cooler). The default look uses 'slate' in the light color scheme
+                    // and 'neutral' in the dark one. The optional 'dark' argument sets a
+                    // different gray scale for the dark color scheme (if not set, the
+                    // same scale is used in both). Instead of magic strings, you can use
+                    // the constants of EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale
+                    ->grays('zinc', dark: 'stone'))
 
                 // by default, all backend URLs are generated as absolute URLs. If you
                 // need to generate relative URLs instead, call this method
