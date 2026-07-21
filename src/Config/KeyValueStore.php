@@ -15,7 +15,7 @@ final class KeyValueStore
      */
     private function __construct(
         private array $map,
-        private ?string $delimiter,
+        private readonly ?string $delimiter,
     ) {
     }
 

@@ -43,7 +43,7 @@ final readonly class ActionFactory
         private AuthorizationCheckerInterface $authChecker,
         private AdminUrlGeneratorInterface $adminUrlGenerator,
         private ?CsrfTokenManagerInterface $csrfTokenManager = null,
-        private readonly iterable $actionsExtensions = [],
+        private iterable $actionsExtensions = [],
     ) {
     }
 

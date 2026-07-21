@@ -18,7 +18,7 @@ use function Symfony\Component\Translation\t;
 final class CommonConfigurator implements FilterConfiguratorInterface
 {
     public function __construct(
-        private EntityTranslationIdGeneratorInterface $entityTranslationIdGenerator,
+        private readonly EntityTranslationIdGeneratorInterface $entityTranslationIdGenerator,
     ) {
     }
 
