@@ -12,29 +12,29 @@ class BlogPost
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $title;
+    private ?string $title = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $slug;
+    private ?string $slug = null;
 
     #[ORM\Column(type: 'text')]
-    private $content;
+    private ?string $content = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'blogPosts')]
-    private $categories;
+    private Collection $categories;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private $createdAt;
+    private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private $publishedAt;
+    private ?\DateTimeImmutable $publishedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'blogPosts')]
     #[ORM\JoinColumn(nullable: false)]
-    private $author;
+    private ?User $author = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     private $publisher;

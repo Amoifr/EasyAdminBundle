@@ -13,17 +13,17 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
     #[Assert\NotBlank]
     #[ORM\Column(type: 'string', length: 255)]
-    private $name;
+    private ?string $name = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $slug;
+    private ?string $slug = null;
 
     #[ORM\ManyToMany(targetEntity: BlogPost::class, mappedBy: 'categories')]
-    private $blogPosts;
+    private Collection $blogPosts;
 
     #[ORM\Column(type: 'boolean')]
     private bool $active = false;

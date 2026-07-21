@@ -13,16 +13,16 @@ class User implements \Stringable
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $name;
+    private ?string $name = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $email;
+    private ?string $email = null;
 
     #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author', orphanRemoval: true)]
-    private $blogPosts;
+    private Collection $blogPosts;
 
     public function __construct()
     {
