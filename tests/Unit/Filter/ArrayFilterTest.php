@@ -33,11 +33,21 @@ class ArrayFilterTest extends TestCase
     {
         $queryBuilder = $this->createQueryBuilder();
         $filterDataDto = $this->createFilterDataDto(['foo']);
-
         $fieldDto = TextField::new('tags')->getAsDto();
-        $fieldDto->setDoctrineMetadata(['type' => Types::SIMPLE_ARRAY]);
 
-        ArrayFilter::new('tags')->apply($queryBuilder, $filterDataDto, $fieldDto, $this->createEntityDto());
+        ArrayFilter::new('tags')->apply($queryBuilder, $filterDataDto, $fieldDto, $this->createEntityDto(Types::SIMPLE_ARRAY));
+
+        $parameters = $queryBuilder->getParameters();
+        $this->assertCount(1, $parameters);
+        $this->assertSame('%"foo"%', $parameters->first()->getValue());
+    }
+
+    public function testApplyWithoutFieldDtoOnSimpleArrayColumnUsesQuotedPattern(): void
+    {
+        $queryBuilder = $this->createQueryBuilder();
+        $filterDataDto = $this->createFilterDataDto(['foo']);
+
+        ArrayFilter::new('tags')->apply($queryBuilder, $filterDataDto, null, $this->createEntityDto(Types::SIMPLE_ARRAY));
 
         $parameters = $queryBuilder->getParameters();
         $this->assertCount(1, $parameters);
@@ -62,8 +72,13 @@ class ArrayFilterTest extends TestCase
         ]);
     }
 
-    private function createEntityDto(): EntityDto
+    private function createEntityDto(?string $tagsDoctrineType = null): EntityDto
     {
-        return new EntityDto(\stdClass::class, new ClassMetadata(\stdClass::class));
+        $classMetadata = new ClassMetadata(\stdClass::class);
+        if (null !== $tagsDoctrineType) {
+            $classMetadata->mapField(['fieldName' => 'tags', 'type' => $tagsDoctrineType]);
+        }
+
+        return new EntityDto(\stdClass::class, $classMetadata);
     }
 }

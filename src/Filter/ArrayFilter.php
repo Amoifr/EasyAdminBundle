@@ -71,9 +71,9 @@ final class ArrayFilter implements FilterInterface
         $parameterName = $filterDataDto->getParameterName();
         $value = $filterDataDto->getValue();
 
-        // the filtered property is not necessarily configured as a displayed field
-        // of the current page, so $fieldDto can be null
-        $useQuotes = Types::SIMPLE_ARRAY === $fieldDto?->getDoctrineMetadata()->get('type');
+        // the Doctrine type is read from the entity metadata instead of $fieldDto because the DTO
+        // can be null (e.g. when the filtered property is not configured as a field of the current page)
+        $useQuotes = Types::SIMPLE_ARRAY === $entityDto->getClassMetadata()->getTypeOfField($property);
 
         if (null === $value || [] === $value) {
             $queryBuilder->andWhere(sprintf('%s.%s %s', $alias, $property, $comparison));
