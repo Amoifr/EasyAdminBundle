@@ -328,6 +328,80 @@ Several props toggle the elements displayed by the component:
     ``<twig:ea:Pagination paginator="{{ paginator }}"/>``. Both ways of configuring
     the component are mutually exclusive.
 
+Sidebar
+-------
+
+Renders the navigation sidebar of the backend. It's a small set of composable
+subcomponents inspired by the `shadcn/ui Sidebar`_ component, but simplified:
+a header, a scrollable content area, groups of items and optional submenus
+(EasyAdmin renders the main menu with these components automatically; use them
+only when building a fully custom sidebar):
+
+.. code-block:: twig
+
+    <twig:ea:Sidebar>
+        <twig:ea:Sidebar:Header>
+            <a class="logo" href="/admin">ACME Corp.</a>
+        </twig:ea:Sidebar:Header>
+
+        <twig:ea:Sidebar:Content>
+            {# a group without label renders only its items #}
+            <twig:ea:Sidebar:Group label="Content">
+                <twig:ea:Sidebar:Item label="Dashboard" href="/admin" icon="fa-home" active="{{ true }}"/>
+                <twig:ea:Sidebar:Item label="Blog Posts" href="/admin/posts" icon="fa-newspaper"/>
+            </twig:ea:Sidebar:Group>
+        </twig:ea:Sidebar:Content>
+    </twig:ea:Sidebar>
+
+Items with a submenu are not clickable: they only expand/collapse their
+submenu (rendered inline in the normal sidebar and as a flyout panel in the
+compact icon-only sidebar). Add the ``keepOpen`` prop to render the submenu
+always expanded and not collapsible. Pass the item contents via the
+``submenu`` slot:
+
+.. code-block:: twig
+
+    <twig:ea:Sidebar:Item label="Settings" icon="fa-gear" hasSubmenu="{{ true }}" expanded="{{ true }}">
+        <twig:block name="submenu">
+            <twig:ea:Sidebar:Submenu label="Settings">
+                <twig:ea:Sidebar:Item label="General" href="/admin/settings"/>
+                <twig:ea:Sidebar:Item label="Security" href="/admin/settings/security"/>
+            </twig:ea:Sidebar:Submenu>
+        </twig:block>
+    </twig:ea:Sidebar:Item>
+
+Items can display a badge (e.g. a counter) using the ``badge`` slot:
+
+.. code-block:: twig
+
+    <twig:ea:Sidebar:Item label="Orders" href="/admin/orders" icon="fa-cart-shopping">
+        <twig:block name="badge">
+            <twig:ea:Badge radius="full">7</twig:ea:Badge>
+        </twig:block>
+    </twig:ea:Sidebar:Item>
+
+The optional footer is always anchored to the bottom of the screen: when the
+menu is taller than the viewport, the menu items scroll underneath it. Use it
+for important messages, notices, etc. (unlike the ``main_menu_after`` template
+block, which renders in the normal flow right after the menu items). The footer
+grows with its contents, so keep them short or make them scrollable yourself:
+
+.. code-block:: twig
+
+    <twig:ea:Sidebar:Footer>
+        <twig:ea:Alert variant="warning">Scheduled maintenance at 22:00 UTC</twig:ea:Alert>
+    </twig:ea:Sidebar:Footer>
+
+In the default sidebar, add footer contents by overriding the ``sidebar_footer``
+block in your dashboard templates.
+
+The sidebar supports two widths: the default one and a compact mode that only
+displays the item icons. Users switch between them by clicking on the sidebar
+edge, and the selected mode is persisted in the browser local storage. In
+compact mode, hovering an item shows a tooltip with its label, hovering an
+item with a submenu shows the submenu as a flyout panel, and the footer is
+hidden (arbitrary contents can't fit in the icon rail).
+
 Switch
 ------
 
@@ -360,6 +434,7 @@ By default, the checked state uses the primary color of the backend. Use the
     it, pass the ``ariaLabel`` prop to keep it accessible to screen readers.
 
 .. _`Twig Components`: https://symfony.com/bundles/ux-twig-component/current/index.html
+.. _`shadcn/ui Sidebar`: https://ui.shadcn.com/docs/components/base/sidebar
 .. _`FontAwesome icons`: https://fontawesome.com/v6/search?m=free
 .. _`ISO 3166-1 alpha-2`: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 .. _`http_method_override`: https://symfony.com/doc/current/reference/configuration/framework.html#http-method-override

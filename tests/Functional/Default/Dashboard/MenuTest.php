@@ -43,15 +43,18 @@ class MenuTest extends AbstractCrudTestCase
         static::assertCount(1, $mainMenu);
     }
 
-    public function testMenuContainsUnorderedList(): void
+    public function testMenuContainsGroupsWithUnorderedLists(): void
     {
         $crawler = $this->client->request('GET', $this->generateIndexUrl());
 
         static::assertResponseIsSuccessful();
 
-        // menu should have a ul.menu element
-        $menuList = $crawler->filter('#main-menu ul.menu');
-        static::assertCount(1, $menuList);
+        // menu items are chunked into groups, each with its own list
+        $menuGroups = $crawler->filter('#main-menu .ea-sidebar-group');
+        static::assertGreaterThan(0, $menuGroups->count());
+
+        $menuLists = $crawler->filter('#main-menu ul.ea-sidebar-group-items');
+        static::assertSame($menuGroups->count(), $menuLists->count());
     }
 
     public function testDashboardLinkIsRendered(): void
@@ -61,7 +64,7 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // dashboard link should be present
-        $dashboardLink = $crawler->filter('.menu-item a.menu-item-contents');
+        $dashboardLink = $crawler->filter('.ea-sidebar-item a.ea-sidebar-item-link');
         static::assertGreaterThan(0, $dashboardLink->count());
 
         $html = $crawler->html();
@@ -74,8 +77,8 @@ class MenuTest extends AbstractCrudTestCase
 
         static::assertResponseIsSuccessful();
 
-        // menu sections should be present
-        $sectionHeaders = $crawler->filter('.menu-header');
+        // menu sections should be present as group labels
+        $sectionHeaders = $crawler->filter('.ea-sidebar-group-label');
         static::assertGreaterThan(0, $sectionHeaders->count());
 
         // check for specific section labels
@@ -108,7 +111,7 @@ class MenuTest extends AbstractCrudTestCase
 
         // the linkTo(CategoryCrudController::class) item (auto-derived label) should also render
         // and its link should be clickable (have an href)
-        $menuLinks = $crawler->filter('.menu-item a.menu-item-contents:not(.submenu-toggle)');
+        $menuLinks = $crawler->filter('.ea-sidebar-item a.ea-sidebar-item-link');
         $hasLinkToItem = false;
         foreach ($menuLinks as $link) {
             $href = $link->getAttribute('href');
@@ -127,7 +130,7 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // the "Categories" linkTo() menu item has a custom query parameter set via setQueryParameter()
-        $categoriesLink = $crawler->filter('.menu-item a.menu-item-contents')->reduce(
+        $categoriesLink = $crawler->filter('.ea-sidebar-item a.ea-sidebar-item-link')->reduce(
             static fn ($node) => str_contains($node->text(), 'Categories')
         );
         static::assertGreaterThan(0, $categoriesLink->count());
@@ -141,7 +144,7 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // the linkTo() Blog Posts item has a badge with 'New'
-        $badges = $crawler->filter('.menu-item-badge');
+        $badges = $crawler->filter('.ea-sidebar-badge');
         static::assertGreaterThan(0, $badges->count());
 
         $html = $crawler->html();
@@ -155,7 +158,7 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // badge should be present for Blog Posts
-        $badges = $crawler->filter('.menu-item-badge');
+        $badges = $crawler->filter('.ea-sidebar-badge');
         static::assertGreaterThan(0, $badges->count());
 
         $html = $crawler->html();
@@ -169,7 +172,7 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // submenu items should be present
-        $submenus = $crawler->filter('.has-submenu');
+        $submenus = $crawler->filter('.ea-sidebar-item.has-submenu');
         static::assertGreaterThan(0, $submenus->count());
 
         // check for submenu labels
@@ -185,7 +188,7 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // submenu list should exist
-        $submenuLists = $crawler->filter('.submenu');
+        $submenuLists = $crawler->filter('.ea-sidebar-submenu');
         static::assertGreaterThan(0, $submenuLists->count());
 
         // check for specific submenu items
@@ -228,7 +231,7 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // menu icons should be present
-        $menuIcons = $crawler->filter('.menu-icon');
+        $menuIcons = $crawler->filter('.ea-sidebar-item-icon');
         static::assertGreaterThan(0, $menuIcons->count());
     }
 
@@ -240,15 +243,14 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // test that menu items can potentially have the active class
-        // the active class is applied via JavaScript or server-side based on URL matching
+        // the active class is applied server-side based on URL matching
         // here we verify the menu structure supports the active state
-        $menuItems = $crawler->filter('li.menu-item');
+        $menuItems = $crawler->filter('li.ea-sidebar-item');
         static::assertGreaterThan(0, $menuItems->count());
 
-        // check that the menu contains items that can receive active class
-        // the menu item HTML structure includes class attribute where 'active' can be added
+        // check that the menu contains items that can receive the 'is-active' class
         $html = $crawler->html();
-        static::assertStringContainsString('menu-item', $html);
+        static::assertStringContainsString('ea-sidebar-item', $html);
     }
 
     public function testMenuItemsAreClickable(): void
@@ -257,8 +259,8 @@ class MenuTest extends AbstractCrudTestCase
         $crawler = $this->client->request('GET', $this->generateIndexUrl());
         static::assertResponseIsSuccessful();
 
-        // find menu item links (excluding submenu toggles that have # hrefs)
-        $menuLinks = $crawler->filter('.menu-item a.menu-item-contents:not(.submenu-toggle)');
+        // find menu item links (items with submenus render a <button> instead of a link)
+        $menuLinks = $crawler->filter('.ea-sidebar-item a.ea-sidebar-item-link');
         static::assertGreaterThan(0, $menuLinks->count());
 
         // verify each has an href attribute
@@ -275,7 +277,7 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // menu item labels should have the correct class
-        $menuLabels = $crawler->filter('.menu-item-label');
+        $menuLabels = $crawler->filter('.ea-sidebar-item-label');
         static::assertGreaterThan(0, $menuLabels->count());
     }
 
@@ -285,8 +287,8 @@ class MenuTest extends AbstractCrudTestCase
 
         static::assertResponseIsSuccessful();
 
-        // submenu toggle icons should exist
-        $toggleIcons = $crawler->filter('.submenu-toggle-icon');
+        // submenu chevron icons should exist
+        $toggleIcons = $crawler->filter('.ea-sidebar-item-chevron');
         static::assertGreaterThan(0, $toggleIcons->count());
     }
 
@@ -297,7 +299,7 @@ class MenuTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // check that submenu items are nested inside their parent
-        $submenuParents = $crawler->filter('.has-submenu > ul.submenu');
+        $submenuParents = $crawler->filter('.ea-sidebar-item.has-submenu .ea-sidebar-submenu ul.ea-sidebar-submenu-items');
         static::assertGreaterThan(0, $submenuParents->count());
     }
 
@@ -307,8 +309,8 @@ class MenuTest extends AbstractCrudTestCase
 
         static::assertResponseIsSuccessful();
 
-        // section headers should have menu-header-contents class
-        $sectionContents = $crawler->filter('.menu-header .menu-header-contents');
+        // section headers should be rendered as group labels
+        $sectionContents = $crawler->filter('.ea-sidebar-group .ea-sidebar-group-label');
         static::assertGreaterThan(0, $sectionContents->count());
     }
 
@@ -318,19 +320,51 @@ class MenuTest extends AbstractCrudTestCase
 
         static::assertResponseIsSuccessful();
 
-        // regular menu item links should have menu-item-contents class
-        $menuLinks = $crawler->filter('a.menu-item-contents');
+        // regular menu item links should have the ea-sidebar-item-link class
+        $menuLinks = $crawler->filter('a.ea-sidebar-item-link');
         static::assertGreaterThan(0, $menuLinks->count());
     }
 
-    public function testSubmenuToggleHasCorrectClass(): void
+    public function testActiveMenuItemHasAriaCurrent(): void
     {
         $crawler = $this->client->request('GET', $this->generateIndexUrl());
 
         static::assertResponseIsSuccessful();
 
-        // submenu toggle links should have submenu-toggle class
-        $submenuToggles = $crawler->filter('a.submenu-toggle');
+        // the link of the active menu item announces itself to assistive technologies
+        $activeLinks = $crawler->filter('.ea-sidebar-item.is-active > a[aria-current="page"]');
+        static::assertGreaterThan(0, $activeLinks->count());
+    }
+
+    public function testSubmenuToggleIsNotClickable(): void
+    {
+        $crawler = $this->client->request('GET', $this->generateIndexUrl());
+
+        static::assertResponseIsSuccessful();
+
+        // items with submenus render a <button> toggle (not a link) with the aria-expanded attribute
+        $submenuToggles = $crawler->filter('.ea-sidebar-item.has-submenu > button.ea-sidebar-item-link[aria-expanded]');
         static::assertGreaterThan(0, $submenuToggles->count());
+    }
+
+    public function testKeepOpenSubmenuIsAlwaysExpanded(): void
+    {
+        // the current URL (Category index) doesn't match any sub-item of the
+        // 'Settings' submenu, which uses keepOpen()
+        $crawler = $this->client->request('GET', $this->generateIndexUrl());
+
+        static::assertResponseIsSuccessful();
+
+        $keepOpenSubmenus = $crawler->filter('.ea-sidebar-item.has-submenu.is-kept-open.is-expanded');
+        static::assertCount(1, $keepOpenSubmenus);
+        static::assertStringContainsString('Settings', $keepOpenSubmenus->text());
+
+        // keep-open parents are not a disclosure widget, so they don't announce aria-expanded
+        $keepOpenToggles = $crawler->filter('.ea-sidebar-item.is-kept-open > button[aria-expanded]');
+        static::assertCount(0, $keepOpenToggles);
+
+        // regular submenus ('Reports') keep working as collapsible toggles
+        $regularToggles = $crawler->filter('.ea-sidebar-item.has-submenu:not(.is-kept-open) > button[aria-expanded="false"]');
+        static::assertGreaterThan(0, $regularToggles->count());
     }
 }

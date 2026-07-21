@@ -621,6 +621,14 @@ using the ``subMenu()`` item type::
     In a submenu, the parent menu item cannot link to any resource, route or URL;
     it can only expand/collapse the submenu items.
 
+By default, submenus render collapsed unless the current URL matches one of
+their items. If some submenu is important enough to keep all its items always
+visible, call ``keepOpen()`` on it. The submenu will render always expanded::
+
+    MenuItem::subMenu('Blog', 'fa fa-article')->setSubItems([
+        // ...
+    ])->keepOpen(),
+
 Complex Main Menus
 ~~~~~~~~~~~~~~~~~~
 

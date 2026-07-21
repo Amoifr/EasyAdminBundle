@@ -40,7 +40,7 @@ class RelativeUrlsTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // check that menu links are relative (not absolute with http://)
-        $menuLinks = $crawler->filter('.menu-item a, nav a');
+        $menuLinks = $crawler->filter('.ea-sidebar-item a, nav a');
 
         if ($menuLinks->count() > 0) {
             $firstHref = $menuLinks->first()->attr('href');

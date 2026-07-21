@@ -23,6 +23,7 @@ final class MenuItemDto
     private ?string $type = null;
     private bool $selected = false;
     private bool $expanded = false;
+    private bool $keepsOpen = false;
     private TranslatableInterface|string|null $label = null;
     private ?string $icon = null;
     private string $cssClass = '';
@@ -75,6 +76,19 @@ final class MenuItemDto
     public function setExpanded(bool $isExpanded): void
     {
         $this->expanded = $isExpanded;
+    }
+
+    /**
+     * @return bool Returns true when this submenu is always expanded and can't be collapsed
+     */
+    public function keepsOpen(): bool
+    {
+        return $this->keepsOpen;
+    }
+
+    public function setKeepOpen(bool $keepOpen): void
+    {
+        $this->keepsOpen = $keepOpen;
     }
 
     public function getLabel(): TranslatableInterface|string|null

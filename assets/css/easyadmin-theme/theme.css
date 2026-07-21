@@ -10,12 +10,13 @@
 @import "./action-menu.css" layer(components);
 @import "./pagination.css" layer(components);
 @import "./modals.css" layer(components);
-@import "./menu.css" layer(components);
+@import "./sidebar.css" layer(components);
 @import "./datagrids.css" layer(components);
 @import "./detail-page.css" layer(components);
 @import "./fields.css" layer(components);
 @import "./images.css" layer(components);
 @import "./forms.css" layer(components);
+@import "./content-search.css" layer(components);
 @import "./buttons.css" layer(components);
 @import "./alerts.css" layer(components);
 @import "./badges.css" layer(components);

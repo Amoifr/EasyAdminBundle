@@ -234,33 +234,49 @@
                     {% endblock responsive_header %}
                 </div>
 
+                {# these variables capture the block contents to render them inside the ea:Sidebar
+                   component slots; defining the blocks at template level (instead of inside the
+                   component slots) is needed to keep them overrideable in child templates #}
+                {% set sidebar_header_contents %}
+                    {% block header %}
+                        {% block header_navbar %}
+                            <div id="header-logo" class="ea-sidebar-logo">
+                                {% block header_logo %}
+                                    <a class="logo" title="{{ ea.dashboardTitle|striptags }}" href="{{ path(ea.dashboardRouteName) }}">
+                                        <span class="logo-custom">{{ ea.dashboardTitle|raw }}</span>
+                                        <span class="logo-compact"><twig:ea:Icon name="internal:home" /></span>
+                                    </a>
+                                {% endblock header_logo %}
+                            </div>
+                        {% endblock header_navbar %}
+                    {% endblock header %}
+                {% endset %}
+
+                {# unlike the 'main_menu_after' block (which renders in the normal document flow,
+                   right after the menu items), the sidebar footer is always anchored to the bottom
+                   of the screen, on top of the menu; use it for important messages, notices, etc. #}
+                {% set sidebar_footer_contents %}
+                    {% block sidebar_footer %}{% endblock %}
+                {% endset %}
+
+                {% set sidebar_contents %}
+                    {% block sidebar %}
+                        <twig:ea:Sidebar:Header>{{ sidebar_header_contents }}</twig:ea:Sidebar:Header>
+
+                        {% block main_menu_wrapper %}
+                            {{ include(ea.templatePath('main_menu')) }}
+                        {% endblock main_menu_wrapper %}
+
+                        {% if sidebar_footer_contents|trim is not empty %}
+                            <twig:ea:Sidebar:Footer>{{ sidebar_footer_contents }}</twig:ea:Sidebar:Footer>
+                        {% endif %}
+                    {% endblock sidebar %}
+                {% endset %}
+
                 <div class="sidebar-wrapper">
-                    <aside class="sidebar">
-                        {% block sidebar %}
-                            <header class="main-header">
-                                {% block header %}
-                                <nav class="navbar" role="navigation">
-                                    {% block header_navbar %}
-                                        <div id="header-logo">
-                                            {% block header_logo %}
-                                                <a class="logo" title="{{ ea.dashboardTitle|striptags }}" href="{{ path(ea.dashboardRouteName) }}">
-                                                    <span class="logo-custom">{{ ea.dashboardTitle|raw }}</span>
-                                                    <span class="logo-compact"><twig:ea:Icon name="internal:home" /></span>
-                                                </a>
-                                            {% endblock header_logo %}
-                                        </div>
-                                    {% endblock header_navbar %}
-                                </nav>
-                                {% endblock header %}
-                            </header>
-
-                            {% block main_menu_wrapper %}
-                                {{ include(ea.templatePath('main_menu')) }}
-                            {% endblock main_menu_wrapper %}
-                        {% endblock sidebar %}
-
-                        <div id="sidebar-resizer-handler" class="resizer-handler resizer-handler-left"></div>
-                    </aside>
+                    <twig:ea:Sidebar>
+                        {{ sidebar_contents }}
+                    </twig:ea:Sidebar>
                 </div>
                 {% block main_content_wrapper %}
                 <section class="main-content">

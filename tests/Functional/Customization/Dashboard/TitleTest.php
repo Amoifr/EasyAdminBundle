@@ -52,7 +52,7 @@ class TitleTest extends AbstractCrudTestCase
         static::assertResponseIsSuccessful();
 
         // verify the title appears in the main header/logo area
-        $headerTitle = $crawler->filter('.main-header .logo-custom')->text();
+        $headerTitle = $crawler->filter('.ea-sidebar-header .logo-custom')->text();
         static::assertStringContainsString('Custom Dashboard Title', $headerTitle);
     }
 

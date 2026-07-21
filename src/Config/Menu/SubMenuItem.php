@@ -40,6 +40,18 @@ final class SubMenuItem implements MenuItemInterface
         return $this;
     }
 
+    /**
+     * Renders the submenu always expanded, no matter the current URL, and makes
+     * it not collapsible. Useful to group related items while keeping all of
+     * them permanently visible.
+     */
+    public function keepOpen(bool $keepOpen = true): self
+    {
+        $this->dto->setKeepOpen($keepOpen);
+
+        return $this;
+    }
+
     public function getAsDto(): MenuItemDto
     {
         $subItemDtos = [];
@@ -48,6 +60,10 @@ final class SubMenuItem implements MenuItemInterface
         }
 
         $this->dto->setSubItems($subItemDtos);
+
+        if ($this->dto->keepsOpen()) {
+            $this->dto->setExpanded(true);
+        }
 
         return $this->dto;
     }

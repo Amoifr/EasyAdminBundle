@@ -1,0 +1,680 @@
+/* Sidebar (ea:Sidebar component)
+/* ------------------------------------------------------------------------- */
+
+/* Container
+   ========================================================================= */
+.sidebar-wrapper {
+    position: relative;
+}
+.ea-sidebar {
+    background: var(--sidebar-bg);
+    block-size: 100%;
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100vh;
+    inset-inline-start: calc(0px - 2 * 20px - var(--sidebar-max-width));
+    overflow-inline: hidden;
+    overflow-block: auto;
+    padding: var(--ea-sp-4) var(--ea-sp-5);
+    position: fixed;
+    inset-block-start: 0;
+    transition: left var(--ea-duration-slower);
+    z-index: calc(var(--zindex-modal-backdrop) + 1);
+    inline-size: calc(2 * 20px + var(--sidebar-max-width));
+    overscroll-behavior: contain; /* needed to not scroll the entire page when reaching the end of this element scroll */
+}
+@media (min-width: 992px) {
+    .ea-sidebar {
+        box-shadow: inset -1px 0 0 var(--sidebar-border-color);
+        max-inline-size: var(--sidebar-max-width);
+        /* 'visible' is required so the sticky footer anchors to the viewport instead
+           of the sidebar (any other value turns the sidebar into its scrollport) */
+        overflow: visible;
+        padding: 0 var(--sidebar-padding-right) 0 var(--sidebar-padding-left);
+        position: static;
+        z-index: calc(var(--zindex-modal-backdrop) - 1);
+        inline-size: initial;
+        overscroll-behavior: auto;
+    }
+}
+body.ea-mobile-sidebar-visible .ea-sidebar {
+    box-shadow: 20px 0 25px -5px color-mix(in srgb, var(--black) 10%, transparent), 10px 0 10px -5px
+        color-mix(in srgb, var(--black) 4%, transparent);
+    inset-inline-start: 0;
+}
+
+/* Header
+   ========================================================================= */
+.ea-sidebar-header {
+    display: none;
+    flex-shrink: 0;
+}
+@media (min-width: 992px) {
+    .ea-sidebar-header {
+        display: block;
+        padding-inline-start: var(--sidebar-menu-items-padding-left);
+    }
+}
+
+.ea-sidebar-logo {
+    overflow: hidden;
+}
+.ea-sidebar-logo a {
+    color: var(--sidebar-logo-color);
+    display: block;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 24px;
+    padding: var(--ea-sp-4) 0 var(--ea-sp-7) 0;
+}
+.ea-sidebar-logo img,
+.ea-sidebar-logo svg {
+    max-inline-size: 100%;
+}
+
+.ea-sidebar-logo .logo-custom {
+    display: block;
+}
+.ea-sidebar-logo .logo-compact {
+    display: none;
+}
+
+/* Content
+   ========================================================================= */
+.ea-sidebar-content {
+    padding: 0 0 20px;
+}
+
+/* Footer
+   ========================================================================= */
+/* always anchored to the bottom of the screen; when there's not enough vertical
+   space, the menu items scroll underneath it (its size is not managed: it grows
+   with its contents, so keep them short or make them scrollable yourself) */
+.ea-sidebar-footer {
+    background: var(--sidebar-bg);
+    box-shadow: 0 -1px 0 var(--sidebar-border-color);
+    flex-shrink: 0;
+    inset-block-end: 0;
+    margin-block-end: -15px;
+    margin-block-start: auto;
+    margin-inline: -20px;
+    padding: 12px 20px;
+    position: sticky;
+}
+@media (min-width: 992px) {
+    .ea-sidebar-footer {
+        /* the inset shadow continues the sidebar right border that the footer overlaps */
+        box-shadow: 0 -1px 0 var(--sidebar-border-color), inset -1px 0 0 var(--sidebar-border-color);
+        margin-block-end: 0;
+        margin-inline-start: calc(0px - var(--sidebar-padding-left));
+        margin-inline-end: calc(0px - var(--sidebar-padding-right));
+        padding: 12px var(--sidebar-padding-right) 12px
+            calc(var(--sidebar-padding-left) + var(--sidebar-menu-items-padding-left));
+    }
+}
+
+/* Groups
+   ========================================================================= */
+.ea-sidebar-group-items {
+    list-style: none;
+    margin: 0;
+    padding-inline-start: 0;
+}
+
+.ea-sidebar-group-label {
+    align-items: center;
+    color: var(--sidebar-menu-header-color);
+    display: flex;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 15px;
+    margin-block-start: 15px;
+    padding: 7px 5px 7px var(--sidebar-menu-items-padding-left);
+    text-transform: uppercase;
+}
+.ea-sidebar-group:first-child .ea-sidebar-group-label {
+    margin-block-start: 0;
+}
+.ea-sidebar-group-icon {
+    color: inherit;
+    margin-inline-end: 8px;
+}
+.ea-sidebar-group-label .ea-sidebar-badge {
+    margin-inline-start: auto;
+}
+
+/* Items
+   ========================================================================= */
+.ea-sidebar-item {
+    border-radius: var(--border-radius);
+    padding-inline-start: var(--sidebar-menu-items-padding-left);
+    padding-inline-end: 5px;
+    position: relative;
+}
+.ea-sidebar-item.is-active {
+    background: var(--sidebar-menu-active-item-bg);
+}
+/* expanded submenu parents don't show the hover background: the open submenu
+   already signals the interaction, and highlighting the whole <li> would also
+   tint the submenu items below */
+.ea-sidebar-item:has(> .ea-sidebar-item-link:hover):not(.is-active):not(.is-expanded) {
+    background: var(--sidebar-item-hover-bg);
+}
+
+.ea-sidebar-item-link {
+    /* 'first baseline' keeps the icon and the badge aligned with the first line
+       of the label, both in single-line and multi-line menu items */
+    align-items: first baseline;
+    /* reset the <button> element used by items with submenus */
+    background: none;
+    border: 0;
+    color: var(--sidebar-menu-color);
+    cursor: pointer;
+    display: flex;
+    font: inherit;
+    inline-size: 100%;
+    padding: 4px 0;
+    text-align: start;
+}
+
+.ea-sidebar-item.is-active > .ea-sidebar-item-link .ea-sidebar-item-label {
+    font-weight: 500;
+}
+.ea-sidebar-item.is-active:not(.is-expanded) > .ea-sidebar-item-link,
+.ea-sidebar-item.is-active:not(.is-expanded) > .ea-sidebar-item-link .ea-sidebar-item-icon {
+    color: var(--sidebar-menu-active-item-color);
+}
+
+.ea-sidebar-item:not(.is-active):not(.is-kept-open) > .ea-sidebar-item-link:hover,
+.ea-sidebar-item:not(.is-active):not(.is-kept-open) > .ea-sidebar-item-link:hover .ea-sidebar-item-icon,
+.ea-sidebar-item:not(.is-active):not(.is-kept-open) > .ea-sidebar-item-link:focus-visible,
+.ea-sidebar-item:not(.is-active):not(.is-kept-open) > .ea-sidebar-item-link:focus-visible .ea-sidebar-item-icon {
+    color: var(--sidebar-menu-hover-color);
+}
+
+.ea-sidebar-item-icon {
+    color: var(--sidebar-menu-icon-color);
+    flex-shrink: 0;
+    margin-inline-end: 10px;
+    text-align: center;
+    /* no explicit block-size: the natural line box keeps the baseline (and so the
+       icon) aligned with the first line of the label */
+    inline-size: 1.25em;
+}
+.ea-sidebar-item-icon svg {
+    color: var(--sidebar-menu-icon-color);
+    max-block-size: 16px;
+    max-inline-size: 20px;
+    vertical-align: sub;
+}
+
+.ea-sidebar-item-label {
+    flex: 1;
+    min-inline-size: 0;
+}
+
+.ea-sidebar-item-chevron {
+    color: var(--sidebar-menu-icon-color);
+    flex-shrink: 0;
+    margin-inline-start: 8px;
+    transition: rotate var(--ea-duration-slow) var(--ea-ease-in-out);
+    inline-size: auto; /* this is needed to make it look better */
+}
+span.icon.ea-sidebar-item-chevron svg {
+    max-block-size: 12px;
+    max-inline-size: 12px;
+}
+.ea-sidebar-item.is-expanded > .ea-sidebar-item-link .ea-sidebar-item-chevron {
+    rotate: 90deg;
+}
+
+/* keep-open submenus are always expanded and can't be collapsed, so their parent
+   doesn't act as a toggle and doesn't display the chevron */
+.ea-sidebar-item.is-kept-open > .ea-sidebar-item-link {
+    cursor: default;
+}
+.ea-sidebar-item.is-kept-open .ea-sidebar-item-chevron {
+    display: none;
+}
+
+/* Badges
+   ========================================================================= */
+.ea-sidebar-badge {
+    margin-inline-start: 8px;
+    min-inline-size: 25px;
+}
+.ea-sidebar-badge.badge-secondary {
+    background: var(--sidebar-menu-badge-bg);
+    color: var(--sidebar-menu-badge-color);
+}
+.ea-light-scheme .ea-sidebar-item .ea-sidebar-badge {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+.ea-light-scheme .ea-sidebar-item.is-active .ea-sidebar-badge {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+.ea-dark-scheme .ea-sidebar-item.is-active .ea-sidebar-badge {
+    background: var(--sidebar-bg);
+    box-shadow: inset 0 0 0 1px transparent;
+}
+
+/* Submenus (inline accordion; becomes a flyout in compact mode)
+   ========================================================================= */
+.ea-sidebar-submenu {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--ea-duration-slow) var(--ea-ease-in-out);
+}
+.ea-sidebar-item.is-expanded > .ea-sidebar-submenu {
+    grid-template-rows: 1fr;
+}
+.ea-sidebar-submenu-inner {
+    min-block-size: 0;
+    overflow: hidden;
+}
+
+/* the parent label is only displayed as the title of the compact mode flyout */
+.ea-sidebar-submenu-title {
+    display: none;
+}
+
+.ea-sidebar-submenu-items {
+    /* the thin vertical line that visually relates the subitems to their parent item */
+    border-inline-start: 1px solid var(--sidebar-border-color);
+    list-style: none;
+    margin-block: 5px;
+    margin-inline-start: 10px;
+    padding-inline-start: 12px;
+}
+.ea-sidebar-submenu-items .ea-sidebar-item {
+    margin-block: 5px;
+    padding-inline-end: 0;
+}
+.ea-sidebar-submenu-items .ea-sidebar-item-link {
+    color: var(--sidebar-menu-submenu-color);
+    padding: 3px 0;
+}
+.ea-sidebar-submenu-items .ea-sidebar-item-icon {
+    font-size: var(--font-size-base);
+    margin-inline-end: 5px;
+}
+.ea-sidebar-submenu-items .ea-sidebar-badge {
+    margin-inline-end: 4px;
+}
+.ea-sidebar-submenu-header {
+    color: var(--sidebar-menu-header-color);
+    font-size: 12px;
+    font-weight: 500;
+    list-style: none;
+    padding: 3px 0;
+    text-transform: uppercase;
+}
+
+/* Tooltip (only displayed in compact mode)
+   ========================================================================= */
+.ea-sidebar-item-tooltip {
+    display: none;
+}
+
+/* Compact mode (icon rail, Stripe-style interactions)
+   ========================================================================= */
+@media (min-width: 992px) {
+    body.ea-sidebar-width-compact .ea-sidebar {
+        overflow: visible;
+        padding: 0;
+    }
+    /* align the logo with the icon column (the 24px icons centered in the 64px
+       rail leave a 20px gutter on each side) */
+    body.ea-sidebar-width-compact .ea-sidebar-header {
+        padding-inline-start: 20px;
+    }
+    body.ea-sidebar-width-compact .ea-sidebar-logo .logo-custom {
+        display: none;
+    }
+    body.ea-sidebar-width-compact .ea-sidebar-logo .logo-compact {
+        display: block;
+    }
+
+    /* arbitrary footer contents can't fit in the icon rail */
+    body.ea-sidebar-width-compact .ea-sidebar-footer {
+        display: none;
+    }
+
+    body.ea-sidebar-width-compact .ea-sidebar-group + .ea-sidebar-group {
+        margin-block-start: 15px;
+    }
+    body.ea-sidebar-width-compact .ea-sidebar-group-label {
+        block-size: 0;
+        margin: 0;
+        overflow: hidden;
+        padding: 0;
+    }
+
+    /* hide everything except the icon in top-level items */
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item
+        > .ea-sidebar-item-link
+        .ea-sidebar-item-label,
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item
+        > .ea-sidebar-item-link
+        .ea-sidebar-item-chevron,
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item > .ea-sidebar-item-link .ea-sidebar-badge {
+        display: none;
+    }
+
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item {
+        border-radius: 0;
+        padding: 6px 0;
+    }
+    /* center the icon tile in the rail, whatever the rail width is */
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item > .ea-sidebar-item-link {
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item
+        > .ea-sidebar-item-link
+        .ea-sidebar-item-icon {
+        align-items: center;
+        block-size: 24px;
+        display: flex;
+        font-size: 16px;
+        inline-size: 24px;
+        justify-content: center;
+        line-height: 1;
+        margin-inline-end: 0;
+        position: relative;
+    }
+
+    /* hovering the item reveals a tile slightly larger than the icon box,
+       growing and tinting in behind the icon */
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item
+        > .ea-sidebar-item-link
+        .ea-sidebar-item-icon::before {
+        background: transparent;
+        border-radius: var(--border-radius);
+        content: "";
+        inset: -4px;
+        position: absolute;
+        scale: 0.75;
+        transition: background-color var(--ea-duration-fast) var(--ea-ease-out), scale var(--ea-duration-fast)
+            var(--ea-ease-out);
+    }
+
+    /* badges are hidden in compact mode, so items with a badge show a small dot
+       on the corner of their icon instead */
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge)
+        .ea-sidebar-item-icon::after {
+        background: var(--sidebar-badge-dot-bg);
+        block-size: 7px;
+        border: 1px solid var(--sidebar-badge-dot-border-color);
+        border-radius: var(--border-radius-full);
+        /* the ring separates the dot from the icon strokes below it */
+        box-shadow: 0 0 0 2px var(--sidebar-bg);
+        content: "";
+        inline-size: 7px;
+        inset-block-start: -3px;
+        inset-inline-end: -3px;
+        position: absolute;
+    }
+    /* tint the dot like the badge it replaces (its pale background as the fill and
+       its darker text color as the border, so hues stay distinguishable at this
+       size); badges without a semantic variant use the default dot colors */
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-primary) {
+        --sidebar-badge-dot-bg: var(--badge-primary-bg);
+        --sidebar-badge-dot-border-color: var(--badge-primary-color);
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-success) {
+        --sidebar-badge-dot-bg: var(--badge-success-bg);
+        --sidebar-badge-dot-border-color: var(--badge-success-color);
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-warning) {
+        --sidebar-badge-dot-bg: var(--badge-warning-bg);
+        --sidebar-badge-dot-border-color: var(--badge-warning-color);
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-danger) {
+        --sidebar-badge-dot-bg: var(--badge-danger-bg);
+        --sidebar-badge-dot-border-color: var(--badge-danger-color);
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-info) {
+        --sidebar-badge-dot-bg: var(--badge-info-bg);
+        --sidebar-badge-dot-border-color: var(--badge-info-color);
+    }
+    /* in dark mode the pale badge backgrounds are semi-transparent and unreadable
+       at this size, so the dot is filled with the solid border color instead */
+    body.ea-dark-scheme.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge)
+        .ea-sidebar-item-icon::after {
+        background: var(--sidebar-badge-dot-border-color);
+    }
+    /* center the icon glyph inside the square tile (the inline baseline and the
+       'vertical-align: sub' of SVG icons push it down a few pixels otherwise);
+       positioning it keeps the glyph painted above the hover tile */
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item
+        > .ea-sidebar-item-link
+        .ea-sidebar-item-icon
+        .icon {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item
+        > .ea-sidebar-item-link
+        .ea-sidebar-item-icon
+        svg {
+        vertical-align: middle;
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:has(> .ea-sidebar-item-link:hover):not(.is-active),
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.is-active {
+        background: none;
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item
+        > .ea-sidebar-item-link:hover
+        .ea-sidebar-item-icon::before,
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item
+        > .ea-sidebar-item-link:focus-visible
+        .ea-sidebar-item-icon::before {
+        background: var(--sidebar-item-icon-tile-hover-bg);
+        scale: 1;
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.is-active
+        > .ea-sidebar-item-link
+        .ea-sidebar-item-icon {
+        color: var(--sidebar-menu-active-item-color);
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.is-active
+        > .ea-sidebar-item-link
+        .ea-sidebar-item-icon::before {
+        background: var(--sidebar-menu-active-item-bg);
+        scale: 1;
+    }
+
+    /* tooltip with the item label, displayed on the side of the icon */
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:not(.has-submenu)
+        .ea-sidebar-item-tooltip {
+        background: var(--sidebar-tooltip-bg);
+        border-radius: var(--border-radius);
+        color: var(--sidebar-tooltip-color);
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        inset-block-start: 50%;
+        /* overlap the rail a bit so the tooltip feels attached to its icon */
+        inset-inline-start: 100%;
+        margin-inline-start: -8px;
+        opacity: 0;
+        padding: 4px 10px;
+        pointer-events: none;
+        position: absolute;
+        translate: 0 -50%;
+        transition: opacity var(--ea-duration-fast) var(--ea-ease-out);
+        white-space: nowrap;
+        z-index: calc(var(--zindex-modal-backdrop) + 2);
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:not(.has-submenu):hover
+        .ea-sidebar-item-tooltip,
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item:not(.has-submenu):focus-within
+        .ea-sidebar-item-tooltip {
+        opacity: 1;
+    }
+
+    /* while hovered, raise the item above the resizer handler that overlays the last
+       pixels of the rail; otherwise the pointer crosses a strip that doesn't belong to
+       the item and the :hover chain (and the flyout) is lost on its way to the panel */
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item:hover,
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item:focus-within {
+        z-index: 1;
+    }
+
+    /* submenus become a flyout panel displayed on the side of the icon; the panel
+       overlaps the rail a bit, so the pointer can never fall in a gap between the
+       icon and the panel that would close it */
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.has-submenu > .ea-sidebar-submenu {
+        display: block;
+        grid-template-rows: none;
+        inline-size: max-content;
+        inset-block-start: 0;
+        inset-inline-start: 100%;
+        margin-inline-start: -8px;
+        max-inline-size: 320px;
+        min-inline-size: 200px;
+        opacity: 0;
+        position: absolute;
+        transition: opacity var(--ea-duration-fast) var(--ea-ease-out), visibility 0s linear var(--ea-duration-fast);
+        visibility: hidden;
+        z-index: calc(var(--zindex-modal-backdrop) + 2);
+    }
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.has-submenu:hover > .ea-sidebar-submenu,
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.has-submenu:focus-within
+        > .ea-sidebar-submenu {
+        opacity: 1;
+        transition-delay: 0s, 0s;
+        visibility: visible;
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.has-submenu
+        > .ea-sidebar-submenu
+        > .ea-sidebar-submenu-inner {
+        background: var(--dropdown-bg);
+        border: 1px solid var(--dropdown-border-color);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--popover-shadow);
+        max-block-size: calc(100vh - 24px);
+        overflow-block: auto;
+        padding: 8px;
+    }
+
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.has-submenu .ea-sidebar-submenu-title {
+        color: var(--sidebar-menu-header-color);
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 4px 8px 6px;
+    }
+
+    /* no vertical guide line inside the flyout */
+    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.has-submenu .ea-sidebar-submenu-items {
+        border-inline-start: 0;
+        margin: 0;
+        padding-inline-start: 0;
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.has-submenu
+        .ea-sidebar-submenu-items
+        .ea-sidebar-item {
+        margin-block: 0;
+        padding-inline: 0;
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.has-submenu
+        .ea-sidebar-submenu-items
+        .ea-sidebar-item-link {
+        border-radius: var(--border-radius);
+        color: var(--sidebar-menu-color);
+        padding: 5px 8px;
+    }
+    body.ea-sidebar-width-compact
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.has-submenu
+        .ea-sidebar-submenu-items
+        .ea-sidebar-item-link:hover {
+        background: var(--sidebar-item-hover-bg);
+    }
+}
+
+/* Resizer handler (toggles between the normal and compact modes)
+   ========================================================================= */
+#sidebar-resizer-handler {
+    cursor: w-resize; /* left arrow: clicking collapses the sidebar */
+    position: absolute;
+    inset-block-start: 0;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    min-block-size: 100vh;
+}
+body.ea-sidebar-width-compact #sidebar-resizer-handler {
+    cursor: e-resize; /* right arrow: clicking expands the sidebar */
+}
+/* cursor keywords are physical, so they must be swapped in RTL layouts */
+#sidebar-resizer-handler:dir(rtl) {
+    cursor: e-resize;
+}
+body.ea-sidebar-width-compact #sidebar-resizer-handler:dir(rtl) {
+    cursor: w-resize;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ea-sidebar-submenu,
+    .ea-sidebar-item-chevron,
+    .ea-sidebar-item-tooltip,
+    .ea-sidebar-item-icon {
+        transition: none;
+    }
+}

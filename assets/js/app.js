@@ -35,6 +35,7 @@ class App {
 
         this.#removeHashFormUrl();
         this.#createMainMenu();
+        this.#scrollActiveMenuItemIntoView();
         this.#createLayoutResizeControls();
         this.#createNavigationToggler();
         this.#createSearchHighlight();
@@ -72,47 +73,55 @@ class App {
     }
 
     #createMainMenu() {
-        // inspired by https://codepen.io/phileflanagan/pen/mwpQpY
-        const menuItemsWithSubmenus = document.querySelectorAll('#main-menu .menu-item.has-submenu');
+        // the expand/collapse animation is fully CSS-based (see sidebar.css); this only
+        // toggles the 'is-expanded' class, keeping a single submenu open at a time
+        // '.is-kept-open' submenus are always expanded: they don't toggle and the
+        // accordion never closes them
+        const menuItemsWithSubmenus = document.querySelectorAll(
+            '#main-menu .ea-sidebar-item.has-submenu:not(.is-kept-open)'
+        );
         menuItemsWithSubmenus.forEach((menuItem) => {
-            const menuItemSubmenu = menuItem.querySelector('.submenu');
-            if (null === menuItemSubmenu) {
+            const submenuToggle = menuItem.querySelector(':scope > .ea-sidebar-item-link');
+            if (null === submenuToggle) {
                 return;
             }
 
-            // needed because the menu accordion is based on the max-block-size property.
-            // visible elements must be initialized with a explicit max-block-size; otherwise
-            // when you click on them the first time, the animation is not smooth
-            if (menuItem.classList.contains('expanded')) {
-                menuItemSubmenu.style.maxHeight = `${menuItemSubmenu.scrollHeight}px`;
-            }
+            submenuToggle.addEventListener('click', () => {
+                const willExpand = !menuItem.classList.contains('is-expanded');
 
-            menuItem.querySelector('.submenu-toggle').addEventListener('click', (event) => {
-                event.preventDefault();
-
-                // hide other submenus
                 menuItemsWithSubmenus.forEach((otherMenuItem) => {
-                    if (menuItem === otherMenuItem) {
-                        return;
-                    }
-
-                    const otherMenuItemSubmenu = otherMenuItem.querySelector('.submenu');
-                    if (otherMenuItem.classList.contains('expanded')) {
-                        otherMenuItemSubmenu.style.maxHeight = '0px';
-                        otherMenuItem.classList.remove('expanded');
-                    }
+                    otherMenuItem.classList.remove('is-expanded');
+                    otherMenuItem
+                        .querySelector(':scope > .ea-sidebar-item-link')
+                        ?.setAttribute('aria-expanded', 'false');
                 });
 
-                // toggle the state of this submenu
-                if (menuItem.classList.contains('expanded')) {
-                    menuItemSubmenu.style.maxHeight = '0px';
-                    menuItem.classList.remove('expanded');
-                } else {
-                    menuItemSubmenu.style.maxHeight = `${menuItemSubmenu.scrollHeight}px`;
-                    menuItem.classList.add('expanded');
-                }
+                menuItem.classList.toggle('is-expanded', willExpand);
+                submenuToggle.setAttribute('aria-expanded', String(willExpand));
             });
         });
+    }
+
+    // with long menus, the active item can be outside the viewport (or behind the
+    // sticky sidebar footer) when the page loads; scroll it into view if needed
+    #scrollActiveMenuItemIntoView() {
+        const activeMenuItem = document.querySelector('#main-menu .ea-sidebar-item.is-active');
+        if (null === activeMenuItem) {
+            return;
+        }
+
+        const sidebarFooterHeight = document.querySelector('.ea-sidebar-footer')?.offsetHeight ?? 0;
+        const visibleBottom = window.innerHeight - sidebarFooterHeight;
+        const itemPosition = activeMenuItem.getBoundingClientRect();
+        if (itemPosition.top >= 0 && itemPosition.bottom <= visibleBottom) {
+            return;
+        }
+
+        activeMenuItem.scrollIntoView({ block: 'nearest' });
+        const newItemPosition = activeMenuItem.getBoundingClientRect();
+        if (newItemPosition.bottom > visibleBottom) {
+            window.scrollBy(0, newItemPosition.bottom - visibleBottom);
+        }
     }
 
     #createLayoutResizeControls() {
