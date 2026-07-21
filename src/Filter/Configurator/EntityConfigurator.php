@@ -16,10 +16,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
  * @author Yonel Ceruto <yonelceruto@gmail.com>
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
-final class EntityConfigurator implements FilterConfiguratorInterface
+final readonly class EntityConfigurator implements FilterConfiguratorInterface
 {
     public function __construct(
-        private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
+        private AdminUrlGeneratorInterface $adminUrlGenerator,
     ) {
     }
 

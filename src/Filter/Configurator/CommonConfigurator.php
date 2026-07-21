@@ -15,10 +15,10 @@ use function Symfony\Component\Translation\t;
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
-final class CommonConfigurator implements FilterConfiguratorInterface
+final readonly class CommonConfigurator implements FilterConfiguratorInterface
 {
     public function __construct(
-        private readonly EntityTranslationIdGeneratorInterface $entityTranslationIdGenerator,
+        private EntityTranslationIdGeneratorInterface $entityTranslationIdGenerator,
     ) {
     }
 
