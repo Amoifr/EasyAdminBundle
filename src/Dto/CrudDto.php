@@ -231,13 +231,11 @@ final class CrudDto
      */
     public function getDefaultPageTitle(?string $pageName = null, ?object $entityInstance = null, array $translationParameters = []): ?TranslatableInterface
     {
-        if (null !== $entityInstance) {
-            if ($entityInstance instanceof \Stringable) {
-                $entityAsString = (string) $entityInstance;
+        if ($entityInstance instanceof \Stringable) {
+            $entityAsString = (string) $entityInstance;
 
-                if ('' !== $entityAsString) {
-                    return t($entityAsString, $translationParameters, 'EasyAdminBundle');
-                }
+            if ('' !== $entityAsString) {
+                return t($entityAsString, $translationParameters, 'EasyAdminBundle');
             }
         }
 

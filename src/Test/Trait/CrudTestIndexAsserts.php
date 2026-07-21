@@ -38,7 +38,7 @@ trait CrudTestIndexAsserts
         }
 
         $message ??= sprintf('There should be %d results found in the current index page', $expectedIndexPageEntityCount);
-        static::assertSelectorNotExists('tr.no-results', );
+        static::assertSelectorNotExists('tr.no-results');
         static::assertSelectorExists('tbody tr');
 
         $indexPageEntityRows = $this->client->getCrawler()->filter('tbody tr');

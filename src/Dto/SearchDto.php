@@ -112,9 +112,8 @@ final class SearchDto
     public function getQueryTerms(): array
     {
         preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $this->query, $matches);
-        $terms = array_map(static fn ($match) => trim($match, '" '), $matches[0]);
 
-        return $terms;
+        return array_map(static fn ($match) => trim($match, '" '), $matches[0]);
     }
 
     /**
