@@ -111,7 +111,7 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
         // this dumps all admin routes in a performance-optimized format to later
         // find them quickly without having to use Symfony's router service
         $this->saveAdminRoutesInCache($adminRoutes);
-        $this->saveCrudControllersAndEntityFqcnMapInCache($this->crudControllers);
+        $this->saveCrudControllerToEntityFqcnMapInCache($this->crudControllers);
 
         return $collection;
     }
@@ -873,32 +873,21 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
     }
 
     // This replaces the ControllerRegistry that existed in previous EasyAdmin versions.
-    // It stores two maps between CRUD controllers and their associated entity FQCN:
-    //   controller_to_entity: $cache['crud_controller_fqcn'] => 'entity_fqcn'
-    //   entity_to_controller: $cache['entity_fqcn'] => ['crud_controller_fqcn1', 'crud_controller_fqcn2', ...]
+    // It stores the map between CRUD controllers and their associated entity FQCN:
+    //   $cache['crud_controller_fqcn'] => 'entity_fqcn'
+    // (AdminControllerRegistry derives the reverse entity-to-controller map from it)
     /**
      * @param iterable<CrudControllerInterface> $crudControllers
      */
-    private function saveCrudControllersAndEntityFqcnMapInCache(iterable $crudControllers): void
+    private function saveCrudControllerToEntityFqcnMapInCache(iterable $crudControllers): void
     {
         $crudToEntityMap = [];
-        $entityToCrudMap = [];
         foreach ($crudControllers as $crudController) {
-            $entityFqcn = $crudController::getEntityFqcn();
-            $crudToEntityMap[$crudController::class] = $entityFqcn;
-
-            if (!isset($entityToCrudMap[$entityFqcn])) {
-                $entityToCrudMap[$entityFqcn] = [];
-            }
-            $entityToCrudMap[$entityFqcn][] = $crudController::class;
+            $crudToEntityMap[$crudController::class] = $crudController::getEntityFqcn();
         }
 
         $crudToEntityCacheItem = $this->cache->getItem(CacheKey::CRUD_FQCN_TO_ENTITY_FQCN);
         $crudToEntityCacheItem->set($crudToEntityMap);
         $this->cache->save($crudToEntityCacheItem);
-
-        $entityToCrudCacheItem = $this->cache->getItem(CacheKey::ENTITY_FQCN_TO_CRUD_FQCN);
-        $entityToCrudCacheItem->set($entityToCrudMap);
-        $this->cache->save($entityToCrudCacheItem);
     }
 }
