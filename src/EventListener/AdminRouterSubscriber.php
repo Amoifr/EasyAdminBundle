@@ -112,18 +112,25 @@ readonly class AdminRouterSubscriber implements EventSubscriberInterface
                     $request->attributes->set('_route_params', $cleanedRouteParams);
                 }
 
-                $adminContext = $this->adminContextFactory->create($request, $dashboardControllerInstance, $crudControllerInstance, $actionName);
-                $request->attributes->set(EA::CONTEXT_REQUEST_ATTRIBUTE, $adminContext);
-
-                // restore the original request data so the exception message is accurate
-                if ($hadEntityIdAttribute) {
-                    $request->attributes->set(EA::ENTITY_ID, $entityIdAttribute);
-                }
-                if ($hadIdAttribute) {
-                    $request->attributes->set('id', $idAttribute);
-                }
-                if ($hadRouteParams) {
-                    $request->attributes->set('_route_params', $routeParams);
+                try {
+                    $adminContext = $this->adminContextFactory->create($request, $dashboardControllerInstance, $crudControllerInstance, $actionName);
+                    $request->attributes->set(EA::CONTEXT_REQUEST_ATTRIBUTE, $adminContext);
+                } catch (\Throwable) {
+                    // creating the fallback context runs user-defined code (e.g. configureActions())
+                    // against a context without an entity, so it may fail too; ignore that second
+                    // error because the original exception is more useful (the error page will
+                    // simply be rendered without the EasyAdmin layout)
+                } finally {
+                    // restore the original request data so the exception message is accurate
+                    if ($hadEntityIdAttribute) {
+                        $request->attributes->set(EA::ENTITY_ID, $entityIdAttribute);
+                    }
+                    if ($hadIdAttribute) {
+                        $request->attributes->set('id', $idAttribute);
+                    }
+                    if ($hadRouteParams) {
+                        $request->attributes->set('_route_params', $routeParams);
+                    }
                 }
 
                 throw $e;
