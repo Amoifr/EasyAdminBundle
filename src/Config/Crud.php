@@ -288,7 +288,9 @@ final class Crud
 
     public function setFilters(?FilterConfigDto $filters): self
     {
-        $this->dto->setFiltersConfig($filters);
+        // 'null' means "no filters", which is represented by an empty filter config
+        // (CrudDto::setFiltersConfig() doesn't accept null values)
+        $this->dto->setFiltersConfig($filters ?? new FilterConfigDto());
 
         return $this;
     }
