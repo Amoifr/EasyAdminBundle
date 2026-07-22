@@ -1,6 +1,19 @@
 Upgrade Guide
 =============
 
+## EasyAdmin 5.3.1
+
+### Removed the Entity-to-Controller Cache Entry
+
+The `easyadmin.crud.entity_fqcn_to_controller_fqcn` cache entry and its
+associated `CacheKey::ENTITY_FQCN_TO_CRUD_FQCN` public constant have been
+removed. This map of entity FQCNs to their CRUD controllers was an internal
+feature mostly needed by previous EasyAdmin versions; in EasyAdmin 5 it was
+written to the cache but never read, because the bundle now derives the
+entity-to-controller map from the reverse `CacheKey::CRUD_FQCN_TO_ENTITY_FQCN`
+cache entry. If your application read this cache entry directly,
+apply `array_flip()` to the contents of the remaining cache entry instead.
+
 ## EasyAdmin 5.3.0
 
 ### CSS Cascade Layers
