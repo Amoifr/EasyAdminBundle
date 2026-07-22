@@ -10,9 +10,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Contracts\Event;
 interface EntityLifecycleEventInterface
 {
     /**
-     * @return object
-     *
      * @phpstan-return TEntity
      */
-    public function getEntityInstance();
+    public function getEntityInstance(): object;
 }

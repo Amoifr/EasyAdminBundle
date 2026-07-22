@@ -149,11 +149,7 @@ final class CrudDto
         $this->entityFqcn = $entityFqcn;
     }
 
-    /**
-     * @param object|null $entityInstance
-     * @param string|null $pageName
-     */
-    public function getEntityLabelInSingular(/* ?object */ $entityInstance = null, /* ?string */ $pageName = null): TranslatableInterface|string|null
+    public function getEntityLabelInSingular(?object $entityInstance = null, ?string $pageName = null): TranslatableInterface|string|null
     {
         if (null === $this->entityLabelInSingular) {
             return null;
@@ -174,11 +170,7 @@ final class CrudDto
         $this->entityLabelInSingular = $label;
     }
 
-    /**
-     * @param object|null $entityInstance
-     * @param string|null $pageName
-     */
-    public function getEntityLabelInPlural(/* ?object */ $entityInstance = null, /* ?string */ $pageName = null): TranslatableInterface|string|null
+    public function getEntityLabelInPlural(?object $entityInstance = null, ?string $pageName = null): TranslatableInterface|string|null
     {
         if (null === $this->entityLabelInPlural) {
             return null;
@@ -200,10 +192,9 @@ final class CrudDto
     }
 
     /**
-     * @param object|null          $entityInstance
      * @param array<string, mixed> $translationParameters
      */
-    public function getCustomPageTitle(?string $pageName = null, /* ?object */ $entityInstance = null, array $translationParameters = [], ?string $domain = null): ?TranslatableInterface
+    public function getCustomPageTitle(?string $pageName = null, ?object $entityInstance = null, array $translationParameters = [], ?string $domain = null): ?TranslatableInterface
     {
         $title = $this->customPageTitles[$pageName ?? $this->pageName];
         if (\is_callable($title)) {

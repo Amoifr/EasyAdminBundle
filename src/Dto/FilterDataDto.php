@@ -10,8 +10,7 @@ final class FilterDataDto
     private int $index;
     private string $entityAlias;
     private FilterDto $filterDto;
-    /** @var string */
-    private $comparison;
+    private string $comparison;
     private mixed $value;
     private mixed $value2;
 

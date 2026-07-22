@@ -10,13 +10,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ColorScheme;
  */
 final class DashboardDto
 {
-    /** @var string */
-    private $routeName;
+    private string $routeName;
     private string $faviconPath = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⬛</text></svg>';
     private string $title = 'EasyAdmin';
     private string $translationDomain = 'messages';
-    /** @var string|null */
-    private $textDirection;
+    private ?string $textDirection = null;
     private string $contentWidth = Crud::LAYOUT_CONTENT_DEFAULT;
     private string $sidebarWidth = Crud::LAYOUT_SIDEBAR_DEFAULT;
     private bool $absoluteUrls = true;

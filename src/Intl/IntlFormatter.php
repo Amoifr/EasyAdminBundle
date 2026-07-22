@@ -262,10 +262,7 @@ final class IntlFormatter implements IntlFormatterInterface
         return $this->numberFormatters[$hash];
     }
 
-    /**
-     * @param \DateTimeZone|string|bool|null $timezone
-     */
-    private function convertDate(?\DateTimeInterface $date, $timezone = null): ?\DateTimeInterface
+    private function convertDate(?\DateTimeInterface $date, bool|\DateTimeZone|string|null $timezone = null): ?\DateTimeInterface
     {
         if (null === $date) {
             return null;

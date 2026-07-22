@@ -30,7 +30,10 @@ class StringToFileTransformer implements DataTransformerInterface
         $this->uploadValidate = $uploadValidate;
     }
 
-    public function transform(mixed $value): mixed
+    /**
+     * @return array<File|FlysystemFile|null>|File|FlysystemFile|null
+     */
+    public function transform(mixed $value): array|File|FlysystemFile|null
     {
         if (null === $value || [] === $value) {
             return null;
@@ -47,7 +50,10 @@ class StringToFileTransformer implements DataTransformerInterface
         return array_map([$this, 'doTransform'], $value);
     }
 
-    public function reverseTransform(mixed $value): mixed
+    /**
+     * @return array<string|null>|string|null
+     */
+    public function reverseTransform(mixed $value): array|string|null
     {
         if (null === $value || [] === $value) {
             return $this->multiple ? [] : '';

@@ -16,8 +16,7 @@ final class FilterDto
     private KeyValueStore $formTypeOptions;
     private KeyValueStore $customOptions;
     private ?string $propertyName = null;
-    /** @var TranslatableInterface|string|false|null */
-    private $label;
+    private TranslatableInterface|string|false|null $label = null;
     /** @var callable */
     private $applyCallable;
 
