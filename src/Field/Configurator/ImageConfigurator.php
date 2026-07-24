@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Model\FlysystemFile;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToGeneratePublicUrl;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Mime\MimeTypes;
@@ -68,15 +69,15 @@ final readonly class ImageConfigurator implements FieldConfiguratorInterface
             return;
         }
 
-        $relativeUploadDir = $field->getCustomOption(ImageField::OPTION_UPLOAD_DIR);
-        if (null === $relativeUploadDir) {
+        $uploadDir = $field->getCustomOption(ImageField::OPTION_UPLOAD_DIR);
+        if (null === $uploadDir) {
             throw new \InvalidArgumentException(sprintf('The "%s" image field must define the directory where the images are uploaded using the setUploadDir() method.', $field->getProperty()));
         }
 
         if (null !== $filesystem) {
             // For Flysystem, use the upload dir as-is (it's a Flysystem path, not a local path)
-            $relativeUploadDir = u($relativeUploadDir)->trimStart('/')->ensureEnd('/')->toString();
-            $field->setFormTypeOption('upload_dir', $relativeUploadDir);
+            $uploadDir = u($uploadDir)->trimStart('/')->ensureEnd('/')->toString();
+            $field->setFormTypeOption('upload_dir', $uploadDir);
             $field->setFormTypeOption('flysystem_storage', $filesystem);
             $field->setFormTypeOption('flysystem_url_prefix', $flysystemUrlPrefix);
 
@@ -120,13 +121,11 @@ final readonly class ImageConfigurator implements FieldConfiguratorInterface
             // Disable download_path for Flysystem (URLs are built via flysystem_url_prefix)
             $field->setFormTypeOption('download_path', null);
         } else {
-            $isStreamWrapper = false !== filter_var($relativeUploadDir, \FILTER_VALIDATE_URL);
-            $isAbsolutePath = str_starts_with($relativeUploadDir, \DIRECTORY_SEPARATOR);
-            if ($isStreamWrapper || $isAbsolutePath) {
-                $absoluteUploadDir = u($relativeUploadDir)->ensureEnd(\DIRECTORY_SEPARATOR)->toString();
+            $isStreamWrapper = false !== filter_var($uploadDir, \FILTER_VALIDATE_URL);
+            if ($isStreamWrapper || Path::isAbsolute($uploadDir)) {
+                $absoluteUploadDir = u($uploadDir)->ensureEnd(\DIRECTORY_SEPARATOR)->toString();
             } else {
-                $relativeUploadDir = u($relativeUploadDir)->trimStart(\DIRECTORY_SEPARATOR)->ensureEnd(\DIRECTORY_SEPARATOR)->toString();
-                $absoluteUploadDir = u($relativeUploadDir)->ensureStart($this->projectDir.\DIRECTORY_SEPARATOR)->toString();
+                $absoluteUploadDir = u($uploadDir)->ensureEnd(\DIRECTORY_SEPARATOR)->ensureStart($this->projectDir.\DIRECTORY_SEPARATOR)->toString();
             }
             $field->setFormTypeOption('upload_dir', $absoluteUploadDir);
         }

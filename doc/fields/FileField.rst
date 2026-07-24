@@ -43,14 +43,26 @@ setUploadDir
 ~~~~~~~~~~~~
 
 **This option is required.** Use it to set the directory where uploaded files are
-stored. The argument is the directory relative to your project root::
+stored. Relative paths are resolved from your project root directory and absolute
+filesystem paths are used as-is::
 
+    // relative to your project root directory
     yield FileField::new('...')->setUploadDir('public/uploads/files/');
+    // absolute filesystem paths are also supported
+    yield FileField::new('...')->setUploadDir('/mnt/data/uploads/');
     // the property will only store the file path relative to this dir
     // (e.g. 'catalog.pdf', 'venue/contract.docx')
 
 ``FileField`` does not define a default upload directory. If you don't call this
 method, an exception will be thrown.
+
+.. note::
+
+    Files stored outside your project's ``public/`` directory are not accessible
+    by web browsers, so the upload form doesn't display the view/download links
+    for them. If you serve those files by other means (e.g. a custom controller),
+    define the public path of those links with
+    ``->setFormTypeOption('download_path', '...')``.
 
 setFileConstraints
 ~~~~~~~~~~~~~~~~~~

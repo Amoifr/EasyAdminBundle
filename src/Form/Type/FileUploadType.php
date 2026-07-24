@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Form\Type\Model\FlysystemFile;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToGeneratePublicUrl;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataMapperInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
@@ -196,7 +197,16 @@ class FileUploadType extends AbstractType implements DataMapperInterface
             return $filename;
         };
 
-        $downloadPath = fn (Options $options) => mb_substr($options['upload_dir'], mb_strlen($this->projectDir.'/public/'));
+        // files stored outside the public dir are not accessible via web URLs, so
+        // no download path can be derived for them (the form theme hides the
+        // view/download links when download_path is null)
+        $downloadPath = function (Options $options): ?string {
+            $publicDir = $this->projectDir.'/public/';
+
+            return str_starts_with($options['upload_dir'], $publicDir)
+                ? mb_substr($options['upload_dir'], mb_strlen($publicDir))
+                : null;
+        };
 
         $allowAdd = static fn (Options $options) => $options['multiple'];
 
@@ -262,7 +272,7 @@ class FileUploadType extends AbstractType implements DataMapperInterface
 
             $isLocalFilesystem = false === filter_var($value, \FILTER_VALIDATE_URL);
 
-            if ($isLocalFilesystem && !str_starts_with($value, $this->projectDir)) {
+            if ($isLocalFilesystem && !Path::isAbsolute($value)) {
                 $value = $this->projectDir.'/'.$value;
             }
 

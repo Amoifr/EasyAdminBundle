@@ -42,11 +42,24 @@ setUploadDir
 
 By default, the contents of uploaded images are stored into files inside the
 ``<your-project-dir>/public/uploads/images/`` directory. Use this option to
-change that location. The argument is the directory relative to your project root::
+change that location. Relative paths are resolved from your project root
+directory and absolute filesystem paths are used as-is::
 
+    // relative to your project root directory
     yield ImageField::new('...')->setUploadDir('assets/images/');
+    // absolute filesystem paths are also supported
+    yield ImageField::new('...')->setUploadDir('/mnt/data/images/');
     // the property will only store the file path relative to this dir
     // (e.g. 'logo.png', 'venue/layout.jpg')
+
+.. note::
+
+    Images stored outside your project's ``public/`` directory are not accessible
+    by web browsers, so they can't be displayed and the upload form doesn't show
+    the view/download links for them. If you serve those images by other means
+    (e.g. a custom controller), use ``setBasePath()`` to display them on the
+    ``index``/``detail`` pages and ``->setFormTypeOption('download_path', '...')``
+    for the links of the upload form.
 
 setFileConstraints
 ~~~~~~~~~~~~~~~~~~
