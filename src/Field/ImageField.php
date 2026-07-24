@@ -75,7 +75,8 @@ final class ImageField implements FieldInterface
     }
 
     /**
-     * Relative to project's root directory (e.g. use 'public/uploads/' for `<your-project-dir>/public/uploads/`)
+     * Relative paths are resolved from the project's root directory (e.g. 'public/uploads/' for `<your-project-dir>/public/uploads/`).
+     * Absolute filesystem paths are also supported (e.g. '/mnt/data/uploads/'), and so are stream wrappers (e.g. 's3://bucket/path/').
      * Default upload dir: `<your-project-dir>/public/uploads/images/`.
      */
     public function setUploadDir(string $uploadDirPath): self
