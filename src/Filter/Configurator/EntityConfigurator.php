@@ -5,6 +5,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Filter\Configurator;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Filter\FilterConfiguratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\EntityRepositoryInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FilterDto;
@@ -20,6 +21,7 @@ final readonly class EntityConfigurator implements FilterConfiguratorInterface
 {
     public function __construct(
         private AdminUrlGeneratorInterface $adminUrlGenerator,
+        private EntityRepositoryInterface $entityRepository,
     ) {
     }
 
@@ -30,10 +32,9 @@ final readonly class EntityConfigurator implements FilterConfiguratorInterface
 
     public function configure(FilterDto $filterDto, ?FieldDto $fieldDto, EntityDto $entityDto, AdminContext $context): void
     {
-        $propertyName = $filterDto->getProperty();
-        if (!$entityDto->getClassMetadata()->hasAssociation($propertyName)) {
-            return;
-        }
+        $resolvedProperty = $this->entityRepository->resolveNestedAssociations(null, $entityDto, $filterDto->getProperty(), true);
+        $entityDto = $resolvedProperty['entity_dto'];
+        $propertyName = $resolvedProperty['property_name'];
 
         // TODO: add the 'em' form type option too?
         $filterDto->setFormTypeOptionIfNotSet('value_type_options.class', $entityDto->getClassMetadata()->getAssociationTargetClass($propertyName));

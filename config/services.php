@@ -335,6 +335,7 @@ return static function (ContainerConfigurator $container) {
 
         ->set(EntityFilterConfigurator::class)
             ->arg(0, new Reference(AdminUrlGenerator::class))
+            ->arg(1, service(EntityRepository::class))
 
         ->set(LanguageFilterConfigurator::class)
 
@@ -378,6 +379,7 @@ return static function (ContainerConfigurator $container) {
             ->arg(4, new Reference(FieldFactory::class))
             ->arg(5, new Reference(AuthorizationChecker::class))
             ->arg(6, service(AdminContextFactory::class))
+            ->arg(7, service(EntityRepository::class))
             ->tag('kernel.reset', ['method' => 'reset'])
 
         ->set(AvatarConfigurator::class)
@@ -446,6 +448,7 @@ return static function (ContainerConfigurator $container) {
             ->arg(2, service(ControllerFactory::class))
             ->arg(3, new Reference(FieldFactory::class))
             ->arg(4, service(AdminContextProvider::class))
+            ->arg(5, service(EntityRepository::class))
 
         ->set(SlugConfigurator::class)
 

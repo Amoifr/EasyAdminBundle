@@ -8,11 +8,11 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Factory\EntityFactoryInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
-use EasyCorp\Bundle\EasyAdminBundle\Factory\EntityFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\FormFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
@@ -26,22 +26,20 @@ class EntityRepositoryTest extends TestCase
     private ManagerRegistry $doctrine;
     private EventDispatcherInterface $eventDispatcher;
     private EntityRepository $entityRepository;
+    private EntityFactoryInterface $entityFactory;
 
     protected function setUp(): void
     {
         $this->adminContextProvider = $this->createMock(AdminContextProviderInterface::class);
         $this->doctrine = $this->createMock(ManagerRegistry::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-
-        // use reflection to create EntityRepository without needing to mock final classes
-        // entityFactory and FormFactory are only used in specific scenarios
-        $entityFactory = $this->createEntityFactoryStub();
+        $this->entityFactory = $this->createMock(EntityFactoryInterface::class);
         $formFactory = $this->createFormFactoryStub();
 
         $this->entityRepository = new EntityRepository(
             $this->adminContextProvider,
             $this->doctrine,
-            $entityFactory,
+            $this->entityFactory,
             $formFactory,
             $this->eventDispatcher
         );
@@ -229,7 +227,7 @@ class EntityRepositoryTest extends TestCase
 
     public function testCustomSortByExposedSortableFieldIsApplied(): void
     {
-        $entityDto = $this->createEntityDto(['displayedField']);
+        $entityDto = $this->createEntityDto(['displayedField' => ['type' => 'string']]);
         $fields = new FieldCollection([$this->createField('displayedField', true)]);
         $searchDto = $this->createSearchDtoForSort(customSort: ['displayedField' => 'ASC']);
 
@@ -247,7 +245,7 @@ class EntityRepositoryTest extends TestCase
     {
         // simulates ?sort[hiddenField]=ASC against a controller whose
         // configureFields(INDEX) doesn't expose `hiddenField`
-        $entityDto = $this->createEntityDto(['hiddenField']);
+        $entityDto = $this->createEntityDto(['hiddenField' => ['type' => 'string']]);
         $fields = new FieldCollection([]);
         $searchDto = $this->createSearchDtoForSort(customSort: ['hiddenField' => 'ASC']);
 
@@ -261,7 +259,7 @@ class EntityRepositoryTest extends TestCase
 
     public function testCustomSortByExplicitlyNonSortableFieldIsIgnored(): void
     {
-        $entityDto = $this->createEntityDto(['displayedField']);
+        $entityDto = $this->createEntityDto(['displayedField' => ['type' => 'string']]);
         $fields = new FieldCollection([$this->createField('displayedField', false)]);
         $searchDto = $this->createSearchDtoForSort(customSort: ['displayedField' => 'ASC']);
 
@@ -276,7 +274,7 @@ class EntityRepositoryTest extends TestCase
     public function testCustomSortKeyContainingCommaIsIgnored(): void
     {
         // ?sort[name,entity.email]=ASC — comma would smuggle an extra ORDER BY column
-        $entityDto = $this->createEntityDto(['displayedField']);
+        $entityDto = $this->createEntityDto(['displayedField' => ['type' => 'string']]);
         $fields = new FieldCollection([$this->createField('displayedField', true)]);
         $searchDto = $this->createSearchDtoForSort(customSort: ['displayedField,entity.hiddenField' => 'ASC']);
 
@@ -293,7 +291,7 @@ class EntityRepositoryTest extends TestCase
         // ?sort[customer.secretField]=ASC — multi-segment keys reach the unfiltered
         // multi-segment branch of applyOrderClause; URL-based association sort is
         // supported via single-segment keys + AssociationField::setSortProperty()
-        $entityDto = $this->createEntityDto([], ['customer']);
+        $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
         $fields = new FieldCollection([$this->createField('customer', true)]);
         $searchDto = $this->createSearchDtoForSort(customSort: ['customer.secretField' => 'ASC']);
 
@@ -311,7 +309,7 @@ class EntityRepositoryTest extends TestCase
         // ?sort[displayedField]=ASC,%20entity.hiddenField%20DESC — Expr\OrderBy
         // concatenates "$property $direction", so an unvalidated direction smuggles
         // a second OrderByItem that the DQL parser happily accepts
-        $entityDto = $this->createEntityDto(['displayedField']);
+        $entityDto = $this->createEntityDto(['displayedField' => ['type' => 'string']]);
         $fields = new FieldCollection([$this->createField('displayedField', true)]);
         $searchDto = $this->createSearchDtoForSort(customSort: ['displayedField' => 'ASC, entity.hiddenField DESC']);
 
@@ -327,7 +325,7 @@ class EntityRepositoryTest extends TestCase
     {
         // ?sort[hiddenField]=ASC must not suppress setDefaultSort(['hiddenField' => 'DESC']):
         // the customSort entry is rejected, the defaultSort entry still applies
-        $entityDto = $this->createEntityDto(['hiddenField']);
+        $entityDto = $this->createEntityDto(['hiddenField' => ['type' => 'string']]);
         $fields = new FieldCollection([]);
         $searchDto = $this->createSearchDtoForSort(
             customSort: ['hiddenField' => 'ASC'],
@@ -347,7 +345,7 @@ class EntityRepositoryTest extends TestCase
     public function testDefaultSortByFieldAbsentFromFieldCollectionIsStillApplied(): void
     {
         // developer-supplied default sort is trusted unconditionally
-        $entityDto = $this->createEntityDto(['createdAt']);
+        $entityDto = $this->createEntityDto(['createdAt' => ['type' => 'date_time']]);
         $fields = new FieldCollection([]);
         $searchDto = $this->createSearchDtoForSort(defaultSort: ['createdAt' => 'DESC']);
 
@@ -363,7 +361,7 @@ class EntityRepositoryTest extends TestCase
 
     public function testValidCustomSortOverridesDefaultSortForSameKey(): void
     {
-        $entityDto = $this->createEntityDto(['displayedField']);
+        $entityDto = $this->createEntityDto(['displayedField' => ['type' => 'string']]);
         $fields = new FieldCollection([$this->createField('displayedField', true)]);
         $searchDto = $this->createSearchDtoForSort(
             customSort: ['displayedField' => 'ASC'],
@@ -378,6 +376,91 @@ class EntityRepositoryTest extends TestCase
         $this->stubEntityManager($queryBuilder);
 
         $this->entityRepository->createQueryBuilder($searchDto, $entityDto, $fields, new FilterCollection());
+    }
+
+    public function testResolveNestedAssociationsWithSimpleProperty(): void
+    {
+        $rootEntityDto = $this->createEntityDto(['title' => ['type' => 'string']], [], 'App\Entity\Post');
+
+        $resolved = $this->entityRepository->resolveNestedAssociations(null, $rootEntityDto, 'title');
+
+        self::assertSame($rootEntityDto, $resolved['entity_dto']);
+        self::assertSame('entity', $resolved['entity_alias']);
+        self::assertSame('title', $resolved['property_name']);
+    }
+
+    public function testResolveNestedAssociationsWithNestedProperty(): void
+    {
+        $authorEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\User');
+        $rootEntityDto = $this->createEntityDto([], ['author' => 'App\Entity\User'], 'App\Entity\Post');
+
+        $this->entityFactory->expects(self::once())
+            ->method('create')
+            ->with('App\Entity\User')
+            ->willReturn($authorEntityDto);
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects(self::once())
+            ->method('leftJoin')
+            ->with('entity.author', 'author');
+
+        $resolved = $this->entityRepository->resolveNestedAssociations($queryBuilder, $rootEntityDto, 'author.name');
+
+        self::assertSame($authorEntityDto, $resolved['entity_dto']);
+        self::assertSame('author', $resolved['entity_alias']);
+        self::assertSame('name', $resolved['property_name']);
+    }
+
+    public function testResolveNestedAssociationsEndingWithAssociation(): void
+    {
+        $categoryEntityDto = $this->createEntityDto([], ['parent' => 'App\Entity\Category'], 'App\Entity\Category');
+        $rootEntityDto = $this->createEntityDto([], ['category' => 'App\Entity\Category'], 'App\Entity\Post');
+
+        $this->entityFactory->expects(self::once())
+            ->method('create')
+            ->with('App\Entity\Category')
+            ->willReturn($categoryEntityDto);
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects(self::once())
+            ->method('leftJoin')
+            ->with('entity.category', 'category');
+
+        $resolved = $this->entityRepository->resolveNestedAssociations(
+            $queryBuilder,
+            $rootEntityDto,
+            'category.parent',
+            true
+        );
+
+        self::assertSame($categoryEntityDto, $resolved['entity_dto']);
+        self::assertSame('category', $resolved['entity_alias']);
+        self::assertSame('parent', $resolved['property_name']);
+    }
+
+    public function testResolveNestedAssociationsDoesNotDuplicateJoins(): void
+    {
+        $authorEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\User');
+        $rootEntityDto = $this->createEntityDto([], ['author' => 'App\Entity\User'], 'App\Entity\Post');
+
+        $this->entityFactory->method('create')->willReturn($authorEntityDto);
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects(self::once())->method('leftJoin');
+
+        // This is called 2 times with the same parameters on purpose to verify it's only joined once.
+        $this->entityRepository->resolveNestedAssociations($queryBuilder, $rootEntityDto, 'author.name');
+        $this->entityRepository->resolveNestedAssociations($queryBuilder, $rootEntityDto, 'author.name');
+    }
+
+    public function testResolveNestedAssociationsThrowsOnInvalidProperty(): void
+    {
+        $rootEntityDto = $this->createEntityDto(['title' => ['type' => 'string']], [], 'App\Entity\Post');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The "invalid" property is not valid');
+
+        $this->entityRepository->resolveNestedAssociations(null, $rootEntityDto, 'invalid');
     }
 
     private function createSearchDto(string $query = '', array $sort = [], ?array $appliedFilters = []): SearchDto
@@ -401,20 +484,22 @@ class EntityRepositoryTest extends TestCase
         return new SearchDto(new Request(), null, '', $defaultSort, $customSort, []);
     }
 
-    /**
-     * @param list<string> $mappedFields
-     * @param list<string> $mappedAssociations
-     */
-    private function createEntityDto(array $mappedFields = [], array $mappedAssociations = []): EntityDto
+    private function createEntityDto(array $mappedFields = [], array $mappedAssociations = [], string $fqcn = 'App\Entity\Product'): EntityDto
     {
         $metadata = $this->createMock(ClassMetadata::class);
         $metadata->method('getSingleIdentifierFieldName')->willReturn('id');
-        $metadata->method('hasField')->willReturnCallback(static fn (string $name): bool => \in_array($name, $mappedFields, true));
-        $metadata->method('hasAssociation')->willReturnCallback(static fn (string $name): bool => \in_array($name, $mappedAssociations, true));
-        $metadata->method('getFieldNames')->willReturn($mappedFields);
-        $metadata->fieldMappings = array_fill_keys($mappedFields, []);
+        $metadata->method('hasField')->willReturnCallback(static fn (string $name): bool => isset($mappedFields[$name]));
+        $metadata->method('hasAssociation')->willReturnCallback(static fn (string $name): bool => isset($mappedAssociations[$name]));
+        $metadata->method('getFieldNames')->willReturn(array_keys($mappedFields));
+        $metadata->method('getFieldMapping')->willReturnCallback(
+            static fn (string $name): array => $mappedFields[$name] ?? throw new \InvalidArgumentException()
+        );
+        $metadata->method('getAssociationTargetClass')->willReturnCallback(
+            static fn (string $name): string => $mappedAssociations[$name] ?? throw new \InvalidArgumentException()
+        );
+        $metadata->fieldMappings = $mappedFields;
 
-        return new EntityDto('App\Entity\Product', $metadata);
+        return new EntityDto($fqcn, $metadata);
     }
 
     private function createField(string $property, bool $sortable): FieldInterface
@@ -444,15 +529,6 @@ class EntityRepositoryTest extends TestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->method('createQueryBuilder')->willReturn($queryBuilder);
         $this->doctrine->method('getManagerForClass')->willReturn($entityManager);
-    }
-
-    /**
-     * Creates a stub for EntityFactory using reflection since it's a final class.
-     */
-    private function createEntityFactoryStub(): EntityFactory
-    {
-        return (new \ReflectionClass(EntityFactory::class))
-            ->newInstanceWithoutConstructor();
     }
 
     /**
