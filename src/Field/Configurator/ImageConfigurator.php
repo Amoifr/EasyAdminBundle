@@ -121,11 +121,14 @@ final readonly class ImageConfigurator implements FieldConfiguratorInterface
             // Disable download_path for Flysystem (URLs are built via flysystem_url_prefix)
             $field->setFormTypeOption('download_path', null);
         } else {
+            // always join and terminate with '/': PHP accepts it on all platforms, while
+            // '\' on Windows breaks the web-path comparisons (e.g. the 'download_path'
+            // derived from the upload dir in FileUploadType)
             $isStreamWrapper = false !== filter_var($uploadDir, \FILTER_VALIDATE_URL);
             if ($isStreamWrapper || Path::isAbsolute($uploadDir)) {
-                $absoluteUploadDir = u($uploadDir)->ensureEnd(\DIRECTORY_SEPARATOR)->toString();
+                $absoluteUploadDir = u($uploadDir)->trimEnd('/\\')->append('/')->toString();
             } else {
-                $absoluteUploadDir = u($uploadDir)->ensureEnd(\DIRECTORY_SEPARATOR)->ensureStart($this->projectDir.\DIRECTORY_SEPARATOR)->toString();
+                $absoluteUploadDir = u($uploadDir)->trimEnd('/\\')->append('/')->ensureStart($this->projectDir.'/')->toString();
             }
             $field->setFormTypeOption('upload_dir', $absoluteUploadDir);
         }

@@ -156,7 +156,7 @@ class FileUploadType extends AbstractType implements DataMapperInterface
         $uploadNew = static function (UploadedFile $file, string $uploadDir, string $fileName) {
             $subDir = \dirname($fileName);
             if ('.' !== $subDir) {
-                $uploadDir = rtrim($uploadDir, \DIRECTORY_SEPARATOR).\DIRECTORY_SEPARATOR.$subDir;
+                $uploadDir = rtrim($uploadDir, '/\\').'/'.$subDir;
                 $fileName = basename($fileName);
             }
             $file->move($uploadDir, $fileName);
@@ -266,8 +266,8 @@ class FileUploadType extends AbstractType implements DataMapperInterface
                 return $value;
             }
 
-            if (\DIRECTORY_SEPARATOR !== mb_substr($value, -1)) {
-                $value .= \DIRECTORY_SEPARATOR;
+            if (\DIRECTORY_SEPARATOR !== mb_substr($value, -1) && '/' !== mb_substr($value, -1)) {
+                $value .= '/';
             }
 
             $isLocalFilesystem = false === filter_var($value, \FILTER_VALIDATE_URL);

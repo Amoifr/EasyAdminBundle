@@ -399,7 +399,7 @@ class EntityRepositoryTest extends TestCase
             ->with('App\Entity\User')
             ->willReturn($authorEntityDto);
 
-        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder = $this->createResolveQueryBuilder();
         $queryBuilder->expects(self::once())
             ->method('leftJoin')
             ->with('entity.author', 'author');
@@ -421,7 +421,7 @@ class EntityRepositoryTest extends TestCase
             ->with('App\Entity\Category')
             ->willReturn($categoryEntityDto);
 
-        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder = $this->createResolveQueryBuilder();
         $queryBuilder->expects(self::once())
             ->method('leftJoin')
             ->with('entity.category', 'category');
@@ -445,7 +445,7 @@ class EntityRepositoryTest extends TestCase
 
         $this->entityFactory->method('create')->willReturn($authorEntityDto);
 
-        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder = $this->createResolveQueryBuilder();
         $queryBuilder->expects(self::once())->method('leftJoin');
 
         // This is called 2 times with the same parameters on purpose to verify it's only joined once.
@@ -462,9 +462,9 @@ class EntityRepositoryTest extends TestCase
 
         // joined associations must not be shared between query builders: a query builder
         // created later (another request or sub-request) needs its own JOIN clauses
-        $firstQueryBuilder = $this->createMock(QueryBuilder::class);
+        $firstQueryBuilder = $this->createResolveQueryBuilder();
         $firstQueryBuilder->expects(self::once())->method('leftJoin')->with('entity.author', 'author');
-        $secondQueryBuilder = $this->createMock(QueryBuilder::class);
+        $secondQueryBuilder = $this->createResolveQueryBuilder();
         $secondQueryBuilder->expects(self::once())->method('leftJoin')->with('entity.author', 'author');
 
         $this->entityRepository->resolveNestedAssociations($firstQueryBuilder, $rootEntityDto, 'author.name');
@@ -497,7 +497,7 @@ class EntityRepositoryTest extends TestCase
 
         // resolving with a query builder first must not leak its alias into
         // a later metadata-only resolution of the same property path
-        $this->entityRepository->resolveNestedAssociations($this->createMock(QueryBuilder::class), $rootEntityDto, 'author.name');
+        $this->entityRepository->resolveNestedAssociations($this->createResolveQueryBuilder(), $rootEntityDto, 'author.name');
         $resolved = $this->entityRepository->resolveNestedAssociations(null, $rootEntityDto, 'author.name');
 
         self::assertSame($authorEntityDto, $resolved->getEntityDto());
@@ -560,6 +560,19 @@ class EntityRepositoryTest extends TestCase
         $field->setSortable($sortable);
 
         return $field;
+    }
+
+    /**
+     * Builds a QueryBuilder mock for resolveNestedAssociations() tests. Stubbing
+     * getRootAliases() is needed because Doctrine ORM 2.x declares no native return
+     * type for it, so an unstubbed mock would return null instead of [].
+     */
+    private function createResolveQueryBuilder(): QueryBuilder
+    {
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->method('getRootAliases')->willReturn(['entity']);
+
+        return $queryBuilder;
     }
 
     /**
