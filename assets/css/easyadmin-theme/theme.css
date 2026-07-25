@@ -16,6 +16,7 @@
 @import "./fields.css" layer(components);
 @import "./images.css" layer(components);
 @import "./forms.css" layer(components);
+@import "./tabs.css" layer(components);
 @import "./content-search.css" layer(components);
 @import "./buttons.css" layer(components);
 @import "./alerts.css" layer(components);

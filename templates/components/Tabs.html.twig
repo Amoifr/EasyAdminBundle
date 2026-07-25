@@ -1,0 +1,31 @@
+{# Renders the tab bar displayed on the new/edit/detail pages; its visual design
+   is based on GitHub Primer's UnderlineNav component:
+   https://primer.style/product/components/underline-nav/ #}
+{% props
+    tabs = null, # FieldDto[] of the tabs created with FormField::addTab(); when null, the content block is rendered instead, so you can pass your own ea:Tabs:Item elements
+    translationDomain = 'messages', # domain used to translate the tab labels
+%}
+
+<div {{ attributes.defaults({class: 'form-tabs-tablist'}) }}>
+    <ul class="nav nav-tabs">
+        {% if tabs is null %}
+            <twig:block name="content"></twig:block>
+        {% else %}
+            {% set tab_id_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_TAB_ID') %}
+            {% set tab_is_active_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_TAB_IS_ACTIVE') %}
+            {% set tab_error_count_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_TAB_ERROR_COUNT') %}
+            {% set tab_badge_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_TAB_BADGE') %}
+
+            {% for tab in tabs %}
+                <twig:ea:Tabs:Item
+                    paneId="{{ tab.getCustomOption(tab_id_option_name) }}"
+                    label="{{ tab.label|trans(domain: translationDomain) }}"
+                    active="{{ tab.getCustomOption(tab_is_active_option_name) }}"
+                    icon="{{ tab.getCustomOption('icon') }}"
+                    errorCount="{{ tab.getCustomOption(tab_error_count_option_name) }}"
+                    badge="{{ tab.getCustomOption(tab_badge_option_name) }}"
+                />
+            {% endfor %}
+        {% endif %}
+    </ul>
+</div>

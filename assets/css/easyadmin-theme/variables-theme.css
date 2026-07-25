@@ -57,8 +57,6 @@
 
     --zindex-modal-backdrop: 2020;
 
-    --form-tabs-gutter-x: var(--ea-sp-1);
-
     --text-primary-color: var(--text-color);
     --text-secondary-color: var(--text-muted);
     --text-tertiary-color: var(--gray-400);
@@ -230,6 +228,9 @@
     --form-help-active-color: var(--gray-800);
     --form-tabs-border-color: var(--gray-200);
     --form-tabs-help-color: var(--gray-600);
+    --form-tabs-item-hover-bg: var(--gray-100);
+    --form-tabs-indicator-color: var(--ea-primary);
+    --form-tabs-indicator-size: 2px;
     --form-column-header-color: var(--gray-700);
     --form-column-help-color: var(--gray-600);
     --form-column-icon-color: var(--gray-500);
@@ -663,6 +664,10 @@
     --form-help-active-color: var(--gray-300);
     --form-tabs-border-color: var(--gray-600);
     --form-tabs-help-color: var(--gray-500);
+    --form-tabs-item-hover-bg: var(--gray-800);
+    /* --ea-primary is too dark against the dark background (~3:1); the lightened
+       primary keeps the indicator tied to the configurable accent color */
+    --form-tabs-indicator-color: var(--ea-primary-text);
     --form-column-header-color: var(--gray-300);
     --form-column-help-color: var(--gray-500);
     --form-column-icon-color: var(--gray-400);
@@ -997,15 +1002,6 @@
     --bs-modal-footer-bg: var(--modal-footer-bg);
     --bs-modal-footer-border-color: var(--modal-border-color);
     --bs-modal-footer-border-width: var(--border-width);
-}
-.nav-tabs {
-    --bs-nav-tabs-border-width: var(--border-width);
-    --bs-nav-tabs-border-color: var(--form-tabs-border-color);
-    --bs-nav-tabs-border-radius: var(--border-radius);
-    --bs-nav-tabs-link-hover-border-color: var(--bs-secondary-bg) var(--bs-secondary-bg) var(--bs-border-color);
-    --bs-nav-tabs-link-active-color: var(--link-color);
-    --bs-nav-tabs-link-active-bg: transparent;
-    --bs-nav-tabs-link-active-border-color: var(--border-color) var(--border-color) transparent var(--border-color);
 }
 .badge {
     --bs-badge-padding-x: var(--ea-sp-1);
