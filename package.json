@@ -13,7 +13,7 @@
     "dirty-form": "^0.4.0",
     "file-loader": "^6.0.0",
     "mark.js": "^8.11.1",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.18",
     "regenerator-runtime": "^0.14.0",
     "slugify": "^1.4.0",
     "tom-select": "^2.0.1",
