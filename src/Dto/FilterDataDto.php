@@ -8,8 +8,8 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Dto;
 final class FilterDataDto
 {
     private int $index;
-    /** @var array{entity_dto: EntityDto, entity_alias: string, property_name: string} */
-    private array $resolvedProperty;
+    private string $entityAlias;
+    private ?ResolvedPropertyDto $resolvedProperty;
     private FilterDto $filterDto;
     private string $comparison;
     private mixed $value;
@@ -20,14 +20,14 @@ final class FilterDataDto
     }
 
     /**
-     * @param array{comparison: string, value: mixed, value2?: mixed}                   $formData
-     * @param array{entity_dto: EntityDto, entity_alias: string, property_name: string} $resolvedProperty
+     * @param array{comparison: string, value: mixed, value2?: mixed} $formData
      */
-    public static function new(int $index, FilterDto $filterDto, array $resolvedProperty, array $formData): self
+    public static function new(int $index, FilterDto $filterDto, string $entityAlias, array $formData, ?ResolvedPropertyDto $resolvedProperty = null): self
     {
         $filterData = new self();
         $filterData->index = $index;
         $filterData->filterDto = $filterDto;
+        $filterData->entityAlias = $entityAlias;
         $filterData->resolvedProperty = $resolvedProperty;
         $filterData->comparison = $formData['comparison'];
         $filterData->value = $formData['value'];
@@ -38,12 +38,23 @@ final class FilterDataDto
 
     public function getEntityAlias(): string
     {
-        return $this->resolvedProperty['entity_alias'];
+        return $this->resolvedProperty?->getEntityAlias() ?? $this->entityAlias;
+    }
+
+    /**
+     * Returns the entity that holds the property targeted by the filter. For nested
+     * properties (e.g. 'author.name') this is the associated entity (e.g. Author),
+     * not the entity of the current CRUD controller. It returns null when the
+     * property couldn't be resolved (e.g. custom filters with unmapped properties).
+     */
+    public function getEntityDto(): ?EntityDto
+    {
+        return $this->resolvedProperty?->getEntityDto();
     }
 
     public function getProperty(): string
     {
-        return $this->resolvedProperty['property_name'];
+        return $this->resolvedProperty?->getPropertyName() ?? $this->filterDto->getProperty();
     }
 
     public function getFormTypeOption(string $optionName): mixed

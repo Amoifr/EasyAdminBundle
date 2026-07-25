@@ -9,7 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\EntityRepositoryInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\NestedAssociationResolverInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
@@ -37,7 +37,7 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
         private ControllerFactory $controllerFactory,
         private FieldFactory $fieldFactory,
         private AdminContextProviderInterface $adminContextProvider,
-        private EntityRepositoryInterface $entityRepository,
+        private NestedAssociationResolverInterface $associationResolver,
     ) {
     }
 
@@ -49,10 +49,22 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
     public function configure(FieldDto $field, EntityDto $entityDto, AdminContext $context): void
     {
         $rootPropertyName = $field->getProperty();
-        $resolvedProperty = $this->entityRepository->resolveNestedAssociations(null, $entityDto, $field->getProperty(), true);
-        $entityDto = $resolvedProperty['entity_dto'];
-        $field->setProperty($resolvedProperty['property_name']);
+        $resolvedProperty = $this->associationResolver->resolveNestedAssociations(null, $entityDto, $rootPropertyName, true);
 
+        // this method and the ones it calls read the property name from the FieldDto, so it's
+        // temporarily replaced by the resolved name (e.g. 'issues' for 'developer.issues'); the
+        // original name is restored at the end because it's also the field name of the root entity form
+        $field->setProperty($resolvedProperty->getPropertyName());
+
+        try {
+            $this->configureField($field, $resolvedProperty->getEntityDto(), $context, $rootPropertyName);
+        } finally {
+            $field->setProperty($rootPropertyName);
+        }
+    }
+
+    private function configureField(FieldDto $field, EntityDto $entityDto, AdminContext $context, string $rootPropertyName): void
+    {
         if (null !== $entryTypeFqcn = $field->getCustomOptions()->get(CollectionField::OPTION_ENTRY_TYPE)) {
             $field->setFormTypeOption('entry_type', $entryTypeFqcn);
         }
@@ -89,8 +101,6 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
         $field->setFormattedValue($this->formatCollection($field, $context));
 
         $this->configureEntryType($field, $entityDto, $context, $rootPropertyName);
-
-        $field->setProperty($rootPropertyName);
     }
 
     private function formatCollection(FieldDto $field, AdminContext $context): int|string

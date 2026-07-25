@@ -13,6 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Contracts\Menu\MenuItemMatcherInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\EntityPaginatorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\EntityRepositoryInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\EntityUpdaterInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\NestedAssociationResolverInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Registry\AdminControllerRegistryInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Translation\EntityTranslationIdGeneratorInterface;
@@ -277,6 +278,8 @@ return static function (ContainerConfigurator $container) {
         ->alias(EntityPaginatorInterface::class, EntityPaginator::class)
 
         ->alias(EntityRepositoryInterface::class, EntityRepository::class)
+
+        ->alias(NestedAssociationResolverInterface::class, EntityRepository::class)
 
         ->set(EntityUpdater::class)
             ->arg(0, service('property_accessor'))

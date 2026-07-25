@@ -384,9 +384,9 @@ class EntityRepositoryTest extends TestCase
 
         $resolved = $this->entityRepository->resolveNestedAssociations(null, $rootEntityDto, 'title');
 
-        self::assertSame($rootEntityDto, $resolved['entity_dto']);
-        self::assertSame('entity', $resolved['entity_alias']);
-        self::assertSame('title', $resolved['property_name']);
+        self::assertSame($rootEntityDto, $resolved->getEntityDto());
+        self::assertNull($resolved->getEntityAlias());
+        self::assertSame('title', $resolved->getPropertyName());
     }
 
     public function testResolveNestedAssociationsWithNestedProperty(): void
@@ -406,9 +406,9 @@ class EntityRepositoryTest extends TestCase
 
         $resolved = $this->entityRepository->resolveNestedAssociations($queryBuilder, $rootEntityDto, 'author.name');
 
-        self::assertSame($authorEntityDto, $resolved['entity_dto']);
-        self::assertSame('author', $resolved['entity_alias']);
-        self::assertSame('name', $resolved['property_name']);
+        self::assertSame($authorEntityDto, $resolved->getEntityDto());
+        self::assertSame('author', $resolved->getEntityAlias());
+        self::assertSame('name', $resolved->getPropertyName());
     }
 
     public function testResolveNestedAssociationsEndingWithAssociation(): void
@@ -433,9 +433,9 @@ class EntityRepositoryTest extends TestCase
             true
         );
 
-        self::assertSame($categoryEntityDto, $resolved['entity_dto']);
-        self::assertSame('category', $resolved['entity_alias']);
-        self::assertSame('parent', $resolved['property_name']);
+        self::assertSame($categoryEntityDto, $resolved->getEntityDto());
+        self::assertSame('category', $resolved->getEntityAlias());
+        self::assertSame('parent', $resolved->getPropertyName());
     }
 
     public function testResolveNestedAssociationsDoesNotDuplicateJoins(): void
@@ -451,6 +451,58 @@ class EntityRepositoryTest extends TestCase
         // This is called 2 times with the same parameters on purpose to verify it's only joined once.
         $this->entityRepository->resolveNestedAssociations($queryBuilder, $rootEntityDto, 'author.name');
         $this->entityRepository->resolveNestedAssociations($queryBuilder, $rootEntityDto, 'author.name');
+    }
+
+    public function testResolveNestedAssociationsJoinsEachQueryBuilder(): void
+    {
+        $authorEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\User');
+        $rootEntityDto = $this->createEntityDto([], ['author' => 'App\Entity\User'], 'App\Entity\Post');
+
+        $this->entityFactory->method('create')->willReturn($authorEntityDto);
+
+        // joined associations must not be shared between query builders: a query builder
+        // created later (another request or sub-request) needs its own JOIN clauses
+        $firstQueryBuilder = $this->createMock(QueryBuilder::class);
+        $firstQueryBuilder->expects(self::once())->method('leftJoin')->with('entity.author', 'author');
+        $secondQueryBuilder = $this->createMock(QueryBuilder::class);
+        $secondQueryBuilder->expects(self::once())->method('leftJoin')->with('entity.author', 'author');
+
+        $this->entityRepository->resolveNestedAssociations($firstQueryBuilder, $rootEntityDto, 'author.name');
+        $this->entityRepository->resolveNestedAssociations($secondQueryBuilder, $rootEntityDto, 'author.name');
+    }
+
+    public function testResolveNestedAssociationsUsesTheQueryBuilderRootAlias(): void
+    {
+        $authorEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\User');
+        $rootEntityDto = $this->createEntityDto([], ['author' => 'App\Entity\User'], 'App\Entity\Post');
+
+        $this->entityFactory->method('create')->willReturn($authorEntityDto);
+
+        // a custom createIndexQueryBuilder() may use a root alias different from 'entity'
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->method('getRootAliases')->willReturn(['e']);
+        $queryBuilder->expects(self::once())->method('leftJoin')->with('e.author', 'author');
+
+        $resolved = $this->entityRepository->resolveNestedAssociations($queryBuilder, $rootEntityDto, 'author.name');
+
+        self::assertSame('author', $resolved->getEntityAlias());
+    }
+
+    public function testResolveNestedAssociationsWithoutQueryBuilderHasNoEntityAlias(): void
+    {
+        $authorEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\User');
+        $rootEntityDto = $this->createEntityDto([], ['author' => 'App\Entity\User'], 'App\Entity\Post');
+
+        $this->entityFactory->method('create')->willReturn($authorEntityDto);
+
+        // resolving with a query builder first must not leak its alias into
+        // a later metadata-only resolution of the same property path
+        $this->entityRepository->resolveNestedAssociations($this->createMock(QueryBuilder::class), $rootEntityDto, 'author.name');
+        $resolved = $this->entityRepository->resolveNestedAssociations(null, $rootEntityDto, 'author.name');
+
+        self::assertSame($authorEntityDto, $resolved->getEntityDto());
+        self::assertNull($resolved->getEntityAlias());
+        self::assertSame('name', $resolved->getPropertyName());
     }
 
     public function testResolveNestedAssociationsThrowsOnInvalidProperty(): void

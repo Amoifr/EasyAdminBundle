@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\TextAlign;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\NestedAssociationResolverInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\CrudDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
@@ -22,7 +23,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Factory\FieldFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudAutocompleteType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudFormType;
-use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository as EAEntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Security\Permission;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,7 +49,7 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
         private readonly FieldFactory $fieldFactory,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly AdminContextFactory $adminContextFactory,
-        private EAEntityRepository $entityRepository,
+        private readonly NestedAssociationResolverInterface $associationResolver,
     ) {
     }
 
@@ -66,11 +66,22 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
     public function configure(FieldDto $field, EntityDto $entityDto, AdminContext $context): void
     {
         $rootPropertyName = $field->getProperty();
-        $resolvedProperty = $this->entityRepository->resolveNestedAssociations(null, $entityDto, $rootPropertyName, true);
-        $entityDto = $resolvedProperty['entity_dto'];
-        $propertyName = $resolvedProperty['property_name'];
-        $field->setProperty($propertyName);
+        $resolvedProperty = $this->associationResolver->resolveNestedAssociations(null, $entityDto, $rootPropertyName, true);
 
+        // this method and the ones it calls read the property name from the FieldDto, so it's
+        // temporarily replaced by the resolved name (e.g. 'name' for 'author.name'); the original
+        // name is restored at the end because it's also the field name of the root entity form
+        $field->setProperty($resolvedProperty->getPropertyName());
+
+        try {
+            $this->configureField($field, $resolvedProperty->getEntityDto(), $context, $resolvedProperty->getPropertyName(), $rootPropertyName);
+        } finally {
+            $field->setProperty($rootPropertyName);
+        }
+    }
+
+    private function configureField(FieldDto $field, EntityDto $entityDto, AdminContext $context, string $propertyName, string $rootPropertyName): void
+    {
         if (!$this->isAssociation($entityDto->getClassMetadata(), $propertyName)) {
             throw new \RuntimeException(sprintf('The "%s" field is not a Doctrine association, so it cannot be used as an association field.', $propertyName));
         }
@@ -108,8 +119,6 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
                 $entityDto->getClassMetadata()->getAssociationTargetClass($propertyName),
                 $targetCrudControllerFqcn,
             );
-
-            $field->setProperty($rootPropertyName);
 
             return;
         }
@@ -223,8 +232,6 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
                 return $queryBuilder;
             });
         }
-
-        $field->setProperty($rootPropertyName);
     }
 
     /**

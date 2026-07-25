@@ -13,6 +13,9 @@ In :ref:`form pages (edit and new) <crud-pages>` it looks like this:
 In read-only pages (``index``and ``detail``) is displayed as a clickable link
 pointing to the ``detail`` action of the related entity.
 
+The field also supports nested associations using the dot syntax
+(e.g. ``AssociationField::new('author.publisher')``).
+
 Basic Information
 -----------------
 

@@ -15,6 +15,9 @@ access its embedded form:
 .. image:: ../images/fields/field-collection-simple-expanded.png
    :alt: Default style of EasyAdmin collection field expanded
 
+The field also supports collections of nested associations using the dot syntax
+(e.g. ``CollectionField::new('profile.attachments')``).
+
 Basic Information
 -----------------
 

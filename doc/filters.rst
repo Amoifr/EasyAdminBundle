@@ -52,6 +52,38 @@ explicitly::
         }
     }
 
+Filters on Associated Properties
+--------------------------------
+
+Filters can also be applied to the properties of associated entities and
+Doctrine embeddables. Use the dot syntax (``association.property``) to traverse
+any number of nested associations; EasyAdmin creates the needed Doctrine JOIN
+clauses automatically::
+
+    namespace App\Controller\Admin;
+
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+    use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+    use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+    use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
+
+    class BookCrudController extends AbstractCrudController
+    {
+        // ...
+
+        public function configureFilters(Filters $filters): Filters
+        {
+            return $filters
+                // 'author' is an association of the Book entity
+                ->add(TextFilter::new('author.fullName', 'Author Name'))
+                // 'address' is a Doctrine embeddable inside the Author entity
+                ->add(TextFilter::new('author.address.country', 'Author Country'))
+                // EntityFilter paths must end in an association instead of a property
+                ->add(EntityFilter::new('author.publisher'))
+            ;
+        }
+    }
+
 Built-in Filters
 ----------------
 
