@@ -12,6 +12,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Factory\EntityFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Util\PageRangeCalculator;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyPath;
+use Symfony\Component\PropertyAccess\PropertyPathInterface;
 use Twig\Environment;
 use Twig\Error\Error;
 
@@ -185,8 +189,10 @@ final class EntityPaginator implements EntityPaginatorInterface
         return $this->rangeLastResultNumber;
     }
 
-    public function getResultsAsJson(?callable $callback = null, ?string $twigTemplate = null, bool $renderAsHtml = false): string
+    public function getResultsAsJson(?callable $callback = null, ?string $twigTemplate = null, bool $renderAsHtml = false, callable|string|PropertyPathInterface|null $groupBy = null): string
     {
+        $groupBy = $this->normalizeGroupBy($groupBy);
+
         $jsonResult = ['results' => []];
         foreach ($this->getResults() ?? [] as $entityInstance) {
             $entityDto = $this->entityFactory->createForEntityInstance($entityInstance);
@@ -216,10 +222,19 @@ final class EntityPaginator implements EntityPaginatorInterface
                 $entityAsString = (string) $entityDto;
             }
 
-            $jsonResult['results'][] = [
-                EA::ENTITY_ID => $entityDto->getPrimaryKeyValueAsString(),
+            $entityId = $entityDto->getPrimaryKeyValueAsString();
+            $result = [
+                EA::ENTITY_ID => $entityId,
                 'entityAsString' => $entityAsString,
             ];
+
+            // the group label is not escaped here because TomSelect escapes the optgroup headers when rendering them
+            $groupLabels = null === $groupBy ? null : $groupBy($entityInstance, $entityAsString, $entityId);
+            if (null !== $groupLabels) {
+                $result['entityGroup'] = \is_array($groupLabels) ? array_map('strval', array_values($groupLabels)) : (string) $groupLabels;
+            }
+
+            $jsonResult['results'][] = $result;
         }
 
         $currentRequest = $this->requestStack->getCurrentRequest();
@@ -236,5 +251,32 @@ final class EntityPaginator implements EntityPaginatorInterface
         $jsonResult['next_page'] = $nextPageUrl;
 
         return json_encode($jsonResult, \JSON_THROW_ON_ERROR);
+    }
+
+    // mirrors how Symfony's ChoiceType resolves its group_by option (see PropertyAccessDecorator):
+    // strings become property paths and unreadable paths mean "don't group this entry"
+    private function normalizeGroupBy(callable|string|PropertyPathInterface|null $groupBy): ?\Closure
+    {
+        if (null === $groupBy) {
+            return null;
+        }
+
+        if (\is_string($groupBy)) {
+            $groupBy = new PropertyPath($groupBy);
+        }
+
+        if ($groupBy instanceof PropertyPathInterface) {
+            $accessor = PropertyAccess::createPropertyAccessor();
+
+            return static function ($entity) use ($accessor, $groupBy) {
+                try {
+                    return $accessor->getValue($entity, $groupBy);
+                } catch (UnexpectedTypeException) {
+                    return null;
+                }
+            };
+        }
+
+        return $groupBy(...);
     }
 }

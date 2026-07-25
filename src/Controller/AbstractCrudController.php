@@ -65,6 +65,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\PropertyAccess\PropertyPathInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use function Symfony\Component\String\u;
@@ -573,9 +574,14 @@ abstract class AbstractCrudController extends AbstractController implements Crud
         $renderAsHtml = (null !== $fieldEscapeHtml && false === $fieldEscapeHtml)
             || (null === $fieldEscapeHtml && $context->getCrud()?->getAutocompleteRenderAsHtml());
 
+        $groupBy = $field?->getFormTypeOption('group_by');
+        if (!\is_string($groupBy) && !\is_callable($groupBy) && !$groupBy instanceof PropertyPathInterface) {
+            $groupBy = null;
+        }
+
         $paginator = $this->container->get(PaginatorFactory::class)->create($queryBuilder);
 
-        return JsonResponse::fromJsonString($paginator->getResultsAsJson($callback, $template, $renderAsHtml));
+        return JsonResponse::fromJsonString($paginator->getResultsAsJson($callback, $template, $renderAsHtml, $groupBy));
     }
 
     /**

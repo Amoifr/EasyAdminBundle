@@ -52,6 +52,9 @@ class CrudAutocompleteType extends AbstractType implements DataMapperInterface
             // forwarded to the underlying EntityType so users can customize the
             // label of the selected items via setFormTypeOption('value_type_options', ...)
             'choice_label' => null,
+            // forwarded to the underlying EntityType and applied to the Ajax results too,
+            // so users can group the autocomplete entries under <optgroup>-like headers
+            'group_by' => null,
         ]);
 
         $resolver->setRequired(['class']);
@@ -60,6 +63,8 @@ class CrudAutocompleteType extends AbstractType implements DataMapperInterface
         // mirror Symfony's ChoiceType allowed types for choice_label so anything accepted by
         // EntityType is also accepted here (we only skip ChoiceLabel::class, which is marked as internal)
         $resolver->setAllowedTypes('choice_label', ['null', 'bool', 'callable', 'string', PropertyPath::class]);
+        // same as choice_label: mirror ChoiceType allowed types, skipping the internal GroupBy::class
+        $resolver->setAllowedTypes('group_by', ['null', 'callable', 'string', PropertyPath::class]);
     }
 
     public function getBlockPrefix(): string

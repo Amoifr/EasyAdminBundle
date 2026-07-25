@@ -47,5 +47,5 @@ interface EntityPaginatorInterface
     /**
      * The signature of this method will add the commented parameters in EasyAdmin 5.0.0.
      */
-    public function getResultsAsJson(/* ?callable $callback = null, ?string $twigTemplate = null, bool $renderAsHtml = false */): string;
+    public function getResultsAsJson(/* ?callable $callback = null, ?string $twigTemplate = null, bool $renderAsHtml = false, callable|string|\Symfony\Component\PropertyAccess\PropertyPathInterface|null $groupBy = null */): string;
 }

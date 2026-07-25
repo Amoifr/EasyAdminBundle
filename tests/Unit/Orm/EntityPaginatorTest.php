@@ -625,6 +625,127 @@ class EntityPaginatorTest extends TestCase
         $this->assertSame('Custom: Entity 2', $result['results'][1]['entityAsString']);
     }
 
+    public function testGetResultsAsJsonWithoutGroupByHasNoGroupKey(): void
+    {
+        $entity = new class {
+            public int $id = 1;
+
+            public function __toString(): string
+            {
+                return 'Entity 1';
+            }
+        };
+
+        $paginator = $this->createPaginatorWithResults([$entity]);
+        $result = json_decode($paginator->getResultsAsJson(), true);
+
+        $this->assertArrayNotHasKey('entityGroup', $result['results'][0]);
+    }
+
+    public function testGetResultsAsJsonWithGroupByCallable(): void
+    {
+        $entity1 = $this->createNamedEntity(1, 'Foo');
+        $entity2 = $this->createNamedEntity(2, 'Bar');
+
+        $groupBy = static fn ($e): string => 'Starts with '.strtoupper($e->getName()[0]);
+
+        $paginator = $this->createPaginatorWithResults([$entity1, $entity2]);
+        $result = json_decode($paginator->getResultsAsJson(null, null, false, $groupBy), true);
+
+        $this->assertSame('Starts with F', $result['results'][0]['entityGroup']);
+        $this->assertSame('Starts with B', $result['results'][1]['entityGroup']);
+    }
+
+    public function testGetResultsAsJsonWithGroupByCallableReturningNull(): void
+    {
+        $entity1 = $this->createNamedEntity(1, 'Foo');
+        $entity2 = $this->createNamedEntity(2, 'Bar');
+
+        $groupBy = static fn ($e): ?string => 'Foo' === $e->getName() ? 'Group A' : null;
+
+        $paginator = $this->createPaginatorWithResults([$entity1, $entity2]);
+        $result = json_decode($paginator->getResultsAsJson(null, null, false, $groupBy), true);
+
+        $this->assertSame('Group A', $result['results'][0]['entityGroup']);
+        $this->assertArrayNotHasKey('entityGroup', $result['results'][1]);
+    }
+
+    public function testGetResultsAsJsonWithGroupByCallableReturningMultipleGroups(): void
+    {
+        $entity = $this->createNamedEntity(1, 'Foo');
+
+        $groupBy = static fn ($e): array => ['Group A', 'Group B'];
+
+        $paginator = $this->createPaginatorWithResults([$entity]);
+        $result = json_decode($paginator->getResultsAsJson(null, null, false, $groupBy), true);
+
+        $this->assertSame(['Group A', 'Group B'], $result['results'][0]['entityGroup']);
+    }
+
+    public function testGetResultsAsJsonWithGroupByPropertyPath(): void
+    {
+        $entity = $this->createNamedEntity(1, 'Foo');
+
+        $paginator = $this->createPaginatorWithResults([$entity]);
+        $result = json_decode($paginator->getResultsAsJson(null, null, false, 'name'), true);
+
+        $this->assertSame('Foo', $result['results'][0]['entityGroup']);
+    }
+
+    public function testGetResultsAsJsonWithGroupByUnreadablePropertyPath(): void
+    {
+        $entity = new class {
+            public int $id = 1;
+            public ?object $parent = null;
+
+            public function __toString(): string
+            {
+                return 'Entity 1';
+            }
+        };
+
+        $paginator = $this->createPaginatorWithResults([$entity]);
+        // the null intermediate value makes the path unreadable; like Symfony's
+        // ChoiceType, the entity must be returned ungrouped instead of failing
+        $result = json_decode($paginator->getResultsAsJson(null, null, false, 'parent.name'), true);
+
+        $this->assertArrayNotHasKey('entityGroup', $result['results'][0]);
+    }
+
+    public function testGetResultsAsJsonGroupLabelIsNotEscaped(): void
+    {
+        $entity = $this->createNamedEntity(1, 'Foo');
+
+        $groupBy = static fn ($e): string => '<b>Group</b>';
+
+        $paginator = $this->createPaginatorWithResults([$entity]);
+        $result = json_decode($paginator->getResultsAsJson(null, null, false, $groupBy), true);
+
+        // group labels are escaped by the frontend when rendering the optgroup headers
+        $this->assertSame('<b>Group</b>', $result['results'][0]['entityGroup']);
+    }
+
+    private function createNamedEntity(int $id, string $name): object
+    {
+        return new class($id, $name) {
+            public function __construct(
+                public int $id,
+                public string $name,
+            ) {
+            }
+
+            public function getName(): string
+            {
+                return $this->name;
+            }
+
+            public function __toString(): string
+            {
+                return $this->name;
+            }
+        };
+    }
+
     private function createPaginatorWithResults(array $entities, ?Environment $twig = null): EntityPaginator
     {
         $adminUrlGenerator = $this->createMock(AdminUrlGeneratorInterface::class);

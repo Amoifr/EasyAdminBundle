@@ -137,6 +137,50 @@ to allow HTML rendering::
     When ``renderAsHtml`` is ``true``, you must handle escaping yourself
     in the template to prevent XSS attacks.
 
+Grouping Autocomplete Results
+.............................
+
+Use the ``group_by`` form type option to display the autocomplete results
+grouped under one or more headers, like the ``<optgroup>`` element does in
+``<select>`` lists. This option works the same as the ``group_by`` option of
+Symfony's ``EntityType`` and accepts a callable that receives each entity::
+
+    use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+
+    yield AssociationField::new('issue')
+        ->autocomplete()
+        ->setFormTypeOption('group_by', static fn (Issue $issue): ?string => $issue->getProject()?->getName());
+
+It also accepts the path of the property to group by (e.g. ``name``,
+``project.name``)::
+
+    yield AssociationField::new('issue')
+        ->autocomplete()
+        ->setFormTypeOption('group_by', 'project.name');
+
+Entities for which the callable (or the property path) returns ``null`` are
+displayed without any group. You can combine this option with the rest of the
+autocomplete options (``callback``, ``template``, ``choice_label``, etc.).
+
+.. note::
+
+    Define the ``group_by`` option in your ``configureFields()`` method, because
+    the Ajax endpoint that serves the autocomplete results reads it from the
+    field definition. For the same reason, this option is ignored by the
+    autocomplete fields used in :doc:`filters </filters>`, which display their
+    results without groups.
+
+.. note::
+
+    Group headers are always HTML-escaped when rendering them, even when the
+    ``renderAsHtml`` option is enabled.
+
+.. tip::
+
+    Results are displayed in the order returned by the server, so sort them by
+    the grouping property (e.g. using the ``setQueryBuilder()`` method) to make
+    the group headers appear in a natural order.
+
 ``renderAsNativeWidget``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

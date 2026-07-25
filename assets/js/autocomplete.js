@@ -105,10 +105,15 @@ export default class Autocomplete {
 
     #createAutocompleteWithRemoteData(element, autocompleteEndpointUrl) {
         const renderOptionsAsHtml = 'true' === element.getAttribute('data-ea-autocomplete-render-items-as-html');
-        const config = this.#mergeObjects(this.#getCommonConfig(element), {
+        const autocomplete = this;
+        let config = this.#mergeObjects(this.#getCommonConfig(element), {
             valueField: 'entityId',
             labelField: 'entityAsString',
             searchField: ['entityAsString'],
+            // each result may define an 'entityGroup' (the group_by option of the form type)
+            // to render it under an <optgroup>-like header in the dropdown
+            optgroupField: 'entityGroup',
+            lockOptgroupOrder: true,
             firstUrl: (query) => {
                 return `${autocompleteEndpointUrl}&query=${encodeURIComponent(query)}`;
             },
@@ -122,7 +127,7 @@ export default class Autocomplete {
                     // important: next_url must be set before invoking callback()
                     .then((json) => {
                         this.setNextUrl(query, json.next_page);
-                        callback(json.results);
+                        callback(json.results, autocomplete.#extractOptgroupsFromResults(json.results));
                     })
                     .catch(() => callback());
             },
@@ -144,6 +149,14 @@ export default class Autocomplete {
                     `<div class="no-results">${element.getAttribute('data-ea-i18n-no-results-found')}</div>`,
             },
         });
+
+        // when using group_by, the server renders the selected items inside <optgroup> elements;
+        // extract them keyed by the group LABEL so they merge with the groups of the Ajax results
+        // (TomSelect's own DOM import assigns numeric ids to these groups, which would duplicate the headers)
+        if (null !== element.querySelector('optgroup')) {
+            const { options, optgroups } = this.#extractRemoteOptionsWithOptgroups(element);
+            config = this.#mergeObjects(config, { options: options, optgroups: optgroups });
+        }
 
         return this.#initializeTomSelect(element, config);
     }
@@ -253,6 +266,64 @@ export default class Autocomplete {
 
             if (!foundSeparator) {
                 seenValues.add(opt.value);
+            }
+        }
+
+        return { options, optgroups };
+    }
+
+    #extractOptgroupsFromResults(results) {
+        const optgroups = [];
+        const seenGroups = new Set();
+
+        (results || []).forEach((result) => {
+            const groups = Array.isArray(result.entityGroup) ? result.entityGroup : [result.entityGroup];
+            groups.forEach((group) => {
+                if (null === group || undefined === group || seenGroups.has(group)) {
+                    return;
+                }
+
+                seenGroups.add(group);
+                // 'value' is the field TomSelect uses as the optgroup id (optgroupValueField)
+                optgroups.push({ value: group, label: group });
+            });
+        });
+
+        return optgroups;
+    }
+
+    #extractRemoteOptionsWithOptgroups(element) {
+        const options = [];
+        const optgroups = [];
+        const seenGroups = new Set();
+
+        const addOption = (opt, groupLabel) => {
+            // skip empty placeholder options
+            if ('' === opt.value) {
+                return;
+            }
+
+            // use textContent (like TomSelect's own DOM import): with renderAsHtml, the HTML
+            // markup is stored escaped as the option text and rendered raw later by render.item
+            const optionData = { ...opt.dataset, entityId: opt.value, entityAsString: opt.textContent };
+            if (undefined !== groupLabel) {
+                optionData.entityGroup = groupLabel;
+            }
+            options.push(optionData);
+        };
+
+        for (let i = 0; i < element.children.length; i++) {
+            const child = element.children[i];
+            if ('OPTGROUP' === child.tagName) {
+                if (!seenGroups.has(child.label)) {
+                    seenGroups.add(child.label);
+                    optgroups.push({ value: child.label, label: child.label });
+                }
+                for (let j = 0; j < child.children.length; j++) {
+                    addOption(child.children[j], child.label);
+                }
+            } else if ('OPTION' === child.tagName) {
+                addOption(child);
             }
         }
 
