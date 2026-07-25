@@ -100,6 +100,8 @@ For example::
              ├─ crud/
              │  ├─ index.html.twig
              │  ├─ detail.html.twig
+             │  ├─ detail/
+             │  │  └─ fieldset_open.html.twig
              │  └─ field/
              │     ├─ country.html.twig
              │     └─ text.html.twig
@@ -179,7 +181,7 @@ any change done in the dashboard)::
             return $crud
                 // ...
 
-                ->overrideTemplate('crud/layout', 'admin/advanced_layout.html.twig')
+                ->overrideTemplate('layout', 'admin/advanced_layout.html.twig')
 
                 ->overrideTemplates([
                     'crud/field/text' => 'admin/product/field_id.html.twig',
@@ -188,6 +190,45 @@ any change done in the dashboard)::
             ;
         }
     }
+
+Detail Page Templates
+~~~~~~~~~~~~~~~~~~~~~
+
+The contents of the ``detail`` page are composed of small templates that you can
+replace individually, so you don't need to copy the entire ``crud/detail.html.twig``
+template to customize how a specific element renders. These are the available
+template names:
+
+* ``crud/detail/field_group``: the label and value of each regular field;
+* ``crud/detail/layout_field``: decides which of the following templates renders
+  each form layout field (tabs, columns, fieldsets, etc.);
+* ``crud/detail/tab_list``: the clickable list of tab names;
+* ``crud/detail/tab_group_open`` and ``crud/detail/tab_group_close``: the element
+  that wraps all tab panes;
+* ``crud/detail/tab_open`` and ``crud/detail/tab_close``: each tab pane;
+* ``crud/detail/column_group_open`` and ``crud/detail/column_group_close``: the
+  element that wraps all columns;
+* ``crud/detail/column_open`` and ``crud/detail/column_close``: each column;
+* ``crud/detail/fieldset_open`` and ``crud/detail/fieldset_close``: each fieldset.
+
+Use them as any other template name, either with Symfony's mechanism to override
+bundle templates (e.g. ``templates/bundles/EasyAdminBundle/crud/detail/fieldset_open.html.twig``)
+or with the EasyAdmin feature to replace templates::
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->overrideTemplate('crud/detail/fieldset_open', 'admin/detail/fieldset_open.html.twig')
+        ;
+    }
+
+.. caution::
+
+    The ``*_open`` and ``*_close`` template pairs deliberately render unbalanced
+    HTML contents: the first one only renders the opening HTML tags of the
+    element and the second one renders the closing HTML tags. When replacing one
+    template of a pair, make sure that the opened/closed HTML tags remain
+    consistent with the other template of the pair.
 
 Fields And Actions Templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

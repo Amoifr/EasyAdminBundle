@@ -1,6 +1,32 @@
 Upgrade Guide
 =============
 
+## EasyAdmin 5.4.0
+
+### Detail Page Templates Are Now Overridable Individually
+
+The Twig macros previously defined in the `@EasyAdmin/crud/detail.html.twig`
+template (`render_field_contents`, `render_layout_field`, `render_tab_*`,
+`render_column_*` and `render_fieldset_*`) have been extracted into standalone
+templates under `@EasyAdmin/crud/detail/` and removed from `detail.html.twig`.
+
+This lets you override how a specific element of the detail page renders
+(e.g. only the fieldsets) without copying the whole `detail.html.twig` template.
+The new template names, usable with `overrideTemplate()`/`overrideTemplates()`
+or via the `templates/bundles/EasyAdminBundle/` directory, are:
+`crud/detail/field_group`, `crud/detail/layout_field`, `crud/detail/tab_list`,
+`crud/detail/tab_group_open`, `crud/detail/tab_group_close`,
+`crud/detail/tab_open`, `crud/detail/tab_close`,
+`crud/detail/column_group_open`, `crud/detail/column_group_close`,
+`crud/detail/column_open`, `crud/detail/column_close`,
+`crud/detail/fieldset_open` and `crud/detail/fieldset_close`.
+
+Applications that copied the whole `detail.html.twig` template or that extend it
+with `@!EasyAdmin/crud/detail.html.twig` are not affected. In the unlikely case
+that your application imported those macros directly with
+`{% from '@EasyAdmin/crud/detail.html.twig' import ... %}`, use the new
+templates instead: `{{ include(ea.templatePath('crud/detail/...'), {field: field}, with_context: false) }}`.
+
 ## EasyAdmin 5.3.1
 
 ### Removed the Entity-to-Controller Cache Entry

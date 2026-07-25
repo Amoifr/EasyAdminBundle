@@ -1,0 +1,49 @@
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# this template renders the opening HTML tags of a fieldset on the 'detail' page;
+   the closing tags are rendered by 'crud/detail/fieldset_close' #}
+{% set has_help = field.help is ea_is_not_empty %}
+{% set has_label = field.label is ea_is_not_empty %}
+{% set fieldset_has_header = has_label or field.getCustomOption('icon') or has_help %}
+{% set is_collapsible_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_COLLAPSIBLE') %}
+{% set is_collapsed_option_name = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Field\\FormField::OPTION_COLLAPSED') %}
+{% set is_collapsible = field.getCustomOption(is_collapsible_option_name) %}
+{% set is_collapsed = field.getCustomOption(is_collapsed_option_name) %}
+
+<div class="form-fieldset {{ not fieldset_has_header ? 'form-fieldset-no-header' }} {{ field.cssClass }}">
+    <fieldset>
+        {% if fieldset_has_header %}
+            <div class="form-fieldset-header {{ is_collapsible ? 'collapsible' }} {{ has_help ? 'with-help' }}">
+                <div class="form-fieldset-title">
+                    {% set fieldset_title_contents %}
+                        {% if is_collapsible %}
+                            <twig:ea:Icon name="internal:chevron-right" class="form-fieldset-collapse-marker"/>
+                        {% endif %}
+
+                        {% if field.getCustomOption('icon') %}
+                            <twig:ea:Icon name="{{ field.getCustomOption('icon') }}" class="form-fieldset-icon" />
+                        {% endif %}
+
+                        {{ field.label|trans|raw }}
+                    {% endset %}
+
+                    {% if is_collapsible %}
+                        <a href="#content-{{ field.propertyNameWithSuffix }}" data-bs-toggle="collapse"
+                           class="form-fieldset-title-content form-fieldset-collapse {{ is_collapsed ? 'collapsed' }}"
+                           aria-expanded="{{ is_collapsed ? 'false' : 'true' }}" aria-controls="content-{{ field.propertyNameWithSuffix }}">
+                            {{ fieldset_title_contents|raw }}
+                        </a>
+                    {% else %}
+                        <span class="not-collapsible form-fieldset-title-content">
+                            {{ fieldset_title_contents|raw }}
+                        </span>
+                    {% endif %}
+
+                    {% if has_help %}
+                        <div class="form-fieldset-help">{{ field.help|trans|raw }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <div id="content-{{ field.propertyNameWithSuffix }}" class="form-fieldset-body {{ not fieldset_has_header ? 'without-header' }} {{ is_collapsible ? 'collapse' }} {{ not is_collapsed ? 'show' }}">
+            <div class="row">

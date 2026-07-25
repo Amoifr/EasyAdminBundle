@@ -1,0 +1,29 @@
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+{# this template renders the label and value of a regular (non-layout) field on the 'detail' page #}
+{% set has_help = field.help is ea_is_not_empty %}
+
+<div class="field-group {{ field.cssClass }}" {% for name, value in field.htmlAttributes %}{{ name }}="{{ value|e('html') }}" {% endfor %}>
+    {% if field.label is same as (false) %}
+        {# a FALSE label value means that the field doesn't even display the <label> element;
+           use an empty string to not display a label but keep the <label> element to not mess with the layout #}
+    {% else %}
+        <div class="field-label">
+            {%- set label_html_attributes -%}
+                {%- if has_help -%}
+                    data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-animation="false"
+                    data-bs-html="true" data-bs-custom-class="ea-detail-label-tooltip"
+                    data-bs-title="{{ field.help|trans|e('html') }}"
+                {%- endif -%}
+            {%- endset -%}
+
+            <div {{ label_html_attributes }}>
+                {{ field.label|trans|raw }}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="field-value">
+        {{ include(field.templatePath, {field: field, entity: entity}, with_context: false) }}
+    </div>
+</div>

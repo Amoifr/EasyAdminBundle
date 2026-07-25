@@ -1,0 +1,6 @@
+{# custom override of the 'crud/detail/field_group' template, applied
+   via Crud::overrideTemplate() in OverrideDetailPartialsTestCrudController #}
+<div class="field-group custom-field-group" data-test="override-template-field-group">
+    <div class="field-label">{{ field.label|trans|raw }}</div>
+    <div class="field-value">{{ include(field.templatePath, {field: field, entity: entity}, with_context: false) }}</div>
+</div>
