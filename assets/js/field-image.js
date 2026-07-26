@@ -1,22 +1,32 @@
 import * as basicLightbox from 'basiclightbox';
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.ea-lightbox-thumbnail').forEach((imageElement) => {
-        new Image(imageElement);
+// event delegation on document, so it works regardless of when the script runs
+// (blocking in <head>, deferred or async) and for thumbnails added after load
+document.addEventListener('click', (event) => {
+    const thumbnail = event.target.closest('.ea-lightbox-thumbnail');
+    if (null === thumbnail) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const content = document.querySelector(thumbnail.dataset.eaLightboxContentSelector);
+    if (null === content) {
+        return;
+    }
+
+    const onKeyDown = (keyEvent) => {
+        if ('Escape' === keyEvent.key) {
+            lightbox.close();
+        }
+    };
+
+    // basiclightbox has no built-in keyboard handling, so bind the Escape
+    // listener only while the lightbox is open and remove it on close
+    const lightbox = basicLightbox.create(content.innerHTML, {
+        onShow: () => document.addEventListener('keydown', onKeyDown),
+        onClose: () => document.removeEventListener('keydown', onKeyDown),
     });
+
+    lightbox.show();
 });
-
-class Image {
-    constructor(field) {
-        this.field = field;
-        this.field.addEventListener('click', this.#renderLightbox.bind(this));
-    }
-
-    #renderLightbox() {
-        const lightboxContent = document.querySelector(
-            this.field.getAttribute('data-ea-lightbox-content-selector')
-        ).innerHTML;
-        const lightbox = basicLightbox.create(lightboxContent);
-        lightbox.show();
-    }
-}
