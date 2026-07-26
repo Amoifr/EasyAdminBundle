@@ -57,7 +57,8 @@
                     </a>
                     {% if applied_filters %}
                         <a href="{{ ea_url().unset('filters').setAction('index') }}" class="btn btn-secondary action-filters-reset">
-                            <twig:ea:Icon name="internal:xmark" />
+                            {# the 'btn-icon' class is needed to make the icon-only button render as a square with a centered icon #}
+                            <twig:ea:Icon name="internal:xmark" class="btn-icon" />
                         </a>
                     {% endif %}
                 </div>

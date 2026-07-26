@@ -39,6 +39,9 @@
     --bs-btn-close-opacity: 1;
     --bs-btn-close-hover-opacity: 1;
 
+    /* Bootstrap positions this button absolutely, but its rule lives in the 'vendor' layer and
+       the 'ea' layer's '.btn { position: relative }' would win, leaving the button inline */
+    position: absolute;
     inset-block-start: 10px;
     inset-inline-end: 5px;
     padding: var(--button-padding-y-md) var(--button-padding-x-md);
