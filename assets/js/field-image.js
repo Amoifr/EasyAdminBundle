@@ -8,12 +8,19 @@ document.addEventListener('click', (event) => {
         return;
     }
 
-    event.preventDefault();
+    // let the browser handle modifier-key clicks (e.g. Cmd/Ctrl-click opens the image in a new tab)
+    if (event.metaKey || event.ctrlKey || event.shiftKey) {
+        return;
+    }
 
+    // if the lightbox content is missing, don't prevent the default behavior,
+    // so the link acts as a fallback that opens the image itself
     const content = document.querySelector(thumbnail.dataset.eaLightboxContentSelector);
     if (null === content) {
         return;
     }
+
+    event.preventDefault();
 
     const onKeyDown = (keyEvent) => {
         if ('Escape' === keyEvent.key) {
