@@ -1,0 +1,27 @@
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# this template decides which template to use to render each of the form layout
+   fields (tabs, columns, fieldsets, etc.) on the 'detail' page #}
+{% set ea = ea() %}
+{% if field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormTabListType' %}
+    {{ include(ea.templatePath('crud/detail/tab_list'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormTabPaneGroupOpenType' %}
+    {{ include(ea.templatePath('crud/detail/tab_group_open'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormTabPaneGroupCloseType' %}
+    {{ include(ea.templatePath('crud/detail/tab_group_close'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormTabPaneOpenType' %}
+    {{ include(ea.templatePath('crud/detail/tab_open'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormTabPaneCloseType' %}
+    {{ include(ea.templatePath('crud/detail/tab_close'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormColumnGroupOpenType' %}
+    {{ include(ea.templatePath('crud/detail/column_group_open'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormColumnGroupCloseType' %}
+    {{ include(ea.templatePath('crud/detail/column_group_close'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormColumnOpenType' %}
+    {{ include(ea.templatePath('crud/detail/column_open'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormColumnCloseType' %}
+    {{ include(ea.templatePath('crud/detail/column_close'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormFieldsetOpenType' %}
+    {{ include(ea.templatePath('crud/detail/fieldset_open'), {field: field}, with_context: false) }}
+{% elseif field.formType == 'EasyCorp\\Bundle\\EasyAdminBundle\\Form\\Type\\Layout\\EaFormFieldsetCloseType' %}
+    {{ include(ea.templatePath('crud/detail/fieldset_close'), {field: field}, with_context: false) }}
+{% endif %}

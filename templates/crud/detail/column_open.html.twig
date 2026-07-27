@@ -1,0 +1,20 @@
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# this template renders the opening HTML tags of a column on the 'detail' page;
+   the closing tags are rendered by 'crud/detail/column_close' #}
+{% set field_icon = field.getCustomOption('icon') %}
+{% set has_label = field.label is ea_is_not_empty %}
+{% set column_has_title = field_icon is not null or has_label or field.help is not null %}
+
+<div class="form-column {{ not column_has_title ? 'form-column-no-header' }} {{ field.cssClass }}">
+    {% if column_has_title %}
+        <div class="form-column-title">
+            <div class="form-column-title-content">
+                {% if field_icon %}<twig:ea:Icon name="{{ field_icon }}" class="form-column-icon" />{% endif %}
+                {% if has_label %}{{ field.label|trans(domain: ea().i18n.translationDomain)|raw }}{% endif %}
+            </div>
+
+            {% if field.help is not null %}
+                <div class="form-column-help">{{ field.help|trans(domain: ea().i18n.translationDomain)|raw }}</div>
+            {% endif %}
+        </div>
+    {% endif %}

@@ -1,0 +1,7 @@
+{# custom override of the '@EasyAdmin/crud/detail/fieldset_open.html.twig' template,
+   applied via Symfony's standard bundle template overriding mechanism; it must open
+   the same 4 HTML elements closed by the default 'crud/detail/fieldset_close' template #}
+<div class="form-fieldset custom-fieldset" data-test="bundle-override-fieldset-open">
+    <fieldset>
+        <div id="content-{{ field.propertyNameWithSuffix }}" class="form-fieldset-body">
+            <div class="row">
