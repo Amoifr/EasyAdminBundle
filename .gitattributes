@@ -8,13 +8,13 @@
 /.symfony.bundle.yaml export-ignore
 /AGENTS.md export-ignore
 /biome.json export-ignore
-/doc export-ignore
+/doc/.doctor-rst.yaml export-ignore
+/doc/images export-ignore
 /Makefile export-ignore
 /package.json export-ignore
 /phpstan-baseline.neon export-ignore
 /phpstan.neon.dist export-ignore
 /phpunit.xml.dist export-ignore
-/src/Twig/Component/AGENTS.md export-ignore
 /tests export-ignore
 /webpack.config.js export-ignore
 /yarn.lock export-ignore
