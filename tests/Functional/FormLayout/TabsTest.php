@@ -176,6 +176,22 @@ class TabsTest extends AbstractCrudTestCase
         static::assertCount(0, $tabItems->eq(0)->filter('.tab-nav-item-badge'), 'Basic Info tab should not render a badge');
     }
 
+    public function testTabLabelsReserveTheWidthOfTheSelectedLabel(): void
+    {
+        $crawler = $this->client->request('GET', $this->generateNewFormUrl());
+
+        static::assertCount(1, $crawler->filter('.form-tabs-tablist'), 'There should be exactly one tab bar');
+
+        $tabLabels = $crawler->filter('.nav-tabs .nav-link .tab-nav-item-label');
+        static::assertCount(4, $tabLabels, 'Every tab should wrap its label in a span');
+
+        // the 'data-content' attribute repeats the plain label text; CSS uses it to reserve
+        // the width of the semibold label, so tabs don't shift when the selected tab changes
+        foreach ($tabLabels as $tabLabel) {
+            static::assertSame(trim($tabLabel->textContent), $tabLabel->getAttribute('data-content'));
+        }
+    }
+
     public function testTabNavigationHasCorrectDataAttributes(): void
     {
         $crawler = $this->client->request('GET', $this->generateNewFormUrl());

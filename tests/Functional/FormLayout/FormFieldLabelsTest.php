@@ -84,7 +84,7 @@ class FormFieldLabelsTest extends AbstractCrudTestCase
         static::assertSelectorTextSame('label[for="FormTestEntity_priority"]', 'Priority Lorem Ipsum', 'The "priority" field defines its label as a translatable string with regular text (no HTML contents).');
 
         // fields with a label defined as a string with HTML contents
-        static::assertSame('<span class="text-danger">Tab</span> <b>7</b>', trim($crawler->filter('ul.nav-tabs #tablist-tab-tab-7')->html()), 'The "Tab 7" defines its label as a text string with HTML contents, which must be rendered instead of escaped.');
+        static::assertSame('<span class="tab-nav-item-label" data-content="Tab 7"><span class="text-danger">Tab</span> <b>7</b></span>', trim($crawler->filter('ul.nav-tabs #tablist-tab-tab-7')->html()), 'The "Tab 7" defines its label as a text string with HTML contents, which must be rendered instead of escaped.');
         static::assertSame('#tab-tab-7', $crawler->filter('ul.nav-tabs #tablist-tab-tab-7')->attr('href'), 'Tabs with labels get IDs generated as the slugs of their labels but HTML tags must be removed.');
         static::assertSame('<a href="https://example.com">Column</a> <b>7</b>', trim($crawler->filter('.form-column.column-7 .form-column-title-content')->html()), 'The "Column 7" defines its label as a text string with HTML contents, which must be rendered instead of escaped.');
         static::assertSelectorNotExists('.form-column.column-7.form-column-no-header');
@@ -93,7 +93,7 @@ class FormFieldLabelsTest extends AbstractCrudTestCase
         static::assertSame($crawler->filter('label[for="FormTestEntity_phone"]')->html(), '<a href="https://example.com">Phone</a> <b>Lorem</b> Ipsum', 'The "phone" field defines its label as regular string with HTML contents, which must be rendered instead of escaped (HTML is allowed in field labels).');
 
         // fields with a label defined as a translatable string with HTML contents
-        static::assertSame('<span class="text-danger">Tab</span> <b>8</b>', trim($crawler->filter('ul.nav-tabs #tablist-tab-tab-8')->html()), 'The "Tab 8" defines its label as a translatable string with HTML contents, which must be rendered instead of escaped.');
+        static::assertSame('<span class="tab-nav-item-label" data-content="Tab 8"><span class="text-danger">Tab</span> <b>8</b></span>', trim($crawler->filter('ul.nav-tabs #tablist-tab-tab-8')->html()), 'The "Tab 8" defines its label as a translatable string with HTML contents, which must be rendered instead of escaped.');
         static::assertSame('#tab-tab-8', $crawler->filter('ul.nav-tabs #tablist-tab-tab-8')->attr('href'), 'Tabs with labels get IDs generated as the slugs of their labels but HTML tags must be removed.');
         static::assertSame('<a href="https://example.com">Column</a> <b>8</b>', trim($crawler->filter('.form-column.column-8 .form-column-title-content')->html()), 'The "Column 8" defines its label as a translatable string with HTML contents, which must be rendered instead of escaped.');
         static::assertSelectorNotExists('.form-column.column-8.form-column-no-header');
@@ -166,7 +166,7 @@ class FormFieldLabelsTest extends AbstractCrudTestCase
         static::assertSelectorTextSame('.field-group.field-priority .field-label > div', 'Priority Lorem Ipsum', 'The "priority" field defines its label as a translatable string with regular text (no HTML contents).');
 
         // fields with a label defined as a string with HTML contents
-        static::assertSame('<span class="text-danger">Tab</span> <b>7</b>', trim($crawler->filter('ul.nav-tabs #tablist-tab-tab-7')->html()), 'The "Tab 7" defines its label as a text string with HTML contents, which must be rendered instead of escaped.');
+        static::assertSame('<span class="tab-nav-item-label" data-content="Tab 7"><span class="text-danger">Tab</span> <b>7</b></span>', trim($crawler->filter('ul.nav-tabs #tablist-tab-tab-7')->html()), 'The "Tab 7" defines its label as a text string with HTML contents, which must be rendered instead of escaped.');
         static::assertSame('#tab-tab-7', $crawler->filter('ul.nav-tabs #tablist-tab-tab-7')->attr('href'), 'Tabs with labels get IDs generated as the slugs of their labels but HTML tags must be removed.');
         static::assertSame('<a href="https://example.com">Column</a> <b>7</b>', trim($crawler->filter('.form-column.column-7 .form-column-title-content')->html()), 'The "Column 7" defines its label as a text string with HTML contents, which must be rendered instead of escaped.');
         static::assertSelectorNotExists('.form-column.column-7.form-column-no-header');
@@ -175,7 +175,7 @@ class FormFieldLabelsTest extends AbstractCrudTestCase
         static::assertSame(trim($crawler->filter('.field-group.field-phone .field-label > div')->html()), '<a href="https://example.com">Phone</a> <b>Lorem</b> Ipsum', 'The "phone" field defines its label as regular string with HTML contents, which must be rendered instead of escaped (HTML is allowed in field labels).');
 
         // fields with a label defined as a translatable string with HTML contents
-        static::assertSame('<span class="text-danger">Tab</span> <b>8</b>', trim($crawler->filter('ul.nav-tabs #tablist-tab-tab-8')->html()), 'The "Tab 8" defines its label as a translatable string with HTML contents, which must be rendered instead of escaped.');
+        static::assertSame('<span class="tab-nav-item-label" data-content="Tab 8"><span class="text-danger">Tab</span> <b>8</b></span>', trim($crawler->filter('ul.nav-tabs #tablist-tab-tab-8')->html()), 'The "Tab 8" defines its label as a translatable string with HTML contents, which must be rendered instead of escaped.');
         static::assertSame('#tab-tab-8', $crawler->filter('ul.nav-tabs #tablist-tab-tab-8')->attr('href'), 'Tabs with labels get IDs generated as the slugs of their labels but HTML tags must be removed.');
         static::assertSame('<a href="https://example.com">Column</a> <b>8</b>', trim($crawler->filter('.form-column.column-8 .form-column-title-content')->html()), 'The "Column 8" defines its label as a translatable string with HTML contents, which must be rendered instead of escaped.');
         static::assertSelectorNotExists('.form-column.column-8.form-column-no-header');
