@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudAutocompleteType;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Entity\ProjectDomain\Project;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\ChoiceList\View\ChoiceGroupView;
 use Symfony\Component\Form\ChoiceList\View\ChoiceView;
 use Symfony\Component\Form\Extension\Validator\ViolationMapper\ViolationMapperInterface;
 use Symfony\Component\Form\PreloadedExtension;
@@ -224,6 +225,79 @@ class CrudAutocompleteTypeTest extends TypeTestCase
         $this->factory->create(CrudAutocompleteType::class, null, [
             'class' => Project::class,
             'choice_label' => 42, // int is not in the allowed types
+        ]);
+    }
+
+    public function testGroupByCallableIsForwardedToTheInnerEntityType(): void
+    {
+        $project = (new Project())->setId(123)->setName('Foo');
+
+        $this->entityManager
+            ->method('contains')
+            ->with($project)
+            ->willReturn(true);
+        $this->repository
+            ->method('findBy')
+            ->willReturn([$project]);
+        $this->classMetadata
+            ->method('getIdentifierValues')
+            ->with($project)
+            ->willReturn(['id' => $project->getId()]);
+
+        $form = $this->factory->create(CrudAutocompleteType::class, null, [
+            'class' => Project::class,
+            'group_by' => static fn (Project $p): string => 'Group A',
+        ]);
+        $form->submit(['autocomplete' => '123']);
+
+        $this->assertTrue($form->isSynchronized());
+
+        $view = $form->createView();
+
+        // the selected choice is rendered inside an <optgroup> named after the group
+        $this->assertEquals(
+            ['Group A' => new ChoiceGroupView('Group A', ['123' => new ChoiceView($project, 123, 'Foo')])],
+            $view->children['autocomplete']->vars['choices'],
+        );
+    }
+
+    public function testGroupByPropertyPathIsForwardedToTheInnerEntityType(): void
+    {
+        $project = (new Project())->setId(123)->setName('Foo');
+
+        $this->entityManager
+            ->method('contains')
+            ->with($project)
+            ->willReturn(true);
+        $this->repository
+            ->method('findBy')
+            ->willReturn([$project]);
+        $this->classMetadata
+            ->method('getIdentifierValues')
+            ->with($project)
+            ->willReturn(['id' => $project->getId()]);
+
+        $form = $this->factory->create(CrudAutocompleteType::class, null, [
+            'class' => Project::class,
+            'group_by' => 'name',
+        ]);
+        $form->submit(['autocomplete' => '123']);
+
+        $view = $form->createView();
+
+        $this->assertEquals(
+            ['Foo' => new ChoiceGroupView('Foo', ['123' => new ChoiceView($project, 123, 'Foo')])],
+            $view->children['autocomplete']->vars['choices'],
+        );
+    }
+
+    public function testGroupByOptionRejectsInvalidType(): void
+    {
+        $this->expectException(\Symfony\Component\OptionsResolver\Exception\InvalidOptionsException::class);
+
+        $this->factory->create(CrudAutocompleteType::class, null, [
+            'class' => Project::class,
+            'group_by' => 42, // int is not in the allowed types
         ]);
     }
 }
