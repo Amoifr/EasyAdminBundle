@@ -13,7 +13,7 @@ input[disabled] {
 
 /* Base form groups */
 .form-group {
-    padding: 0 0 var(--ea-sp-6);
+    padding: 0 0 var(--ea-sp-12);
 }
 
 .form-group label,
@@ -22,7 +22,7 @@ input[disabled] {
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
     margin: 0;
-    padding: 0 0 var(--ea-sp-2) 0;
+    padding: 0 0 var(--ea-sp-4) 0;
 }
 
 .form-check .form-check-input {
@@ -42,19 +42,19 @@ label.form-check-label {
     display: none;
 }
 .form-widget .form-check + .form-check {
-    margin-block-start: var(--ea-sp-1);
+    margin-block-start: var(--ea-sp-2);
 }
 
 .form-group label.required:after,
 .form-group .col-form-label.required:after {
     background: var(--color-danger);
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     content: "";
     display: inline-block;
     filter: opacity(75%);
     position: relative;
-    inset-inline-end: -2px;
-    inset-block-start: -8px;
+    inset-inline-end: calc(-1 * var(--ea-sp-1));
+    inset-block-start: calc(-1 * var(--ea-sp-4));
     z-index: var(--zindex-700);
     block-size: 4px;
     inline-size: 4px;
@@ -65,7 +65,7 @@ label.form-check-label {
     color: var(--form-help-color);
     display: block;
     font-size: var(--font-size-sm);
-    margin-block-start: var(--ea-sp-1);
+    margin-block-start: var(--ea-sp-2);
     transition: color var(--ea-duration-slower) var(--ea-ease-in-out);
 }
 .form-widget:focus-within .form-help {
@@ -82,7 +82,7 @@ label.form-check-label {
     color: var(--form-input-text-color);
     font-size: var(--font-size-base);
     block-size: 30px;
-    padding: var(--ea-sp-1) var(--ea-sp-2) var(--ea-sp-1);
+    padding: var(--ea-sp-2) var(--ea-sp-4) var(--ea-sp-2);
     white-space: nowrap;
     word-break: keep-all;
     transition: box-shadow var(--ea-duration-fast) var(--ea-ease-in), color var(--ea-duration-fast) var(--ea-ease-in);
@@ -154,7 +154,7 @@ body.ea-dark-scheme .form-widget .form-select {
     text-align: right;
 }
 .form-widget input.form-control.is-invalid[data-ea-align="right"] {
-    padding-inline-end: var(--ea-sp-8);
+    padding-inline-end: var(--ea-sp-16);
 }
 
 .form-widget textarea.form-control {
@@ -165,7 +165,7 @@ body.ea-dark-scheme .form-widget .form-select {
 
 .form-widget .form-select {
     background-position: right 5px center;
-    padding: var(--ea-sp-1) var(--ea-sp-7) var(--ea-sp-1) var(--ea-sp-2);
+    padding: var(--ea-sp-2) var(--ea-sp-14) var(--ea-sp-2) var(--ea-sp-4);
 }
 .ts-dropdown.form-select {
     block-size: auto;
@@ -178,15 +178,15 @@ body.ea-dark-scheme .form-widget .form-select {
 }
 label.form-check-label {
     margin: 0;
-    padding-inline-start: var(--ea-sp-1);
+    padding-inline-start: var(--ea-sp-2);
 }
 .form-check .form-check-input {
     float: none;
     margin-inline-start: 0;
-    margin-block-start: 2px;
+    margin-block-start: var(--ea-sp-1);
 }
 .form-check-inline + .form-check-inline {
-    margin-inline-start: var(--ea-sp-4);
+    margin-inline-start: var(--ea-sp-8);
 }
 
 /* Date-time widgets */
@@ -202,15 +202,15 @@ label.form-check-label {
     -webkit-appearance: none; /* needed for Safari */
 }
 .datetime-widget + .datetime-widget {
-    margin-inline-start: var(--ea-sp-2-5);
+    margin-inline-start: var(--ea-sp-5);
 }
 
 .datetime-widget select + select {
-    margin-inline-start: var(--ea-sp-1);
+    margin-inline-start: var(--ea-sp-2);
 }
 
 .datetime-widget-time select {
-    margin: 0 0 0 2px;
+    margin: 0 0 0 var(--ea-sp-1);
 }
 .datetime-widget-time select:first-child {
     margin-inline-start: 0;
@@ -240,7 +240,7 @@ label.form-check-label {
 
 .code input.form-control,
 .code textarea.form-control {
-    font-family: monospace !important;
+    font-family: var(--font-family-monospace) !important;
 }
 
 .field-group .long .form-control,
@@ -256,10 +256,33 @@ label.form-check-label {
 }
 
 /* Form columns */
+/* the gap between columns of fieldset cards matches their vertical stacking
+   gap (see .field-form_fieldset below), for a uniform grid between cards;
+   rows inside the cards keep the default gutter. The gap between wrapped
+   column lines uses row-gap instead of the last card's margin, so it survives
+   fieldsets whose css classes were replaced with setCssClass() */
+.row:has(> .form-column) {
+    --bs-gutter-x: var(--ea-sp-10);
+    row-gap: var(--ea-sp-10);
+}
+
+/* columns in the same row stretch to equal height (Bootstrap flex default);
+   the last fieldset card of each column grows to fill the leftover space so
+   all columns end flush at the bottom */
+.form-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-column > .form-fieldset:last-child {
+    flex-grow: 1;
+    margin-block-end: 0;
+}
+
 .form-column .form-column-title {
     display: flex;
     flex-direction: column;
-    margin-block-end: var(--ea-sp-4);
+    margin-block-end: var(--ea-sp-8);
 }
 .form-column .form-column-title .form-column-title-content {
     align-items: center;
@@ -267,12 +290,12 @@ label.form-check-label {
     color: var(--form-column-header-color);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
-    padding: 0 0 2px;
+    padding: 0 0 var(--ea-sp-1);
 }
 
 .form-column .form-column-title .form-column-icon {
     color: var(--form-column-icon-color);
-    margin-inline-end: var(--ea-sp-2-5);
+    margin-inline-end: var(--ea-sp-5);
 }
 
 .form-column .form-column-title .form-column-help {
@@ -281,17 +304,23 @@ label.form-check-label {
     margin: 0;
 }
 .form-column .field-form_fieldset {
-    margin-block-end: var(--bs-gutter-x);
+    margin-block-end: var(--ea-sp-10);
 }
 
+/* modeled on the shadcn/ui Card component: one spacing value drives the
+   padding of every card section and the gap between them (like shadcn's
+   --card-spacing); the bottom padding comes from the last .form-group's own
+   block-end padding, which equals this same value */
 .form-column .form-fieldset {
-    border-radius: var(--border-radius);
+    --form-fieldset-spacing: var(--ea-sp-12);
+
+    border-radius: var(--border-radius-lg);
     box-shadow: inset 0 0 0 1px var(--form-fieldset-border-color);
 }
 
 .form-column .form-fieldset-header {
     box-shadow: none;
-    padding: calc(var(--bs-gutter-x) - 5px) var(--bs-gutter-x) calc(var(--bs-gutter-x) / 2);
+    padding: var(--form-fieldset-spacing) var(--form-fieldset-spacing) 0;
 }
 
 .form-column .form-fieldset-header .form-fieldset-title .form-fieldset-title-content {
@@ -300,36 +329,33 @@ label.form-check-label {
 }
 
 .form-column .form-fieldset-header .form-fieldset-title .form-fieldset-help {
-    margin-block-start: 2px;
+    margin-block-start: var(--ea-sp-2);
 }
 
 .form-column .form-fieldset-body {
-    padding: var(--ea-sp-1) var(--bs-gutter-x) 0;
-}
-.form-column .form-fieldset-body.without-header {
-    padding: var(--bs-gutter-x) var(--bs-gutter-x) 0;
+    padding: var(--form-fieldset-spacing) var(--form-fieldset-spacing) 0;
 }
 
 /* Form fieldsets */
 .field-form_fieldset {
-    margin-block-end: calc(1.5 * var(--bs-gutter-x)); /* not a typo; don't use --bs-gutter-y here */
+    margin-block-end: var(--ea-sp-18);
 }
 
 .form-section-empty {
-    padding: var(--ea-sp-6) var(--ea-sp-2-5) var(--ea-sp-6);
+    padding: var(--ea-sp-12) var(--ea-sp-5) var(--ea-sp-12);
 }
 
 .form-fieldset-header {
     align-items: flex-start;
     display: flex;
     flex-wrap: nowrap;
-    padding: 0 0 var(--ea-sp-4);
+    padding: 0 0 var(--ea-sp-8);
     position: relative;
 }
 .form-fieldset-header .form-fieldset-collapse-marker {
     color: var(--form-fieldset-collapse-marker-color);
     font-size: 90%;
-    margin: 0 var(--ea-sp-2-5) 0 2px;
+    margin: 0 var(--ea-sp-5) 0 var(--ea-sp-1);
     transform: rotate(90deg);
     transition: transform var(--ea-duration-slow) var(--ea-ease-out);
 }
@@ -344,7 +370,7 @@ label.form-check-label {
     color: var(--form-fieldset-header-color);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
-    padding: 0 0 var(--ea-sp-1);
+    padding: 0 0 var(--ea-sp-2);
 }
 .form-fieldset-header .form-fieldset-title .form-fieldset-title-content.not-collapsible {
     cursor: default;
@@ -363,21 +389,21 @@ label.form-check-label {
 
 .form-fieldset-header .form-fieldset-title .form-fieldset-icon {
     color: var(--form-fieldset-icon-color);
-    margin-inline-end: var(--ea-sp-2-5);
+    margin-inline-end: var(--ea-sp-5);
 }
 
 .form-fieldset-header .form-fieldset-title .form-fieldset-help {
     color: var(--form-fieldset-help-color);
-    margin-block-start: var(--ea-sp-1-5);
+    margin-block-start: var(--ea-sp-3);
 }
 
 .form-fieldset-title-content .badge-danger {
-    margin-inline-start: var(--ea-sp-2);
+    margin-inline-start: var(--ea-sp-4);
 }
 
 .form-fieldset.has-fieldset-error {
     border: var(--border-width) solid var(--form-input-error-border-color);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-xl);
     box-shadow: var(--form-input-error-shadow);
 }
 
@@ -431,7 +457,7 @@ label.form-check-label {
     padding: 0;
 }
 .form-actions .btn {
-    margin-inline-start: var(--ea-sp-2-5);
+    margin-inline-start: var(--ea-sp-5);
 }
 
 /* Form errors */
@@ -475,14 +501,14 @@ label.form-check-label {
     border-radius: var(--border-radius);
     color: var(--form-global-error-color);
     font-size: var(--font-size-base);
-    margin: var(--ea-sp-1) 0;
-    padding: var(--ea-sp-1-5) var(--ea-sp-3);
+    margin: var(--ea-sp-2) 0;
+    padding: var(--ea-sp-3) var(--ea-sp-6);
 }
 form .invalid-feedback {
     color: var(--color-danger);
     font-size: 1em;
     font-weight: var(--font-weight-medium);
-    padding-block-start: var(--ea-sp-1-5);
+    padding-block-start: var(--ea-sp-3);
 }
 .form-check-input.is-invalid ~ .form-check-label,
 .was-validated .form-check-input:not([type="checkbox"]):invalid ~ .form-check-label {
@@ -491,11 +517,11 @@ form .invalid-feedback {
 
 form .invalid-feedback .badge-danger {
     font-size: var(--font-size-xs);
-    margin-inline-end: 2px;
-    padding: var(--ea-sp-1) var(--ea-sp-1);
+    margin-inline-end: var(--ea-sp-1);
+    padding: var(--ea-sp-2) var(--ea-sp-2);
 }
 form .invalid-feedback > .d-block + .d-block {
-    margin-block-start: var(--ea-sp-1);
+    margin-block-start: var(--ea-sp-2);
 }
 
 /* Form group inputs */
@@ -505,7 +531,7 @@ form .invalid-feedback > .d-block + .d-block {
     box-shadow: var(--form-input-box-shadow);
     color: var(--form-input-text-color);
     block-size: 30px;
-    padding: var(--ea-sp-1) var(--ea-sp-2-5) var(--ea-sp-1);
+    padding: var(--ea-sp-2) var(--ea-sp-5) var(--ea-sp-2);
 }
 .input-group button,
 .input-group button:hover,
@@ -526,26 +552,26 @@ form .invalid-feedback > .d-block + .d-block {
 .ea-fileupload {
     display: flex;
     flex-direction: column;
-    gap: var(--ea-sp-2);
+    gap: var(--ea-sp-4);
 }
 
 /* File Upload - Toolbar (Add button + Clear All) */
 .ea-fileupload-toolbar {
     display: flex;
     align-items: center;
-    gap: var(--ea-sp-3);
+    gap: var(--ea-sp-6);
 }
 .ea-fileupload-add-btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--ea-sp-1-5);
+    gap: var(--ea-sp-3);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
-    padding: var(--ea-sp-1-5) var(--ea-sp-3-5);
+    padding: var(--ea-sp-3) var(--ea-sp-7);
 }
 .ea-fileupload-add-btn .btn-icon {
-    inline-size: 0.875rem;
-    block-size: 0.875rem;
+    inline-size: var(--ea-sp-7);
+    block-size: var(--ea-sp-7);
 }
 .ea-fileupload-clear-all-btn {
     margin-inline-start: auto;
@@ -555,7 +581,7 @@ form .invalid-feedback > .d-block + .d-block {
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
     cursor: pointer;
-    padding: var(--ea-sp-1-5) 0;
+    padding: var(--ea-sp-3) 0;
 }
 .ea-fileupload-clear-all-btn:hover {
     text-decoration: underline;
@@ -565,7 +591,7 @@ form .invalid-feedback > .d-block + .d-block {
 .ea-fileupload-cards {
     display: flex;
     flex-direction: column;
-    gap: var(--ea-sp-1-5);
+    gap: var(--ea-sp-3);
 }
 .ea-fileupload-cards:empty {
     display: none;
@@ -575,10 +601,10 @@ form .invalid-feedback > .d-block + .d-block {
 .ea-fileupload-card {
     display: flex;
     align-items: center;
-    gap: var(--ea-sp-2-5);
+    gap: var(--ea-sp-5);
     border: var(--border-width) solid var(--border-tertiary-color);
     border-radius: var(--border-radius);
-    padding: var(--ea-sp-2) var(--ea-sp-3);
+    padding: var(--ea-sp-4) var(--ea-sp-6);
 }
 
 /* File Upload - Card preview (left side: icon or thumbnail) */
@@ -587,18 +613,18 @@ form .invalid-feedback > .d-block + .d-block {
     display: flex;
     align-items: center;
     justify-content: center;
-    inline-size: 2.25rem;
-    block-size: 2.25rem;
+    inline-size: var(--ea-sp-18);
+    block-size: var(--ea-sp-18);
 }
 .ea-fileupload-card-thumbnail {
-    inline-size: 2.25rem;
-    block-size: 2.25rem;
+    inline-size: var(--ea-sp-18);
+    block-size: var(--ea-sp-18);
     object-fit: cover;
     border-radius: var(--border-radius-sm);
 }
 .ea-fileupload-card .ea-fileupload-card-icon {
-    inline-size: 2rem;
-    block-size: 2rem;
+    inline-size: var(--ea-sp-16);
+    block-size: var(--ea-sp-16);
 }
 .ea-fileupload-card .ea-fileupload-card-icon svg {
     inline-size: 100%;
@@ -667,14 +693,14 @@ form .invalid-feedback > .d-block + .d-block {
 /* Image/file vich uploads */
 .ea-vich-image img {
     box-shadow: 0 0 0 4px var(--white), 0px 0px 4px 3px var(--gray-600);
-    margin: var(--ea-sp-1-5) var(--ea-sp-1) var(--ea-sp-3);
+    margin: var(--ea-sp-3) var(--ea-sp-2) var(--ea-sp-6);
     max-block-size: 300px;
     max-inline-size: 100%;
 }
 
 .ea-vich-file-name {
     display: block;
-    margin: var(--ea-sp-1) 0 var(--ea-sp-2);
+    margin: var(--ea-sp-2) 0 var(--ea-sp-4);
 }
 
 .ea-vich-file-name .fa {
@@ -687,7 +713,7 @@ form .invalid-feedback > .d-block + .d-block {
 .ea-vich-image-actions > div,
 .ea-vich-file-actions > div {
     float: left;
-    margin-inline-end: var(--ea-sp-1);
+    margin-inline-end: var(--ea-sp-2);
 }
 
 .ea-vich-image-actions:after,
@@ -699,7 +725,7 @@ form .invalid-feedback > .d-block + .d-block {
 
 .ea-vich-image-actions .field-checkbox,
 .ea-vich-file-actions .field-checkbox {
-    padding-block-start: var(--ea-sp-1);
+    padding-block-start: var(--ea-sp-2);
 }
 
 .ea-vich-image-actions .form-widget {

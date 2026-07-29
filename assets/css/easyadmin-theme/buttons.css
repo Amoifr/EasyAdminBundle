@@ -25,10 +25,10 @@
     cursor: pointer;
     display: inline-flex;
     font-family: inherit;
-    font-size: var(--button-font-size, .875rem);
-    font-weight: var(--button-font-weight, 500);
-    gap: var(--button-icon-gap, var(--ea-sp-1-5));
-    min-block-size: var(--button-height, var(--ea-sp-8));
+    font-size: var(--button-font-size, var(--font-size-base));
+    font-weight: var(--button-font-weight, var(--font-weight-medium));
+    gap: var(--button-icon-gap, var(--ea-sp-3));
+    min-block-size: var(--button-height, var(--ea-sp-16));
     justify-content: space-between;
     line-height: var(--button-line-height);
     padding: var(--button-padding-y, var(--button-padding-y-md)) var(--button-padding-x, var(--button-padding-x-md));
@@ -411,15 +411,15 @@
     --button-font-size: var(--button-font-size-sm);
     --button-padding-y: var(--button-padding-y-sm);
     --button-padding-x: var(--button-padding-x-sm);
-    --button-icon-gap: var(--ea-sp-1);
-    --button-height: var(--ea-sp-7);
+    --button-icon-gap: var(--ea-sp-2);
+    --button-height: var(--ea-sp-14);
 }
 
 .btn-lg {
     --button-font-size: var(--button-font-size-lg);
     --button-padding-y: var(--button-padding-y-lg);
     --button-padding-x: var(--button-padding-x-lg);
-    --button-height: var(--ea-sp-9);
+    --button-height: var(--ea-sp-18);
 }
 
 .btn-block {
@@ -486,7 +486,7 @@ fieldset:disabled a.btn {
    their horizontal padding. */
 .btn:has(.btn-icon):not(:has(.btn-label)) {
     justify-content: center;
-    min-inline-size: var(--button-height, var(--ea-sp-8));
+    min-inline-size: var(--button-height, var(--ea-sp-16));
     padding: 0;
 }
 
@@ -511,8 +511,8 @@ fieldset:disabled a.btn {
     border-end-start-radius: 0;
 }
 .btn-group > .btn.dropdown-toggle.dropdown-toggle-split {
-    padding-inline-end: var(--ea-sp-2);
-    padding-inline-start: var(--ea-sp-2);
+    padding-inline-end: var(--ea-sp-4);
+    padding-inline-start: var(--ea-sp-4);
 }
 .dropdown-menu .dropdown-submenu .dropdown-toggle.dropdown-toggle-split {
     border: 0;
@@ -542,7 +542,7 @@ fieldset:disabled a.btn {
     /* the spinner can't use currentColor because .is-loading sets 'color: transparent' to hide
        the label; the --button-color token still holds the variant's real text color */
     border: 2px solid var(--button-color, currentColor);
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     border-inline-end-color: transparent;
     border-block-start-color: transparent;
     content: "";

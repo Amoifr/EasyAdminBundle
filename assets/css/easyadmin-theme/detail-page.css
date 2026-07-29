@@ -1,24 +1,26 @@
 /* Detail Page styles
 /* ------------------------------------------------------------------------- */
 .ea-detail .form-column .form-fieldset-body {
-    padding-block-end: var(--ea-sp-2);
-    padding-block-start: var(--ea-sp-1);
+    padding-block-end: var(--ea-sp-4);
+    /* smaller than the form-page card gap: detail rows are read-only text, so
+       the title needs less separation from them */
+    padding-block-start: var(--ea-sp-8);
 }
 .ea-detail .form-column .form-fieldset-body.without-header {
-    padding-block-end: var(--ea-sp-2-5);
-    padding-block-start: var(--bs-gutter-x);
+    padding-block-end: var(--ea-sp-5);
+    padding-block-start: var(--ea-sp-12);
 }
 
 .ea-detail .field-group {
     display: flex;
-    margin-block-end: var(--ea-sp-3);
+    margin-block-end: var(--ea-sp-6);
 }
 
 .ea-detail .field-group .field-label {
     color: var(--form-label-color);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
-    margin: 0 var(--ea-sp-4) 0 0;
+    margin: 0 var(--ea-sp-8) 0 0;
     padding: 0 0 1px 0;
     text-align: right;
     inline-size: 130px;
@@ -38,8 +40,8 @@
 .tooltip.ea-detail-label-tooltip {
     --bs-tooltip-max-width: 350px;
     --bs-tooltip-border-radius: var(--border-radius);
-    --bs-tooltip-padding-x: 20px;
-    --bs-tooltip-padding-y: 10px;
+    --bs-tooltip-padding-x: var(--ea-sp-10);
+    --bs-tooltip-padding-y: var(--ea-sp-5);
     --bs-tooltip-opacity: 1;
 }
 .tooltip.ea-detail-label-tooltip .tooltip-inner {
@@ -67,7 +69,7 @@
 .ea-detail .field-group.field-boolean .field-label {
     flex: 1;
     min-inline-size: 66%;
-    margin: 0 0 0 var(--ea-sp-4);
+    margin: 0 0 0 var(--ea-sp-8);
     text-align: left;
 }
 .ea-detail .field-group.field-boolean .field-value {

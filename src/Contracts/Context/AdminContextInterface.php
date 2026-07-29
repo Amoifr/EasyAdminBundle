@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\I18nDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\LocaleDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\MainMenuDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\ThemeDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\UserMenuDto;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -51,6 +52,8 @@ interface AdminContextInterface
     public function getDashboardHasDarkModeEnabled(): bool;
 
     public function getDashboardDefaultColorScheme(): string;
+
+    public function getDashboardTheme(): ?ThemeDto;
 
     /**
      * @return LocaleDto[]

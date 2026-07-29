@@ -63,8 +63,8 @@
    16px grid gap instead of per-section padding. */
 .modal-content {
     display: grid;
-    gap: var(--ea-sp-6);
-    padding: var(--ea-sp-4);
+    gap: var(--ea-sp-12);
+    padding: var(--ea-sp-8);
     border-color: var(--modal-border-color);
     /* Bootstrap's dist CSS is built with $enable-shadows: false, so its modal
        box-shadow rule is never emitted (the --bs-modal-box-shadow var is defined
@@ -104,7 +104,7 @@
 }
 .modal-body-content {
     display: grid;
-    gap: var(--ea-sp-1-5);
+    gap: var(--ea-sp-3);
 }
 /* let the grid gap be the only separator, whatever the children are */
 .modal-body-content > * {
@@ -118,8 +118,8 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    inline-size: 40px;
-    block-size: 40px;
+    inline-size: var(--ea-sp-20);
+    block-size: var(--ea-sp-20);
     border-radius: var(--border-radius-lg);
     background: var(--modal-icon-bg);
     color: var(--modal-icon-color);
@@ -137,18 +137,18 @@
 .modal-body--icon {
     display: flex;
     align-items: flex-start;
-    gap: var(--ea-sp-4);
+    gap: var(--ea-sp-8);
 }
 
 /* `topIcon`: larger icon stacked above the body content */
 .modal-body--top-icon {
     display: flex;
     flex-direction: column;
-    gap: var(--ea-sp-3);
+    gap: var(--ea-sp-6);
 }
 .modal-icon--top {
-    inline-size: 48px;
-    block-size: 48px;
+    inline-size: var(--ea-sp-24);
+    block-size: var(--ea-sp-24);
 }
 .modal-icon--top .icon {
     font-size: var(--icon-size-lg);

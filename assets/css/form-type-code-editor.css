@@ -5,15 +5,16 @@
 
 @layer ea.components {
     .CodeMirror {
-        font: 13px / 1.5 SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Ubuntu Mono", "Courier New",
-            monospace;
+        font-family: var(--font-family-monospace);
+        font-size: var(--font-size-sm);
+        line-height: var(--line-height-normal);
         block-size: auto;
         min-block-size: 45px;
     }
 
     .CodeMirror-wrap {
         background: var(--form-control-bg);
-        border: 1px solid var(--form-input-border-color);
+        border: var(--border-width) solid var(--form-input-border-color);
         box-shadow: var(--form-input-shadow);
         border-radius: var(--border-radius);
         color: var(--form-input-text-color);
@@ -33,10 +34,10 @@
     }
 
     .CodeMirror-lines {
-        padding-block-end: 5px;
+        padding-block-end: var(--ea-sp-3);
     }
     .CodeMirror-cursor {
-        border: 1px solid var(--code-editor-comment-color);
+        border: var(--border-width) solid var(--code-editor-comment-color);
     }
 
     .cm-s-default .cm-header {
@@ -115,7 +116,7 @@
         color: var(--code-editor-keyword-color);
     }
     .CodeMirror-matchingtag {
-        background: rgba(255, 150, 0, 0.3);
+        background: color-mix(in srgb, var(--orange-400) 30%, transparent);
     }
 
     div.CodeMirror-selected {

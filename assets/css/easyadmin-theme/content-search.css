@@ -12,7 +12,7 @@
 }
 .content-top .content-search .form-group {
     flex-basis: 100%;
-    padding: 2px 0;
+    padding: var(--ea-sp-1) 0;
 }
 .content-top .content-search .form-widget {
     align-items: center;
@@ -33,7 +33,7 @@
     border-radius: var(--border-radius);
     color: var(--content-search-reset-button-color);
     font-size: var(--font-size-sm);
-    padding: 2px 2px;
+    padding: var(--ea-sp-1) var(--ea-sp-1);
 }
 .content-top .content-search .content-search-reset:hover {
     background: var(--content-search-reset-button-hover-bg);
