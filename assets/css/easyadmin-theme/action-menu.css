@@ -134,3 +134,13 @@
     order: -1; /* and sit on the leading (left) edge, the side it opens to */
     margin-inline-start: 0;
 }
+/* pull the toggle into the menu's reserved start gutter (see .dropdown-has-submenus)
+   so the chevron occupies that gutter and the icon + label stay aligned with the
+   sibling items; the offset is the chevron size plus the item's flex gap, and the
+   inline-size compensates the 100% sizing that Bootstrap gives to dropdown items,
+   so the item (and its hover background) still reaches the menu's end edge */
+.dropdown-has-submenus .dropstart > .dropdown-item.dropdown-toggle {
+    --submenu-chevron-gutter: calc(var(--icon-size-sm) + var(--ea-sp-3));
+    margin-inline-start: calc(-1 * var(--submenu-chevron-gutter));
+    inline-size: calc(100% + var(--submenu-chevron-gutter));
+}
