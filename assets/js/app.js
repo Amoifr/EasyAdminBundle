@@ -35,7 +35,6 @@ class App {
 
         this.#removeHashFormUrl();
         this.#createMainMenu();
-        this.#scrollActiveMenuItemIntoView();
         this.#createLayoutResizeControls();
         this.#createNavigationToggler();
         this.#createSearchHighlight();
@@ -100,28 +99,6 @@ class App {
                 submenuToggle.setAttribute('aria-expanded', String(willExpand));
             });
         });
-    }
-
-    // with long menus, the active item can be outside the viewport (or behind the
-    // sticky sidebar footer) when the page loads; scroll it into view if needed
-    #scrollActiveMenuItemIntoView() {
-        const activeMenuItem = document.querySelector('#main-menu .ea-sidebar-item.is-active');
-        if (null === activeMenuItem) {
-            return;
-        }
-
-        const sidebarFooterHeight = document.querySelector('.ea-sidebar-footer')?.offsetHeight ?? 0;
-        const visibleBottom = window.innerHeight - sidebarFooterHeight;
-        const itemPosition = activeMenuItem.getBoundingClientRect();
-        if (itemPosition.top >= 0 && itemPosition.bottom <= visibleBottom) {
-            return;
-        }
-
-        activeMenuItem.scrollIntoView({ block: 'nearest' });
-        const newItemPosition = activeMenuItem.getBoundingClientRect();
-        if (newItemPosition.bottom > visibleBottom) {
-            window.scrollBy(0, newItemPosition.bottom - visibleBottom);
-        }
     }
 
     #createLayoutResizeControls() {
