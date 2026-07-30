@@ -253,7 +253,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 .datagrid .dropdown-actions {
     display: inline-block;
 }
-.datagrid .dropdown-actions .dropdown-toggle {
+.datagrid .dropdown-actions > .dropdown-toggle {
     border: var(--border-width) solid transparent;
     border-radius: var(--border-radius);
     color: var(--dropdown-toggle-color);
@@ -262,7 +262,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     overflow: visible;
 }
 
-.datagrid .dropdown-actions .dropdown-toggle .icon {
+.datagrid .dropdown-actions > .dropdown-toggle .icon {
     display: block;
     font-size: var(--icon-size-md);
     inline-size: unset;
@@ -284,11 +284,8 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     inset-inline-start: auto;
     margin-block-end: 0;
     margin-block-start: 0;
-    margin-inline-end: calc(-1 * var(--ea-sp-1));
-    margin-inline-start: 0;
-}
-.datagrid .dropdown-actions .dropdown-menu .dropstart:has(.dropdown-toggle-split) > .dropdown-menu {
     margin-inline-end: var(--ea-sp-8);
+    margin-inline-start: 0;
 }
 
 /* Submenus without toggle-split */
