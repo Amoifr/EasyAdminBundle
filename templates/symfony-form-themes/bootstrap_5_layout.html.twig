@@ -216,6 +216,9 @@
         {%- set switch_variant = 'checkbox-switch-success' in parent_label_class ? 'success'
             : ('checkbox-switch-warning' in parent_label_class ? 'warning'
             : ('checkbox-switch-danger' in parent_label_class ? 'danger' : null)) -%}
+        {%- if not valid %}
+            {% set attr = attr|merge({class: (attr.class|default('') ~ ' is-invalid')|trim}) %}
+        {% endif -%}
         {%- set switch_widget -%}
             <twig:ea:Switch
                 id="{{ id }}"
@@ -225,6 +228,7 @@
                 disabled="{{ disabled ?? false }}"
                 required="{{ required ?? false }}"
                 variant="{{ switch_variant }}"
+                {{ ...attr }}
             />
         {%- endset -%}
         <div class="form-check ea-switch-check">

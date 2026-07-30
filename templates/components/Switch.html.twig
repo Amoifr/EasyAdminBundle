@@ -21,13 +21,13 @@
 ) %}
 
 <span class="{{ css_class }}">
-    <input type="checkbox" role="switch" class="ea-switch-input"
+    <input type="checkbox" role="switch" class="{{ html_classes('ea-switch-input', attributes.render('class')|default('')) }}"
         {% if id %}id="{{ id }}"{% endif %}
         {% if name %}name="{{ name }}"{% endif %}
         value="{{ value }}"
         {{ checked ? 'checked' }} {{ disabled ? 'disabled' }} {{ required ? 'required' }}
         {% if ariaLabel %}aria-label="{{ ariaLabel }}"{% endif %}
         autocomplete="off"
-        {{ attributes.without('class') }}>
+        {{ attributes }}>
     <span class="ea-switch-track" aria-hidden="true"><span class="ea-switch-thumb"></span></span>
 </span>{#--#}
