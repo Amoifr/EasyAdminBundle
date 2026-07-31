@@ -2,6 +2,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\Configurator;
 
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\NestedAssociationResolverInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Translation\EntityTranslationIdGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\EntityFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CommonPreConfigurator;
@@ -21,7 +22,8 @@ class CommonPreConfiguratorTest extends AbstractFieldTest
         $propertyAccessor = $container->get(PropertyAccessorInterface::class);
         $entityFactory = $container->get(EntityFactory::class);
         $entityTranslationIdGenerator = $container->get(EntityTranslationIdGeneratorInterface::class);
-        $this->configurator = new CommonPreConfigurator($propertyAccessor, $entityFactory, $entityTranslationIdGenerator);
+        $associationResolver = $container->get(NestedAssociationResolverInterface::class);
+        $this->configurator = new CommonPreConfigurator($propertyAccessor, $entityFactory, $entityTranslationIdGenerator, $associationResolver);
     }
 
     public function testShouldKeepExistingValue(): void
