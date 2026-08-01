@@ -2,8 +2,11 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\Configurator;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\NestedAssociationResolverInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Translation\EntityTranslationIdGeneratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\ResolvedPropertyDto;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\EntityFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CommonPreConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
@@ -38,5 +41,58 @@ class CommonPreConfiguratorTest extends AbstractFieldTest
         $field = Field::new('foo')->setFormattedValue('bar');
 
         $this->assertSame('bar', $this->configure($field)->getFormattedValue());
+    }
+
+    public function testNestedPropertyEndingInSingleValuedAssociationIsSortableByDefault(): void
+    {
+        // e.g. AssociationField::new('customer.country') where 'country' is a to-one
+        // association: sortable by default, like single-level association fields
+        $this->configurator = $this->createConfiguratorForAssociationLeaf(isSingleValuedLeaf: true);
+
+        $field = Field::new('customer.country');
+
+        $this->assertTrue($this->configure($field)->isSortable());
+    }
+
+    public function testNestedPropertyEndingInToManyAssociationIsNotSortableByDefault(): void
+    {
+        $this->configurator = $this->createConfiguratorForAssociationLeaf(isSingleValuedLeaf: false);
+
+        $field = Field::new('customer.orders');
+
+        $this->assertFalse($this->configure($field)->isSortable());
+    }
+
+    /**
+     * Creates the configurator with a resolver stub that behaves like the real one does
+     * for a nested path ending at an association: the default resolve call (which requires
+     * the leaf to be a field) throws, and the resolve call allowing an association leaf
+     * returns the leaf's parent entity, whose metadata tells whether the leaf is single-valued.
+     */
+    private function createConfiguratorForAssociationLeaf(bool $isSingleValuedLeaf): CommonPreConfigurator
+    {
+        $associationResolver = $this->createMock(NestedAssociationResolverInterface::class);
+        $associationResolver->method('resolveNestedAssociations')->willReturnCallback(
+            function ($queryBuilder, EntityDto $entityDto, string $propertyName, bool $mustEndWithAssociation = false) use ($isSingleValuedLeaf): ResolvedPropertyDto {
+                if (!$mustEndWithAssociation) {
+                    throw new \InvalidArgumentException(sprintf('The "%s" property ends with an association.', $propertyName));
+                }
+
+                $leafName = substr($propertyName, strrpos($propertyName, '.') + 1);
+                $classMetadata = $this->createMock(ClassMetadata::class);
+                $classMetadata->method('isSingleValuedAssociation')->with($leafName)->willReturn($isSingleValuedLeaf);
+
+                return new ResolvedPropertyDto(new EntityDto('App\Entity\Customer', $classMetadata), null, $leafName);
+            }
+        );
+
+        $container = self::$kernel->getContainer()->get('test.service_container');
+
+        return new CommonPreConfigurator(
+            $container->get(PropertyAccessorInterface::class),
+            $container->get(EntityFactory::class),
+            $container->get(EntityTranslationIdGeneratorInterface::class),
+            $associationResolver,
+        );
     }
 }
