@@ -286,14 +286,17 @@ class EntityRepositoryTest extends TestCase
         $this->entityRepository->createQueryBuilder($searchDto, $entityDto, $fields, new FilterCollection());
     }
 
-    public function testCustomSortKeyContainingDotIsIgnored(): void
+    public function testCustomSortByNestedPropertyNotExposedAsFieldIsIgnored(): void
     {
-        // ?sort[customer.secretField]=ASC — multi-segment keys reach the unfiltered
-        // multi-segment branch of applyOrderClause; URL-based association sort is
-        // supported via single-segment keys + AssociationField::setSortProperty()
+        // ?sort[customer.name]=ASC against a controller whose configureFields(INDEX)
+        // doesn't expose the `customer.name` property: the path maps to real Doctrine
+        // metadata, but only properties exposed as sortable fields can be sorted via the URL
+        $customerEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\Customer');
         $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
         $fields = new FieldCollection([$this->createField('customer', true)]);
-        $searchDto = $this->createSearchDtoForSort(customSort: ['customer.secretField' => 'ASC']);
+        $searchDto = $this->createSearchDtoForSort(customSort: ['customer.name' => 'ASC']);
+
+        $this->entityFactory->method('create')->willReturn($customerEntityDto);
 
         $queryBuilder = $this->createSortingQueryBuilder();
         $queryBuilder->expects($this->never())->method('addOrderBy');
@@ -302,6 +305,112 @@ class EntityRepositoryTest extends TestCase
         $this->stubEntityManager($queryBuilder);
 
         $this->entityRepository->createQueryBuilder($searchDto, $entityDto, $fields, new FilterCollection());
+    }
+
+    public function testCustomSortByNestedPropertyNotMappedByDoctrineIsIgnored(): void
+    {
+        // ?sort[customer.secretField]=ASC — the last segment doesn't map to any
+        // Doctrine field of the associated entity, so the whole key is rejected
+        $customerEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\Customer');
+        $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
+        $fields = new FieldCollection([$this->createField('customer.secretField', true)]);
+        $searchDto = $this->createSearchDtoForSort(customSort: ['customer.secretField' => 'ASC']);
+
+        $this->entityFactory->method('create')->willReturn($customerEntityDto);
+
+        $queryBuilder = $this->createSortingQueryBuilder();
+        $queryBuilder->expects($this->never())->method('addOrderBy');
+        $queryBuilder->expects($this->never())->method('leftJoin');
+
+        $this->stubEntityManager($queryBuilder);
+
+        $this->entityRepository->createQueryBuilder($searchDto, $entityDto, $fields, new FilterCollection());
+    }
+
+    public function testCustomSortByExposedSortableNestedPropertyIsApplied(): void
+    {
+        $customerEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\Customer');
+        $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
+        $fields = new FieldCollection([$this->createField('customer.name', true)]);
+        $searchDto = $this->createSearchDtoForSort(customSort: ['customer.name' => 'ASC']);
+
+        $this->entityFactory->method('create')->willReturn($customerEntityDto);
+
+        $queryBuilder = $this->createSortingQueryBuilder();
+        $queryBuilder->method('getRootAliases')->willReturn(['entity']);
+        $queryBuilder->expects($this->once())
+            ->method('leftJoin')
+            ->with('entity.customer', 'customer');
+        $queryBuilder->expects($this->once())
+            ->method('addOrderBy')
+            ->with('customer.name', 'ASC');
+
+        $this->stubEntityManager($queryBuilder);
+
+        $this->entityRepository->createQueryBuilder($searchDto, $entityDto, $fields, new FilterCollection());
+    }
+
+    public function testDefaultSortByMultiLevelNestedPropertyAddsAllJoins(): void
+    {
+        $categoryEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\Category');
+        $releaseEntityDto = $this->createEntityDto([], ['category' => 'App\Entity\Category'], 'App\Entity\Release');
+        $entityDto = $this->createEntityDto([], ['latestRelease' => 'App\Entity\Release']);
+        $searchDto = $this->createSearchDtoForSort(defaultSort: ['latestRelease.category.name' => 'DESC']);
+
+        $this->entityFactory->method('create')->willReturnCallback(static fn (string $fqcn): EntityDto => match ($fqcn) {
+            'App\Entity\Release' => $releaseEntityDto,
+            'App\Entity\Category' => $categoryEntityDto,
+        });
+
+        $joins = [];
+        $queryBuilder = $this->createSortingQueryBuilder();
+        $queryBuilder->method('getRootAliases')->willReturn(['entity']);
+        $queryBuilder->method('leftJoin')->willReturnCallback(static function (string $join, string $alias) use (&$joins, $queryBuilder) {
+            $joins[] = [$join, $alias];
+
+            return $queryBuilder;
+        });
+        $queryBuilder->expects($this->once())
+            ->method('addOrderBy')
+            ->with('category1.name', 'DESC');
+
+        $this->stubEntityManager($queryBuilder);
+
+        $this->entityRepository->createQueryBuilder($searchDto, $entityDto, new FieldCollection([]), new FilterCollection());
+
+        self::assertSame([['entity.latestRelease', 'latestRelease'], ['latestRelease.category', 'category1']], $joins);
+    }
+
+    public function testCustomSortOnAssociationCombinedWithNestedDefaultSortJoinsOnlyOnce(): void
+    {
+        // ?sort[customer]=ASC on a CRUD with setDefaultSort(['customer.name' => 'DESC']):
+        // both sort properties traverse the 'customer' association, so its JOIN must be
+        // added only once or Doctrine fails with "[Semantical Error] 'customer' is already defined"
+        $customerEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\Customer');
+        $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
+        $fields = new FieldCollection([$this->createField('customer', true)]);
+        $searchDto = $this->createSearchDtoForSort(customSort: ['customer' => 'ASC'], defaultSort: ['customer.name' => 'DESC']);
+
+        $this->entityFactory->method('create')->willReturn($customerEntityDto);
+
+        $orderClauses = [];
+        $queryBuilder = $this->createSortingQueryBuilder();
+        $queryBuilder->method('getRootAliases')->willReturn(['entity']);
+        $queryBuilder->expects($this->once())
+            ->method('leftJoin')
+            ->with('entity.customer', 'customer')
+            ->willReturnSelf();
+        $queryBuilder->method('addOrderBy')->willReturnCallback(static function (string $sort, string $order) use (&$orderClauses, $queryBuilder) {
+            $orderClauses[] = [$sort, $order];
+
+            return $queryBuilder;
+        });
+
+        $this->stubEntityManager($queryBuilder);
+
+        $this->entityRepository->createQueryBuilder($searchDto, $entityDto, $fields, new FilterCollection());
+
+        self::assertSame([['entity.customer', 'ASC'], ['customer.name', 'DESC']], $orderClauses);
     }
 
     public function testCustomSortWithNonAscDescValueIsIgnored(): void
@@ -408,6 +517,33 @@ class EntityRepositoryTest extends TestCase
 
         self::assertSame($authorEntityDto, $resolved->getEntityDto());
         self::assertSame('author', $resolved->getEntityAlias());
+        self::assertSame('name', $resolved->getPropertyName());
+    }
+
+    public function testResolveNestedAssociationsWithMultiLevelNestedProperty(): void
+    {
+        $categoryEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\Category');
+        $releaseEntityDto = $this->createEntityDto([], ['category' => 'App\Entity\Category'], 'App\Entity\Release');
+        $rootEntityDto = $this->createEntityDto([], ['latestRelease' => 'App\Entity\Release'], 'App\Entity\Project');
+
+        $this->entityFactory->method('create')->willReturnCallback(static fn (string $fqcn): EntityDto => match ($fqcn) {
+            'App\Entity\Release' => $releaseEntityDto,
+            'App\Entity\Category' => $categoryEntityDto,
+        });
+
+        $joins = [];
+        $queryBuilder = $this->createResolveQueryBuilder();
+        $queryBuilder->method('leftJoin')->willReturnCallback(static function (string $join, string $alias) use (&$joins, $queryBuilder) {
+            $joins[] = [$join, $alias];
+
+            return $queryBuilder;
+        });
+
+        $resolved = $this->entityRepository->resolveNestedAssociations($queryBuilder, $rootEntityDto, 'latestRelease.category.name');
+
+        self::assertSame([['entity.latestRelease', 'latestRelease'], ['latestRelease.category', 'category1']], $joins);
+        self::assertSame($categoryEntityDto, $resolved->getEntityDto());
+        self::assertSame('category1', $resolved->getEntityAlias());
         self::assertSame('name', $resolved->getPropertyName());
     }
 

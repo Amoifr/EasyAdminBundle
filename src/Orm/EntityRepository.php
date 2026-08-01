@@ -179,52 +179,61 @@ final readonly class EntityRepository implements EntityRepositoryInterface, Nest
 
     private function applyOrderClause(QueryBuilder $queryBuilder, EntityDto $entityDto, FieldCollection $fields, string $sortProperty, string $sortOrder): void
     {
-        $aliases = $queryBuilder->getAllAliases();
         $sortFieldIsDoctrineAssociation = $this->isAssociation($entityDto, $sortProperty);
 
         if ($sortFieldIsDoctrineAssociation) {
-            $sortFieldParts = explode('.', $sortProperty, 2);
-            // check if join has been added once before.
-            if (!\in_array($sortFieldParts[0], $aliases, true)) {
-                $queryBuilder->leftJoin('entity.'.$sortFieldParts[0], $sortFieldParts[0]);
+            if (str_contains($sortProperty, '.')) {
+                $resolvedProperty = $this->resolveNestedAssociations($queryBuilder, $entityDto, $sortProperty);
+                $queryBuilder->addOrderBy($resolvedProperty->getEntityAlias().'.'.$resolvedProperty->getPropertyName(), $sortOrder);
+
+                return;
             }
 
-            if (1 === \count($sortFieldParts)) {
-                if ($entityDto->getClassMetadata()->isCollectionValuedAssociation($sortProperty)) {
-                    /** @var EntityManagerInterface $entityManager */
-                    $entityManager = $this->doctrine->getManagerForClass($entityDto->getFqcn());
-                    $countQueryBuilder = $entityManager->createQueryBuilder();
+            // check if join has been added once before.
+            if (!\in_array($sortProperty, $queryBuilder->getAllAliases(), true)) {
+                $queryBuilder->leftJoin('entity.'.$sortProperty, $sortProperty);
+            }
 
-                    if (ClassMetadata::MANY_TO_MANY === $entityDto->getClassMetadata()->getAssociationMapping($sortProperty)['type']) {
-                        // many-to-many relation
-                        $countQueryBuilder
-                            ->select($queryBuilder->expr()->count('subQueryEntity'))
-                            ->from($entityDto->getFqcn(), 'subQueryEntity')
-                            ->join(sprintf('subQueryEntity.%s', $sortProperty), 'relatedEntity')
-                            ->where('subQueryEntity = entity');
-                    } else {
-                        // one-to-many relation
-                        $countQueryBuilder
-                            ->select($queryBuilder->expr()->count('subQueryEntity'))
-                            ->from($entityDto->getClassMetadata()->getAssociationTargetClass($sortProperty), 'subQueryEntity')
-                            ->where(sprintf('subQueryEntity.%s = entity', $entityDto->getClassMetadata()->getAssociationMapping($sortProperty)['mappedBy']));
-                    }
+            // register the join in the shared cache so that resolveNestedAssociations() reuses it
+            // when another sort property (e.g. a nested defaultSort) traverses the same association
+            $joinedAssociations = $this->joinedAssociations[$queryBuilder] ?? [];
+            if (!isset($joinedAssociations[$sortProperty])) {
+                $joinedAssociations[$sortProperty] = $sortProperty;
+                $this->joinedAssociations[$queryBuilder] = $joinedAssociations;
+            }
 
-                    $queryBuilder->addSelect(sprintf('(%s) as HIDDEN sub_query_sort', $countQueryBuilder->getDQL()));
-                    $queryBuilder->addOrderBy('sub_query_sort', $sortOrder);
-                    $queryBuilder->addOrderBy('entity.'.$entityDto->getClassMetadata()->getSingleIdentifierFieldName(), $sortOrder);
+            if ($entityDto->getClassMetadata()->isCollectionValuedAssociation($sortProperty)) {
+                /** @var EntityManagerInterface $entityManager */
+                $entityManager = $this->doctrine->getManagerForClass($entityDto->getFqcn());
+                $countQueryBuilder = $entityManager->createQueryBuilder();
+
+                if (ClassMetadata::MANY_TO_MANY === $entityDto->getClassMetadata()->getAssociationMapping($sortProperty)['type']) {
+                    // many-to-many relation
+                    $countQueryBuilder
+                        ->select($queryBuilder->expr()->count('subQueryEntity'))
+                        ->from($entityDto->getFqcn(), 'subQueryEntity')
+                        ->join(sprintf('subQueryEntity.%s', $sortProperty), 'relatedEntity')
+                        ->where('subQueryEntity = entity');
                 } else {
-                    $field = $fields->getByProperty($sortProperty);
-                    $associationSortProperty = $field?->getCustomOption(AssociationField::OPTION_SORT_PROPERTY);
-
-                    if (null === $associationSortProperty) {
-                        $queryBuilder->addOrderBy('entity.'.$sortProperty, $sortOrder);
-                    } else {
-                        $queryBuilder->addOrderBy($sortProperty.'.'.$associationSortProperty, $sortOrder);
-                    }
+                    // one-to-many relation
+                    $countQueryBuilder
+                        ->select($queryBuilder->expr()->count('subQueryEntity'))
+                        ->from($entityDto->getClassMetadata()->getAssociationTargetClass($sortProperty), 'subQueryEntity')
+                        ->where(sprintf('subQueryEntity.%s = entity', $entityDto->getClassMetadata()->getAssociationMapping($sortProperty)['mappedBy']));
                 }
+
+                $queryBuilder->addSelect(sprintf('(%s) as HIDDEN sub_query_sort', $countQueryBuilder->getDQL()));
+                $queryBuilder->addOrderBy('sub_query_sort', $sortOrder);
+                $queryBuilder->addOrderBy('entity.'.$entityDto->getClassMetadata()->getSingleIdentifierFieldName(), $sortOrder);
             } else {
-                $queryBuilder->addOrderBy($sortProperty, $sortOrder);
+                $field = $fields->getByProperty($sortProperty);
+                $associationSortProperty = $field?->getCustomOption(AssociationField::OPTION_SORT_PROPERTY);
+
+                if (null === $associationSortProperty) {
+                    $queryBuilder->addOrderBy('entity.'.$sortProperty, $sortOrder);
+                } else {
+                    $queryBuilder->addOrderBy($sortProperty.'.'.$associationSortProperty, $sortOrder);
+                }
             }
         } else {
             $queryBuilder->addOrderBy('entity.'.$sortProperty, $sortOrder);
@@ -302,7 +311,12 @@ final readonly class EntityRepository implements EntityRepositoryInterface, Nest
         $searchableProperties = (null === $configuredSearchableProperties || 0 === \count($configuredSearchableProperties)) ? $entityDto->getClassMetadata()->getFieldNames() : $configuredSearchableProperties;
 
         foreach ($searchableProperties as $searchableProperty) {
-            $resolvedProperty = $this->resolveNestedAssociations($queryBuilder, $entityDto, $searchableProperty);
+            try {
+                $resolvedProperty = $this->resolveNestedAssociations($queryBuilder, $entityDto, $searchableProperty);
+            } catch (\InvalidArgumentException) {
+                // skip properties not mapped by Doctrine (e.g. virtual fields) instead of failing the whole search
+                continue;
+            }
 
             // In Doctrine ORM 3.x, FieldMapping implements \ArrayAccess; in 4.x it's an object with properties
             $fieldMapping = $resolvedProperty->getEntityDto()->getClassMetadata()->getFieldMapping($resolvedProperty->getPropertyName());
@@ -457,20 +471,19 @@ final readonly class EntityRepository implements EntityRepositoryInterface, Nest
 
         $classMetadata = $entityDto->getClassMetadata();
 
-        // multi-segment customSort (e.g. "customer.secretField") would otherwise
-        // reach the unfiltered multi-segment branch in applyOrderClause; URL-based
-        // association sort is supported via AssociationField::setSortProperty()
-        // with a single-segment key. Embeddable properties (e.g. "address.city")
-        // are real Doctrine fields with a dotted name (hasField() === true), so
-        // they are still allowed
+        // structural gate: the property must be a real Doctrine field or association,
+        // or a nested path (e.g. "author.publisher.name") whose every segment maps to
+        // one. This also rejects any key with characters (commas, spaces, quotes…) that
+        // could otherwise smuggle DQL fragments through identifier interpolation.
+        // Embeddable properties (e.g. "address.city") are real Doctrine fields with a
+        // dotted name (hasField() === true), so they don't need to be resolved
         if (str_contains($sortProperty, '.') && !$classMetadata->hasField($sortProperty)) {
-            return false;
-        }
-
-        // structural gate: the property must be a real Doctrine field or association
-        // on the entity. This also rejects any key with characters (commas, spaces,
-        // quotes…) that could otherwise smuggle DQL fragments through identifier interpolation
-        if (!$classMetadata->hasField($sortProperty) && !$classMetadata->hasAssociation($sortProperty)) {
+            try {
+                $this->resolveNestedAssociations(null, $entityDto, $sortProperty);
+            } catch (\InvalidArgumentException) {
+                return false;
+            }
+        } elseif (!$classMetadata->hasField($sortProperty) && !$classMetadata->hasAssociation($sortProperty)) {
             return false;
         }
 

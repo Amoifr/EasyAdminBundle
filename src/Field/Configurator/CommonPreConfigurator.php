@@ -8,6 +8,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\NestedAssociationResolverInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Translation\EntityTranslationIdGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
@@ -30,6 +31,7 @@ final readonly class CommonPreConfigurator implements FieldConfiguratorInterface
         private PropertyAccessorInterface $propertyAccessor,
         private EntityFactory $entityFactory,
         private EntityTranslationIdGeneratorInterface $entityTranslationIdGenerator,
+        private NestedAssociationResolverInterface $associationResolver,
     ) {
     }
 
@@ -162,8 +164,24 @@ final readonly class CommonPreConfigurator implements FieldConfiguratorInterface
             return $isSortable;
         }
 
-        return isset($entityDto->getClassMetadata()->fieldMappings[$field->getProperty()])
-            || $entityDto->getClassMetadata()->hasAssociation($field->getProperty());
+        if (isset($entityDto->getClassMetadata()->fieldMappings[$field->getProperty()])
+            || $entityDto->getClassMetadata()->hasAssociation($field->getProperty())) {
+            return true;
+        }
+
+        // nested properties (e.g. 'author.publisher.name') are sortable when
+        // every segment of the path maps to a real Doctrine association or field
+        if (str_contains($field->getProperty(), '.')) {
+            try {
+                $this->associationResolver->resolveNestedAssociations(null, $entityDto, $field->getProperty());
+
+                return true;
+            } catch (\InvalidArgumentException) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     private function buildVirtualOption(FieldDto $field, EntityDto $entityDto): bool

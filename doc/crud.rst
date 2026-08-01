@@ -438,8 +438,9 @@ Search, Order, and Pagination Options
             // (user can later change this sorting by clicking on the table columns)
             ->setDefaultSort(['id' => 'DESC'])
             ->setDefaultSort(['id' => 'DESC', 'title' => 'ASC', 'startsAt' => 'DESC'])
-            // you can sort by Doctrine associations up to two levels
+            // you can sort by nested Doctrine associations of any depth
             ->setDefaultSort(['seller.name' => 'ASC'])
+            ->setDefaultSort(['seller.address.country' => 'ASC'])
         ;
     }
 
