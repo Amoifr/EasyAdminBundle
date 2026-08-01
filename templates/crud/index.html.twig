@@ -99,6 +99,7 @@
     {% set has_filters = filters|length > 0 %}
     {% set num_results = entities|length %}
 
+    {% block datagrid %}
     <table class="table datagrid {{ entities is empty ? 'datagrid-empty' }}" data-default-action-trigger="{{ ea.crud.defaultRowActionTrigger }}">
         {% if num_results > 0 %}
             <thead>
@@ -248,6 +249,7 @@
         {% endblock table_footer %}
         </tfoot>
     </table>
+    {% endblock datagrid %}
 
     {% if entities|length > 0 %}
         <div class="content-panel-footer without-padding without-border">
