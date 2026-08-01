@@ -94,14 +94,14 @@ class CrudAutocompleteSubscriber implements EventSubscriberInterface
                 /** @phpstan-ignore-next-line function.alreadyNarrowedType */
                 $idFieldType = property_exists($idFieldMapping, 'type') ? $idFieldMapping->type : $idFieldMapping['type'];
 
-                // third-party packages can register their own Doctrine type for the 'uuid' and 'ulid' type
-                // names with a different storage format (e.g. ramsey/uuid-doctrine stores UUIDs as strings);
-                // convert the submitted values only when the registered type is the Symfony UID one, whose
-                // storage format the conversion below assumes; otherwise, pass the values through unchanged
-                // and let the registered type convert them when running the query
-                $registeredIdType = Type::hasType($idFieldType) ? Type::getType($idFieldType) : null;
-                $isSymfonyUlidType = null === $registeredIdType || $registeredIdType instanceof UlidType;
-                $isSymfonyUuidType = null === $registeredIdType || $registeredIdType instanceof UuidType;
+                // the 'uuid' and 'ulid' Doctrine type names can be claimed by third-party types which use
+                // a different storage format (e.g. ramsey/uuid-doctrine stores UUIDs as CHAR(36) strings),
+                // so convert the submitted values only when the registered type is the Symfony one, whose
+                // storage format is the one assumed by the conversion made below; otherwise, pass the values
+                // through unchanged and let the registered type convert them when running the query
+                $idFieldDoctrineType = Type::hasType($idFieldType) ? Type::getType($idFieldType) : null;
+                $isSymfonyUlidType = null === $idFieldDoctrineType || $idFieldDoctrineType instanceof UlidType;
+                $isSymfonyUuidType = null === $idFieldDoctrineType || $idFieldDoctrineType instanceof UuidType;
 
                 $data['autocomplete'] = array_map(
                     static function ($v) use ($options, $idFieldType, $isSymfonyUlidType, $isSymfonyUuidType) {

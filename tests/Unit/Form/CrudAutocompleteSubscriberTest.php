@@ -41,6 +41,15 @@ class CrudAutocompleteSubscriberTest extends TestCase
         self::registerDoctrineType('ulid', UlidType::class);
     }
 
+    protected function tearDown(): void
+    {
+        // some tests override the 'uuid' and 'ulid' types in the global Doctrine type
+        // registry, so restore the Symfony UID types to not leak the overridden types
+        // into other test classes running in the same PHPUnit process
+        self::registerDoctrineType('uuid', UuidType::class);
+        self::registerDoctrineType('ulid', UlidType::class);
+    }
+
     /** @dataProvider idFieldInDifferentPlatformsData */
     public function testIdFieldInDifferentPlatforms(
         string $expectedValue,
@@ -173,6 +182,11 @@ class CrudAutocompleteSubscriberTest extends TestCase
                 'ulid',
                 self::ULID_STRING,
                 'Doctrine\DBAL\Platforms\MySQLPlatform',
+            ],
+            'PostgreSQL with ULID' => [
+                'ulid',
+                self::ULID_STRING,
+                'Doctrine\DBAL\Platforms\PostgreSQLPlatform',
             ],
         ];
     }
