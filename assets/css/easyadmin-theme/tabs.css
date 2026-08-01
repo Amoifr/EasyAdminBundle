@@ -6,19 +6,14 @@
     box-shadow: inset 0 calc(-1 * var(--border-width)) 0 var(--form-tabs-border-color);
     display: flex;
     margin-block-end: var(--ea-sp-10);
-    overflow-inline: auto;
-    overscroll-behavior-inline: contain;
-    scrollbar-width: none;
-}
-.form-tabs-tablist::-webkit-scrollbar {
-    display: none;
 }
 
 .form-tabs-tablist .nav-tabs {
     background: transparent;
     /* the 1px line is drawn by the wrapper, not by Bootstrap's .nav-tabs border */
     border: 0;
-    flex-wrap: nowrap;
+    /* tabs that don't fit wrap to new lines, so all of them stay reachable */
+    flex-wrap: wrap;
     gap: var(--ea-sp-6);
     margin: 0;
     /* the tabs (and their hover chip) don't touch the bottom line; the indicator of the selected tab bridges this gap (see ::after below) */
@@ -57,7 +52,7 @@
 .form-tabs-tablist .nav-tabs .nav-link:focus-visible {
     box-shadow: none;
     outline: var(--ea-focus-ring-width) solid var(--ea-primary-ring);
-    /* the ring is drawn inside the tab so the scroll container of the tab bar doesn't clip it */
+    /* the ring is drawn inside the tab so it doesn't overlap the neighboring tabs */
     outline-offset: calc(-1 * var(--ea-focus-ring-width));
 }
 
@@ -112,10 +107,9 @@
         block-size: var(--form-tabs-indicator-size);
         border-radius: var(--border-radius-sm);
         content: "";
-        inset-block-end: 0;
         position: absolute;
         transition: inset-inline-start var(--ea-duration-slow) var(--ea-ease-out), inline-size var(--ea-duration-slow)
-            var(--ea-ease-out);
+            var(--ea-ease-out), inset-block-start var(--ea-duration-slow) var(--ea-ease-out);
     }
 
     .form-tabs-tablist .nav-tabs .nav-item:nth-child(1) > .nav-link {
@@ -149,43 +143,55 @@
         anchor-name: --ea-tab-10;
     }
 
+    /* the block position is anchored per tab too, so when tabs wrap into several rows
+       the indicator lands under its own tab's row (matching the fallback indicator geometry) */
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(1) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-1 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-1 start);
         inline-size: anchor-size(--ea-tab-1 inline);
     }
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(2) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-2 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-2 start);
         inline-size: anchor-size(--ea-tab-2 inline);
     }
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(3) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-3 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-3 start);
         inline-size: anchor-size(--ea-tab-3 inline);
     }
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(4) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-4 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-4 start);
         inline-size: anchor-size(--ea-tab-4 inline);
     }
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(5) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-5 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-5 start);
         inline-size: anchor-size(--ea-tab-5 inline);
     }
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(6) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-6 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-6 start);
         inline-size: anchor-size(--ea-tab-6 inline);
     }
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(7) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-7 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-7 start);
         inline-size: anchor-size(--ea-tab-7 inline);
     }
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(8) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-8 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-8 start);
         inline-size: anchor-size(--ea-tab-8 inline);
     }
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(9) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-9 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-9 start);
         inline-size: anchor-size(--ea-tab-9 inline);
     }
     .form-tabs-tablist .nav-tabs:has(.nav-item:nth-child(10) > .nav-link.active)::after {
+        inset-block-start: calc(anchor(--ea-tab-10 end) + var(--ea-sp-4) - var(--form-tabs-indicator-size));
         inset-inline-start: anchor(--ea-tab-10 start);
         inline-size: anchor-size(--ea-tab-10 inline);
     }
