@@ -137,6 +137,13 @@ conversion between field names and methods must comply with the rules of the
         ];
     }
 
+Internally, EasyAdmin flags unmapped fields as *virtual* (both terms refer to
+the same concept). This is detected automatically from the Doctrine metadata,
+so you never need to call the ``setVirtual()`` method on the field yourself.
+Virtual fields are optional (``required`` = ``false``) in forms by default, and
+their column header on the index page includes a ``field-virtual`` CSS class
+that you can use to style them differently.
+
 Beware that unmapped fields are **not sortable** because they don't exist as a
 database table column, so they cannot be included in the Doctrine query. In some
 cases, you can overcome this limitation yourself by computing the unmapped field
