@@ -37,25 +37,6 @@ permissions when browsing that URL path:
             - { path: ^/admin, roles: ROLE_ADMIN }
             # ...
 
-Alternatively you can use the `#[IsGranted] attribute`_. However, this can be
-cumbersome because you must apply it to all dashboard controllers and to all the
-:doc:`CRUD controllers </crud>`::
-
-    // app/Controller/Admin/DashboardController.php
-    use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
-    use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
-    use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
-    use Symfony\Component\Security\Http\Attribute\IsGranted;
-
-    #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
-    #[IsGranted('ROLE_ADMIN')]
-    class DashboardController extends AbstractDashboardController
-    {
-        // ...
-    }
-
-    // don't forget to also apply #[IsGranted('ROLE_ADMIN')] to all CRUD controllers
-
 .. _security-controllers:
 
 Restrict Access to Some CRUD Controllers
