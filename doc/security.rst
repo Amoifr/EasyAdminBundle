@@ -266,7 +266,6 @@ grants access only if there are no voters denying access:
 .. _`Symfony Security`: https://symfony.com/doc/current/security.html
 .. _`Create users`: https://symfony.com/doc/current/security.html#a-create-your-user-class
 .. _`Define a firewall`: https://symfony.com/doc/current/security.html#a-authentication-firewalls
-.. _`#[IsGranted] attribute`: https://symfony.com/doc/current/security.html#securing-controllers-and-other-code
 .. _`access_control option`: https://symfony.com/doc/current/security/access_control.html
 .. _`security voter`: https://symfony.com/doc/current/security/voters.html
 .. _`access decision strategy`: https://symfony.com/doc/current/security/voters.html#changing-the-access-decision-strategy
