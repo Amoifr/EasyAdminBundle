@@ -317,6 +317,35 @@ associated entity::
 
     yield AssociationField::new('user')->setSortProperty('name');
 
+Nested Associations
+-------------------
+
+This field can display a property of a *related* entity, following a chain of
+associations written as a dotted property path. For example, if an ``Order``
+entity is associated with a ``Customer`` and that ``Customer`` is associated
+with a ``Country``, you can show the order's country on the ``index`` and
+``detail`` pages like this::
+
+    yield AssociationField::new('customer.country');
+
+The value is rendered as a clickable link pointing to the ``detail`` page of
+the entity at the end of the path (the ``Country`` in this example). EasyAdmin
+finds the CRUD controller of that entity automatically; if you define more than
+one CRUD controller for it, use the ``setCrudController()`` method to choose
+which one to link to.
+
+Nested association columns are sortable by default, like single-level
+association fields, as long as every segment of the path is a *to-one*
+association (sorting by *to-many* associations is not supported for nested
+paths). By default, results are sorted by the ``id`` of the related entity;
+use ``setSortProperty()`` to sort by any other property of it::
+
+    // sorts by the id of the related country
+    yield AssociationField::new('customer.country');
+
+    // sorts by the name of the related country
+    yield AssociationField::new('customer.country')->setSortProperty('name');
+
 .. _`TomSelect`: https://tom-select.js.org/
 .. _`EntityType`: https://symfony.com/doc/current/reference/forms/types/entity.html
 .. _`query_builder option`: https://symfony.com/doc/current/reference/forms/types/entity.html#query-builder

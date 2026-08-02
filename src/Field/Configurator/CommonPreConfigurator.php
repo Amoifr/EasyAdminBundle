@@ -177,6 +177,16 @@ final readonly class CommonPreConfigurator implements FieldConfiguratorInterface
 
                 return true;
             } catch (\InvalidArgumentException) {
+            }
+
+            // nested paths ending at an association (e.g. 'customer.country') are sortable
+            // when the leaf is single-valued, mirroring single-level association fields;
+            // to-many leaves are not sortable (the COUNT-subquery sort is not supported here)
+            try {
+                $resolvedProperty = $this->associationResolver->resolveNestedAssociations(null, $entityDto, $field->getProperty(), true);
+
+                return $resolvedProperty->getEntityDto()->getClassMetadata()->isSingleValuedAssociation($resolvedProperty->getPropertyName());
+            } catch (\InvalidArgumentException) {
                 return false;
             }
         }

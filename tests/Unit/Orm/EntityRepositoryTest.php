@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInter
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\FormFactory;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use PHPUnit\Framework\TestCase;
@@ -413,6 +414,134 @@ class EntityRepositoryTest extends TestCase
         self::assertSame([['entity.customer', 'ASC'], ['customer.name', 'DESC']], $orderClauses);
     }
 
+    public function testDefaultSortByNestedAssociationLeafOrdersByItsForeignKey(): void
+    {
+        // setDefaultSort(['customer.country' => 'ASC']) where 'country' is itself an
+        // association: with no setSortProperty(), the query orders by the leaf association
+        // on its already-joined parent (i.e. its foreign key), mirroring how single-level
+        // associations are ordered by 'entity.assoc'
+        $customerEntityDto = $this->createEntityDto([], ['country' => 'App\Entity\Country'], 'App\Entity\Customer');
+        $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
+        $searchDto = $this->createSearchDtoForSort(defaultSort: ['customer.country' => 'ASC']);
+
+        $this->entityFactory->method('create')->willReturn($customerEntityDto);
+
+        $queryBuilder = $this->createSortingQueryBuilder();
+        $queryBuilder->method('getRootAliases')->willReturn(['entity']);
+        $queryBuilder->expects($this->once())
+            ->method('leftJoin')
+            ->with('entity.customer', 'customer')
+            ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+            ->method('addOrderBy')
+            ->with('customer.country', 'ASC');
+
+        $this->stubEntityManager($queryBuilder);
+
+        $this->entityRepository->createQueryBuilder($searchDto, $entityDto, new FieldCollection([]), new FilterCollection());
+    }
+
+    public function testDefaultSortByNestedAssociationLeafWithSortPropertyOrdersByThatProperty(): void
+    {
+        // AssociationField::new('customer.country')->setSortProperty('name') sorts by
+        // the 'name' property of the related Country entity: the leaf association is
+        // also joined and the ORDER BY targets its resolved alias
+        $countryEntityDto = $this->createEntityDto(['name' => ['type' => 'string']], [], 'App\Entity\Country');
+        $customerEntityDto = $this->createEntityDto([], ['country' => 'App\Entity\Country'], 'App\Entity\Customer');
+        $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
+        $field = AssociationField::new('customer.country')->setSortProperty('name');
+        $searchDto = $this->createSearchDtoForSort(defaultSort: ['customer.country' => 'ASC']);
+
+        $this->entityFactory->method('create')->willReturnCallback(static fn (string $fqcn): EntityDto => match ($fqcn) {
+            'App\Entity\Customer' => $customerEntityDto,
+            'App\Entity\Country' => $countryEntityDto,
+        });
+
+        $joins = [];
+        $queryBuilder = $this->createSortingQueryBuilder();
+        $queryBuilder->method('getRootAliases')->willReturn(['entity']);
+        $queryBuilder->method('leftJoin')->willReturnCallback(static function (string $join, string $alias) use (&$joins, $queryBuilder) {
+            $joins[] = [$join, $alias];
+
+            return $queryBuilder;
+        });
+        $queryBuilder->expects($this->once())
+            ->method('addOrderBy')
+            ->with('country1.name', 'ASC');
+
+        $this->stubEntityManager($queryBuilder);
+
+        $this->entityRepository->createQueryBuilder($searchDto, $entityDto, new FieldCollection([$field]), new FilterCollection());
+
+        self::assertSame([['entity.customer', 'customer'], ['customer.country', 'country1']], $joins);
+    }
+
+    public function testCustomSortByExposedSortableNestedAssociationLeafIsApplied(): void
+    {
+        // ?sort[customer.country]=DESC is valid when every segment is a real Doctrine
+        // association, the leaf is single-valued and the property is exposed as a sortable field
+        $customerEntityDto = $this->createEntityDto([], ['country' => 'App\Entity\Country'], 'App\Entity\Customer');
+        $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
+        $fields = new FieldCollection([$this->createField('customer.country', true)]);
+        $searchDto = $this->createSearchDtoForSort(customSort: ['customer.country' => 'DESC']);
+
+        $this->entityFactory->method('create')->willReturn($customerEntityDto);
+
+        $queryBuilder = $this->createSortingQueryBuilder();
+        $queryBuilder->method('getRootAliases')->willReturn(['entity']);
+        $queryBuilder->expects($this->once())
+            ->method('leftJoin')
+            ->with('entity.customer', 'customer')
+            ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+            ->method('addOrderBy')
+            ->with('customer.country', 'DESC');
+
+        $this->stubEntityManager($queryBuilder);
+
+        $this->entityRepository->createQueryBuilder($searchDto, $entityDto, $fields, new FilterCollection());
+    }
+
+    public function testCustomSortByNestedAssociationLeafNotExposedAsFieldIsIgnored(): void
+    {
+        // URL sort remains opt-in: the nested association path maps to real Doctrine
+        // metadata, but the property is not exposed as a field of the INDEX page
+        $customerEntityDto = $this->createEntityDto([], ['country' => 'App\Entity\Country'], 'App\Entity\Customer');
+        $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
+        $searchDto = $this->createSearchDtoForSort(customSort: ['customer.country' => 'ASC']);
+
+        $this->entityFactory->method('create')->willReturn($customerEntityDto);
+
+        $queryBuilder = $this->createSortingQueryBuilder();
+        $queryBuilder->expects($this->never())->method('addOrderBy');
+        $queryBuilder->expects($this->never())->method('leftJoin');
+
+        $this->stubEntityManager($queryBuilder);
+
+        $this->entityRepository->createQueryBuilder($searchDto, $entityDto, new FieldCollection([]), new FilterCollection());
+    }
+
+    public function testCustomSortByNestedToManyAssociationLeafIsIgnored(): void
+    {
+        // ?sort[customer.orders]=ASC where 'orders' is a to-many association: sorting by
+        // a collection foreign key is undefined, so the key is rejected even though the
+        // field is exposed as sortable
+        $customerEntityDto = $this->createEntityDto([], ['orders' => 'App\Entity\Order'], 'App\Entity\Customer', ['orders']);
+        $entityDto = $this->createEntityDto([], ['customer' => 'App\Entity\Customer']);
+        $fields = new FieldCollection([$this->createField('customer.orders', true)]);
+        $searchDto = $this->createSearchDtoForSort(customSort: ['customer.orders' => 'ASC']);
+
+        $this->entityFactory->method('create')->willReturn($customerEntityDto);
+
+        $queryBuilder = $this->createSortingQueryBuilder();
+        $queryBuilder->expects($this->never())->method('addOrderBy');
+        $queryBuilder->expects($this->never())->method('leftJoin');
+
+        $this->stubEntityManager($queryBuilder);
+
+        $this->entityRepository->createQueryBuilder($searchDto, $entityDto, $fields, new FilterCollection());
+    }
+
     public function testCustomSortWithNonAscDescValueIsIgnored(): void
     {
         // ?sort[displayedField]=ASC,%20entity.hiddenField%20DESC — Expr\OrderBy
@@ -672,12 +801,13 @@ class EntityRepositoryTest extends TestCase
         return new SearchDto(new Request(), null, '', $defaultSort, $customSort, []);
     }
 
-    private function createEntityDto(array $mappedFields = [], array $mappedAssociations = [], string $fqcn = 'App\Entity\Product'): EntityDto
+    private function createEntityDto(array $mappedFields = [], array $mappedAssociations = [], string $fqcn = 'App\Entity\Product', array $collectionAssociations = []): EntityDto
     {
         $metadata = $this->createMock(ClassMetadata::class);
         $metadata->method('getSingleIdentifierFieldName')->willReturn('id');
         $metadata->method('hasField')->willReturnCallback(static fn (string $name): bool => isset($mappedFields[$name]));
         $metadata->method('hasAssociation')->willReturnCallback(static fn (string $name): bool => isset($mappedAssociations[$name]));
+        $metadata->method('isSingleValuedAssociation')->willReturnCallback(static fn (string $name): bool => isset($mappedAssociations[$name]) && !\in_array($name, $collectionAssociations, true));
         $metadata->method('getFieldNames')->willReturn(array_keys($mappedFields));
         $metadata->method('getFieldMapping')->willReturnCallback(
             static fn (string $name): array => $mappedFields[$name] ?? throw new \InvalidArgumentException()

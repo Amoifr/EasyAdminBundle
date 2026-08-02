@@ -183,7 +183,21 @@ final readonly class EntityRepository implements EntityRepositoryInterface, Nest
 
         if ($sortFieldIsDoctrineAssociation) {
             if (str_contains($sortProperty, '.')) {
-                $resolvedProperty = $this->resolveNestedAssociations($queryBuilder, $entityDto, $sortProperty);
+                $pathToResolve = $sortProperty;
+                $pathEndsInAssociation = $this->pathEndsInSingleValuedAssociation($entityDto, $sortProperty);
+
+                if ($pathEndsInAssociation) {
+                    // an AssociationField with a nested property (e.g. 'customer.country') sorts by the
+                    // property defined with setSortProperty() or, by default, by the foreign key of the
+                    // leaf association on its parent (mirroring the 'entity.assoc' single-level behavior)
+                    $associationSortProperty = $fields->getByProperty($sortProperty)?->getCustomOption(AssociationField::OPTION_SORT_PROPERTY);
+                    if (null !== $associationSortProperty) {
+                        $pathToResolve = $sortProperty.'.'.$associationSortProperty;
+                        $pathEndsInAssociation = false;
+                    }
+                }
+
+                $resolvedProperty = $this->resolveNestedAssociations($queryBuilder, $entityDto, $pathToResolve, $pathEndsInAssociation);
                 $queryBuilder->addOrderBy($resolvedProperty->getEntityAlias().'.'.$resolvedProperty->getPropertyName(), $sortOrder);
 
                 return;
@@ -460,6 +474,17 @@ final readonly class EntityRepository implements EntityRepositoryInterface, Nest
         return $entityDto->getClassMetadata()->hasAssociation($propertyNameParts[0]);
     }
 
+    private function pathEndsInSingleValuedAssociation(EntityDto $entityDto, string $propertyName): bool
+    {
+        try {
+            $resolvedProperty = $this->resolveNestedAssociations(null, $entityDto, $propertyName, true);
+        } catch (\InvalidArgumentException) {
+            return false;
+        }
+
+        return $resolvedProperty->getEntityDto()->getClassMetadata()->isSingleValuedAssociation($resolvedProperty->getPropertyName());
+    }
+
     private function isValidCustomSort(string $sortProperty, string $sortOrder, EntityDto $entityDto, FieldCollection $fields): bool
     {
         // the order direction reaches DQL via Expr\OrderBy as "$property $direction",
@@ -472,16 +497,19 @@ final readonly class EntityRepository implements EntityRepositoryInterface, Nest
         $classMetadata = $entityDto->getClassMetadata();
 
         // structural gate: the property must be a real Doctrine field or association,
-        // or a nested path (e.g. "author.publisher.name") whose every segment maps to
-        // one. This also rejects any key with characters (commas, spaces, quotes…) that
-        // could otherwise smuggle DQL fragments through identifier interpolation.
-        // Embeddable properties (e.g. "address.city") are real Doctrine fields with a
-        // dotted name (hasField() === true), so they don't need to be resolved
+        // or a nested path whose every segment maps to one, ending either in a field
+        // (e.g. "author.publisher.name") or in a single-valued association (e.g.
+        // "customer.country"). This also rejects any key with characters (commas, spaces,
+        // quotes…) that could otherwise smuggle DQL fragments through identifier
+        // interpolation. Embeddable properties (e.g. "address.city") are real Doctrine
+        // fields with a dotted name (hasField() === true), so they don't need to be resolved
         if (str_contains($sortProperty, '.') && !$classMetadata->hasField($sortProperty)) {
             try {
                 $this->resolveNestedAssociations(null, $entityDto, $sortProperty);
             } catch (\InvalidArgumentException) {
-                return false;
+                if (!$this->pathEndsInSingleValuedAssociation($entityDto, $sortProperty)) {
+                    return false;
+                }
             }
         } elseif (!$classMetadata->hasField($sortProperty) && !$classMetadata->hasAssociation($sortProperty)) {
             return false;
