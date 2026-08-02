@@ -230,6 +230,62 @@ or with the EasyAdmin feature to replace templates::
     template of a pair, make sure that the opened/closed HTML tags remain
     consistent with the other template of the pair.
 
+Index Page Listing
+~~~~~~~~~~~~~~~~~~
+
+The ``index`` page displays the entity listing as a ``<table>`` element. This
+entire element is wrapped in a Twig block called ``datagrid``, so you can
+replace the listing markup completely (e.g. to display entities as cards or
+boxes) while keeping the rest of the page (search form, filters, global
+actions, paginator) intact:
+
+.. code-block:: twig
+
+    {# templates/bundles/EasyAdminBundle/crud/index.html.twig #}
+    {% extends '@!EasyAdmin/crud/index.html.twig' %}
+
+    {% block datagrid %}
+        <div class="datagrid product-cards" data-default-action-trigger="{{ ea.crud.defaultRowActionTrigger }}">
+            {% for entity in entities %}
+                {% if entity.isAccessible %}
+                    <article data-id="{{ entity.primaryKeyValueAsString }}"
+                        {% if entity.defaultActionUrl %}data-default-action-url="{{ entity.defaultActionUrl }}" role="link" tabindex="0"{% endif %}>
+                        {% for field in entity.fields %}
+                            {% set is_searchable = null == ea.crud.searchFields or field.property in ea.crud.searchFields %}
+                            <div class="{{ is_searchable ? 'searchable' }} {{ field.cssClass }}">
+                                {{ include(field.templatePath, {field: field, entity: entity}, with_context: false) }}
+                            </div>
+                        {% endfor %}
+                    </article>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endblock %}
+
+EasyAdmin's JavaScript features don't depend on the ``<table>`` markup but on
+some HTML attributes and CSS classes. Keep them in your custom markup so those
+features keep working:
+
+* ``datagrid`` CSS class on the element that wraps the entire listing;
+* ``data-default-action-trigger`` attribute on that same wrapper element; it
+  defines whether a ``single`` or ``double`` click runs the default action;
+* ``data-id`` attribute on the element of each entity; when using batch actions,
+  this element must also contain the ``input.form-batch-checkbox`` checkbox of
+  the entity and it gets the ``selected-row`` CSS class when checked;
+* ``data-default-action-url`` attribute on the element of each entity (add also
+  ``role="link"`` and ``tabindex="0"`` for accessibility); clicking on the
+  element runs the default action;
+* ``searchable`` CSS class on the elements that render field values; the terms
+  of search queries are highlighted inside these elements;
+* the CSS classes of each field (e.g. ``field-boolean``), which are needed for
+  example to turn the checkboxes of boolean fields into Ajax toggles.
+
+.. note::
+
+    EasyAdmin styles the default listing with table-specific CSS selectors, so
+    custom markup receives almost no default styling. Add your own CSS as
+    explained in :ref:`the section about custom assets <crud-design-custom-web-assets>`.
+
 Fields And Actions Templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
