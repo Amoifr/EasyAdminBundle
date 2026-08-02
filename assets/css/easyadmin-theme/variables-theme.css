@@ -193,6 +193,7 @@
     --form-input-text-color: var(--gray-700);
     --form-input-group-text-bg: var(--form-control-bg);
     --form-input-group-text-border-color: var(--form-input-border-color);
+    --form-input-addon-color: var(--gray-500);
     --switch-bg: var(--gray-300);
     --switch-checked-bg: var(--ea-primary);
     --switch-thumb-bg: var(--white);
@@ -641,6 +642,7 @@
     --form-input-text-color: var(--gray-200);
     --form-input-group-text-bg: var(--gray-800);
     --form-input-group-text-border-color: var(--gray-600);
+    --form-input-addon-color: var(--gray-400);
     --switch-bg: var(--gray-600);
     --switch-checked-bg: var(--ea-primary);
     --switch-thumb-bg: var(--gray-300);

@@ -6,6 +6,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\TextAlign;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\AssetDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -225,6 +226,44 @@ trait FieldTrait
     public function setHelp(TranslatableInterface|string $help): self
     {
         $this->dto->setHelp($help);
+
+        return $this;
+    }
+
+    /**
+     * Renders some content inside the field's form input, before the value
+     * (it's only displayed on form pages and ignored for fields whose form
+     * control is not a single-line input).
+     *
+     * @param TranslatableInterface|string|null $content Text or HTML contents (rendered as HTML, not escaped)
+     * @param string|null                       $icon    The icon name/CSS classes, same values accepted by menu item and action icons
+     */
+    public function prepend(TranslatableInterface|string|null $content = null, ?string $icon = null): self
+    {
+        if (null === $content && null === $icon) {
+            throw new \InvalidArgumentException(sprintf('The "%s()" method requires a content and/or an icon argument, but none was passed.', __METHOD__));
+        }
+
+        $this->dto->setCustomOption(FieldInterface::OPTION_PREPEND, ['icon' => $icon, 'content' => $content]);
+
+        return $this;
+    }
+
+    /**
+     * Renders some content inside the field's form input, after the value
+     * (it's only displayed on form pages and ignored for fields whose form
+     * control is not a single-line input).
+     *
+     * @param TranslatableInterface|string|null $content Text or HTML contents (rendered as HTML, not escaped)
+     * @param string|null                       $icon    The icon name/CSS classes, same values accepted by menu item and action icons
+     */
+    public function append(TranslatableInterface|string|null $content = null, ?string $icon = null): self
+    {
+        if (null === $content && null === $icon) {
+            throw new \InvalidArgumentException(sprintf('The "%s()" method requires a content and/or an icon argument, but none was passed.', __METHOD__));
+        }
+
+        $this->dto->setCustomOption(FieldInterface::OPTION_APPEND, ['icon' => $icon, 'content' => $content]);
 
         return $this;
     }

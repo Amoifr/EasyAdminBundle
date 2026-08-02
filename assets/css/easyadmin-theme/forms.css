@@ -534,6 +534,90 @@ form .invalid-feedback > .d-block + .d-block {
     margin-block-start: 1px;
 }
 
+/* Input addons created with the field prepend()/append() methods:
+   a single border around the whole group, a borderless input inside it,
+   and the focus ring applied to the group instead of the input */
+.form-widget .ea-input-group {
+    align-items: center;
+    background-color: var(--form-control-bg);
+    border: var(--border-width) solid var(--form-input-border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--form-input-shadow);
+    display: flex;
+    block-size: 30px;
+    transition: box-shadow var(--ea-duration-fast) var(--ea-ease-in);
+}
+.form-widget .ea-input-group:focus-within {
+    border-color: var(--form-input-hover-border-color);
+    box-shadow: var(--form-input-hover-shadow);
+}
+.form-widget .ea-input-group .ea-input-addon {
+    align-items: center;
+    color: var(--form-input-addon-color);
+    display: inline-flex;
+    flex-shrink: 0;
+    font-size: var(--font-size-base);
+    gap: var(--ea-sp-2);
+    white-space: nowrap;
+}
+/* the global 'span.icon' styles align icons to the text baseline, which
+   renders them a couple of pixels too low inside the flex addon container */
+.form-widget .ea-input-group .ea-input-addon .icon {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+}
+/* the input's own inline padding provides the gap between it and the addons */
+.form-widget .ea-input-group .ea-input-addon-prepend {
+    padding-inline-start: var(--ea-sp-4);
+}
+.form-widget .ea-input-group .ea-input-addon-append {
+    padding-inline-end: var(--ea-sp-4);
+}
+.form-widget .ea-input-group .ea-input-addon-prepend + .ea-input-addon-prepend {
+    padding-inline-start: var(--ea-sp-3);
+}
+.form-widget .ea-input-group .ea-input-addon-append + .ea-input-addon-append {
+    padding-inline-start: var(--ea-sp-3);
+    padding-inline-end: var(--ea-sp-4);
+}
+.form-widget .ea-input-group input.form-control {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    flex: 1;
+    min-inline-size: 0;
+    block-size: 28px;
+}
+.form-widget .ea-input-group input.form-control:focus {
+    border: none;
+    box-shadow: none;
+    outline: 0;
+}
+/* validation errors are displayed on the whole group, not on the inner input */
+.has-error .form-widget .ea-input-group {
+    border-color: var(--form-input-error-border-color);
+    box-shadow: var(--form-input-error-shadow);
+}
+.has-error .form-widget .ea-input-group input.form-control,
+.has-error .form-widget .ea-input-group input.form-control:focus,
+.form-widget .ea-input-group input.form-control.is-invalid {
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+.form-widget .ea-input-group.ea-input-group-disabled {
+    background-color: var(--form-control-disabled-bg);
+    box-shadow: none;
+}
+.form-widget .ea-input-group.ea-input-group-disabled .ea-input-addon {
+    color: var(--form-control-disabled-color);
+}
+/* slug widgets keep their inner Bootstrap .input-group; let it fill the addon group */
+.form-widget .ea-input-group .input-group {
+    flex: 1;
+}
+
 /* fileupload widgets */
 .ea-fileupload {
     display: flex;

@@ -38,6 +38,12 @@ The method argument must be a valid `ISO 4217 standard`_ currency code::
     // e.g. 'INR' = 'Indian Rupee'
     yield MoneyField('...')->setCurrency('INR');
 
+.. note::
+
+    In form pages, the currency symbol is displayed inside the form input using
+    the same addons created with the ``prepend()`` and ``append()`` methods, so
+    you can combine the currency symbol with your own addon contents.
+
 setCurrencyPropertyPath
 ~~~~~~~~~~~~~~~~~~~~~~~
 
