@@ -87,9 +87,7 @@
 
                 {% if has_input_groups %}<div class="input-group">{% endif %}
                     {% if has_prepend_html %}
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">{{ field.prepend_html|raw }}</span>
-                        </div>
+                        <span class="input-group-text">{{ field.prepend_html|raw }}</span>
                     {% endif %}
 
                     {{ form_widget(form) }}

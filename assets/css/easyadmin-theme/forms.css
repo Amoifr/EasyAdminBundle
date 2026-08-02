@@ -142,14 +142,6 @@ body.ea-dark-scheme .form-widget .form-select {
     box-shadow: var(--form-input-hover-shadow);
 }
 
-.form-widget .form-control + .input-group-append {
-    color: var(--gray-600);
-    block-size: 30px;
-}
-.form-widget .form-control + .input-group-append i {
-    color: var(--gray-600);
-}
-
 .form-widget input.form-control[data-ea-align="right"] {
     text-align: right;
 }
@@ -531,6 +523,7 @@ form .invalid-feedback > .d-block + .d-block {
     box-shadow: var(--form-input-box-shadow);
     color: var(--form-input-text-color);
     block-size: 30px;
+    font-size: var(--font-size-base);
     padding: var(--ea-sp-2) var(--ea-sp-5) var(--ea-sp-2);
 }
 .input-group button,
@@ -539,13 +532,6 @@ form .invalid-feedback > .d-block + .d-block {
 .input-group button:focus {
     block-size: 28px;
     margin-block-start: 1px;
-}
-
-.input-group-append {
-    margin-inline-start: 0;
-}
-.input-group-prepend {
-    margin-inline-end: 0;
 }
 
 /* fileupload widgets */
