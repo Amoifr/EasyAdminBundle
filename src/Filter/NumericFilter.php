@@ -44,15 +44,21 @@ final class NumericFilter implements FilterInterface
         $value = $filterDataDto->getValue();
         $value2 = $filterDataDto->getValue2();
 
+        if (null === $value) {
+            $queryBuilder->andWhere(sprintf('%s.%s %s', $alias, $property, $comparison));
+
+            return;
+        }
+
         if (null !== $fieldDto && true === $fieldDto->getCustomOption(MoneyField::OPTION_STORED_AS_CENTS)) {
             $divisor = $fieldDto->getFormTypeOption('divisor') ?? MoneyConfigurator::DEFAULT_DIVISOR;
             $value *= $divisor;
-            $value2 *= $divisor;
+            if (null !== $value2) {
+                $value2 *= $divisor;
+            }
         }
 
-        if (null === $value) {
-            $queryBuilder->andWhere(sprintf('%s.%s %s', $alias, $property, $comparison));
-        } elseif (ComparisonType::BETWEEN === $comparison) {
+        if (ComparisonType::BETWEEN === $comparison) {
             $queryBuilder->andWhere(sprintf('%s.%s BETWEEN :%s and :%s', $alias, $property, $parameterName, $parameter2Name))
                 ->setParameter($parameterName, $value)
                 ->setParameter($parameter2Name, $value2);
