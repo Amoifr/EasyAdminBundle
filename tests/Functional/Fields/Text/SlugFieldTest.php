@@ -69,6 +69,21 @@ class SlugFieldTest extends AbstractFieldFunctionalTest
         static::assertCount(1, $slugFieldInput, 'SlugField input should exist in form');
     }
 
+    public function testSlugFieldFormRendersLockButton(): void
+    {
+        $crawler = $this->client->request('GET', $this->generateNewFormUrl());
+
+        $group = $crawler->filter('#FieldTestEntity_slugField')->closest('.ea-input-group');
+        static::assertNotNull($group, 'The slug input is rendered inside an input group');
+
+        $button = $group->filter('button[data-ea-slug-lock-button]');
+        static::assertCount(1, $button, 'The slug input group contains the lock button');
+        static::assertSame('button', $button->attr('type'));
+        static::assertStringContainsString('ea-input-addon-button', $button->attr('class'));
+        static::assertNotEmpty($button->attr('data-icon-locked'));
+        static::assertNotEmpty($button->attr('data-icon-unlocked'));
+    }
+
     public function testSlugFieldSubmission(): void
     {
         $slug = 'manually-entered-slug';

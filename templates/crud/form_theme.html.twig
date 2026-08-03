@@ -764,12 +764,24 @@
         }) %}
     {% endif %}
 
-    <div class="input-group">
+    {# when the field defines prepend/append addons, the form_row block already wrapped
+       this widget in an '.ea-input-group', so don't render a nested group here #}
+    {% set ea_addons = ea_addons|default({prepend: [], append: []}) %}
+    {% set is_inside_addon_group = ea_addons.prepend is not empty or ea_addons.append is not empty %}
+
+    {% set slug_widget %}
         {{ block('form_widget') }}
-        <button type="button" class="btn"
+        <button type="button" class="ea-input-addon ea-input-addon-button" data-ea-slug-lock-button
+                aria-pressed="true" {{ disabled ? 'disabled' }}
                 data-icon-locked="{{ component('ea:Icon', {name: 'internal:lock'})|e('html') }}"
                 data-icon-unlocked="{{ component('ea:Icon', {name: 'internal:lock-open-solid'})|e('html') }}">
             <twig:ea:Icon name="internal:lock" />
         </button>
-    </div>
+    {% endset %}
+
+    {% if is_inside_addon_group %}
+        {{ slug_widget }}
+    {% else %}
+        <div class="ea-input-group {{ disabled ? 'ea-input-group-disabled' }}">{{ slug_widget }}</div>
+    {% endif %}
 {% endblock %}
