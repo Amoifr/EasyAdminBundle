@@ -1050,9 +1050,10 @@
 }
 .row {
     /* re-base Bootstrap's grid gutter on the spacing scale (identical to its
-       1.5rem default at the default --ea-spacing), so the gaps between form
-       columns and fieldsets follow the density knob. This beats Bootstrap's
-       gutter utilities ("g-2", "gx-3"...), which live in the vendor layer;
-       EasyAdmin doesn't use them */
+       1.5rem default at the default --ea-spacing) so grid gutters follow the
+       density knob everywhere, including rows written in user content. The
+       'g-*' utilities are re-declared on the spacing scale in utilities.css,
+       because this rule would otherwise defeat them (they live in the 'vendor'
+       layer and layer order trumps specificity) */
     --bs-gutter-x: var(--ea-sp-12);
 }
