@@ -968,6 +968,27 @@ Misc. Options
         // a key-value array of attributes to add to the HTML element
         ->setHtmlAttributes(['data-foo' => 'bar', 'autofocus' => 'autofocus'])
 
+        // content rendered inside the field's form input, before/after the value
+        // (it's only displayed on form pages and ignored for fields whose form
+        // control is not a single-line input, such as textareas and checkboxes)
+        ->prepend('https://')
+        ->append('@example.com')
+
+        // string contents can include HTML tags (they are rendered instead of escaped)
+        // and they are translated using the application translation domain
+        ->append('<b>per unit</b>')
+
+        // use the 'icon' argument to display an icon (pass the same value as the
+        // icons of menu items and actions); you can combine icons and text contents
+        ->prepend(icon: 'fa fa-lock')
+        ->append('Search', icon: 'fa fa-magnifying-glass')
+
+.. note::
+
+    ``MoneyField`` and ``PercentField`` display their currency and percentage
+    symbols using these input addons, so their symbols are compatible with any
+    additional content that you prepend or append to those fields.
+
 .. _custom-fields:
 
 Creating Custom Fields

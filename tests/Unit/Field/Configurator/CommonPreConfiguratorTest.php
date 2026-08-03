@@ -3,6 +3,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\Configurator;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\NestedAssociationResolverInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Translation\EntityTranslationIdGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
@@ -12,6 +13,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CommonPreConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\AbstractFieldTest;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Component\Translation\TranslatableMessage;
+use function Symfony\Component\Translation\t;
 
 class CommonPreConfiguratorTest extends AbstractFieldTest
 {
@@ -94,5 +97,67 @@ class CommonPreConfiguratorTest extends AbstractFieldTest
             $container->get(EntityTranslationIdGeneratorInterface::class),
             $associationResolver,
         );
+    }
+
+    public function testAddonOptionsAreNullByDefault(): void
+    {
+        $fieldDto = $this->configure(Field::new('foo'));
+
+        $this->assertNull($fieldDto->getCustomOption(FieldInterface::OPTION_PREPEND));
+        $this->assertNull($fieldDto->getCustomOption(FieldInterface::OPTION_APPEND));
+    }
+
+    public function testAddonWithEmptyStringContentIsNormalizedToNull(): void
+    {
+        $fieldDto = $this->configure(Field::new('foo')->prepend(''));
+
+        $this->assertNull($fieldDto->getCustomOption(FieldInterface::OPTION_PREPEND));
+    }
+
+    public function testAddonWithStringContentIsWrappedInTranslatable(): void
+    {
+        $fieldDto = $this->configure(Field::new('foo')->append('<b>@example.com</b>'));
+
+        $addon = $fieldDto->getCustomOption(FieldInterface::OPTION_APPEND);
+        $this->assertNull($addon['icon']);
+        $this->assertInstanceOf(TranslatableMessage::class, $addon['html']);
+        $this->assertSame('<b>@example.com</b>', $addon['html']->getMessage());
+    }
+
+    public function testAddonStringContentGetsTheFieldTranslationParameters(): void
+    {
+        $field = Field::new('foo')->setTranslationParameters(['%foo%' => 'bar'])->prepend('some %foo% content');
+        $fieldDto = $this->configure($field);
+
+        $addon = $fieldDto->getCustomOption(FieldInterface::OPTION_PREPEND);
+        $this->assertSame(['%foo%' => 'bar'], $addon['html']->getParameters());
+    }
+
+    public function testAddonWithTranslatableContentIsKeptUnchanged(): void
+    {
+        $content = t('some content');
+        $fieldDto = $this->configure(Field::new('foo')->prepend($content));
+
+        $addon = $fieldDto->getCustomOption(FieldInterface::OPTION_PREPEND);
+        $this->assertNull($addon['icon']);
+        $this->assertSame($content, $addon['html']);
+    }
+
+    public function testAddonWithOnlyAnIcon(): void
+    {
+        $fieldDto = $this->configure(Field::new('foo')->prepend(icon: 'internal:lock'));
+
+        $addon = $fieldDto->getCustomOption(FieldInterface::OPTION_PREPEND);
+        $this->assertSame('internal:lock', $addon['icon']);
+        $this->assertNull($addon['html']);
+    }
+
+    public function testAddonWithIconAndContent(): void
+    {
+        $fieldDto = $this->configure(Field::new('foo')->append('Search', icon: 'internal:search'));
+
+        $addon = $fieldDto->getCustomOption(FieldInterface::OPTION_APPEND);
+        $this->assertSame('internal:search', $addon['icon']);
+        $this->assertSame('Search', $addon['html']->getMessage());
     }
 }

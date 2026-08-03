@@ -72,5 +72,11 @@ string to use that as the symbol::
     // this will display the "per mille" (per thousand) symbol next to values
     yield PercentField::new('...')->setSymbol('‰');
 
+.. note::
+
+    In form pages, this symbol is displayed inside the form input using the
+    same addons created with the ``prepend()`` and ``append()`` methods, so
+    you can combine the symbol with your own addon contents.
+
 .. _`PercentType`: https://symfony.com/doc/current/reference/forms/types/percent.html
 .. _`PHP NumberFormatter class`: https://www.php.net/manual/en/class.numberformatter.php

@@ -37,6 +37,12 @@
     {{- parent() -}}
 {%- endblock form_widget_simple %}
 
+{# the currency/percent symbols are rendered as input addons by the form_row block,
+   so these widgets must not wrap the input in their own Bootstrap .input-group #}
+{% block money_widget %}{{ block('form_widget_simple') }}{% endblock %}
+
+{% block percent_widget %}{{ block('form_widget_simple') }}{% endblock %}
+
 {% block datetime_widget %}
     {%- if widget != 'single_text' -%}
         {%- set attr = attr|merge({class: (attr.class|default('') ~ ' form-inline')|trim}) -%}
@@ -81,21 +87,27 @@
         <div {% with {attr: row_attr|merge({class: (row_class ~ ((not compound or force_error|default(false)) and not valid ? ' has-error'))|trim})} %}{{ block('attributes') }}{% endwith %}>
             {{- form_label(form) -}}
             <div class="form-widget">
-                {% set has_prepend_html = field.prepend_html|default(null) is not null %}
-                {% set has_append_html = field.append_html|default(null) is not null %}
-                {% set has_input_groups = has_prepend_html or has_append_html %}
+                {# 'ea_addons' merges the addons configured with the prepend()/append() field methods
+                   and the default symbols of money/percent fields (see EaCrudFormTypeExtension) #}
+                {% set ea_addons = ea_addons|default({prepend: [], append: []}) %}
 
-                {% if has_input_groups %}<div class="input-group">{% endif %}
-                    {% if has_prepend_html %}
-                        <span class="input-group-text">{{ field.prepend_html|raw }}</span>
-                    {% endif %}
-
+                {% if ea_addons.prepend is not empty or ea_addons.append is not empty %}
+                    <div class="ea-input-group {{ disabled ? 'ea-input-group-disabled' }}">
+                        {% for addon in ea_addons.prepend %}
+                            <span class="ea-input-addon ea-input-addon-prepend">
+                                {%- if addon.icon %}<twig:ea:Icon name="{{ addon.icon }}" />{% endif %}{% if addon.html %}{{ addon.html|trans|raw }}{% elseif addon.text %}{{ addon.text }}{% endif -%}
+                            </span>
+                        {% endfor %}
+                        {{ form_widget(form) }}
+                        {% for addon in ea_addons.append %}
+                            <span class="ea-input-addon ea-input-addon-append">
+                                {%- if addon.icon %}<twig:ea:Icon name="{{ addon.icon }}" />{% endif %}{% if addon.html %}{{ addon.html|trans|raw }}{% elseif addon.text %}{{ addon.text }}{% endif -%}
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% else %}
                     {{ form_widget(form) }}
-
-                    {% if has_append_html %}
-                        <span class="input-group-text">{{ field.append_html|raw }}</span>
-                    {% endif %}
-                {% if has_input_groups %}</div>{% endif %}
+                {% endif %}
 
                 {% if field.help ?? false %}
                     <small class="form-text form-help">{{ field.help|trans(label_translation_parameters, translation_domain)|raw }}</small>

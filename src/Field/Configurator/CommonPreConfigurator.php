@@ -8,6 +8,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\NestedAssociationResolverInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Translation\EntityTranslationIdGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
@@ -93,6 +94,9 @@ final readonly class CommonPreConfigurator implements FieldConfiguratorInterface
             $field->setFormTypeOptionIfNotSet('help_html', true);
         }
 
+        $field->setCustomOption(FieldInterface::OPTION_PREPEND, $this->buildAddonOption($field, FieldInterface::OPTION_PREPEND, $translationDomain));
+        $field->setCustomOption(FieldInterface::OPTION_APPEND, $this->buildAddonOption($field, FieldInterface::OPTION_APPEND, $translationDomain));
+
         if ('' !== $field->getCssClass()) {
             $field->setFormTypeOptionIfNotSet('row_attr.class', $field->getCssClass());
         }
@@ -102,6 +106,29 @@ final readonly class CommonPreConfigurator implements FieldConfiguratorInterface
         }
 
         $field->setFormTypeOptionIfNotSet('label', $field->getLabel());
+    }
+
+    /**
+     * @return array{icon: ?string, html: ?TranslatableInterface}|null
+     */
+    private function buildAddonOption(FieldDto $field, string $optionName, string $translationDomain): ?array
+    {
+        $addon = $field->getCustomOption($optionName);
+        if (null === $addon) {
+            return null;
+        }
+
+        $icon = $addon['icon'] ?? null;
+        $content = $addon['content'] ?? null;
+        if (\is_string($content)) {
+            $content = '' === $content ? null : t($content, $field->getTranslationParameters(), $translationDomain);
+        }
+
+        if (null === $icon && null === $content) {
+            return null;
+        }
+
+        return ['icon' => $icon, 'html' => $content];
     }
 
     private function buildHelpOption(FieldDto $field, string $translationDomain): ?TranslatableInterface

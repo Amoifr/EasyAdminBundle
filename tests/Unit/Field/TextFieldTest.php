@@ -136,6 +136,28 @@ class TextFieldTest extends AbstractFieldTest
         self::assertStringContainsString('&lt;script&gt;', $fieldDto->getFormattedValue());
     }
 
+    public function testPrependAndAppendStoreTheRawValues(): void
+    {
+        $field = TextField::new('foo')->prepend('https://')->append('Search', icon: 'internal:search');
+
+        self::assertSame(['icon' => null, 'content' => 'https://'], $field->getAsDto()->getCustomOption(TextField::OPTION_PREPEND));
+        self::assertSame(['icon' => 'internal:search', 'content' => 'Search'], $field->getAsDto()->getCustomOption(TextField::OPTION_APPEND));
+    }
+
+    public function testPrependThrowsExceptionWhenCalledWithNoArguments(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        TextField::new('foo')->prepend();
+    }
+
+    public function testAppendThrowsExceptionWhenCalledWithNoArguments(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        TextField::new('foo')->append();
+    }
+
     public function testBackedEnumValue(): void
     {
         // create a backed enum for testing
