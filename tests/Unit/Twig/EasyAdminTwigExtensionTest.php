@@ -226,6 +226,22 @@ class EasyAdminTwigExtensionTest extends KernelTestCase
                 return 'foo bar';
             }
         }, 'foo bar'];
+        // a failing __toString() must not break the page rendering; e.g. the new entities
+        // created for the collection form prototype may have uninitialized properties
+        yield [new class implements \Stringable {
+            private \DateTimeImmutable $startDate;
+
+            public function __toString(): string
+            {
+                return $this->startDate->format('Y-m-d');
+            }
+        }, ''];
+        yield [new class implements \Stringable {
+            public function __toString(): string
+            {
+                throw new \RuntimeException('This object cannot be represented as a string');
+            }
+        }, ''];
         yield [new class {
             public function getId(): int
             {
