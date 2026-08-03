@@ -70,6 +70,34 @@ a:hover {
     text-decoration: var(--link-hover-decoration);
 }
 
+/* these Bootstrap components color their own anchors, but their rules live in
+   the 'vendor' layer, so the generic 'a' rules above would always beat them
+   (layer order trumps specificity); hand the color back to Bootstrap's own
+   cascade, which handles all their variants and states (#7768). The second
+   selector is needed because 'a:hover' out-specifies single-class selectors */
+:is(
+        .alert-link,
+        .nav-link,
+        .navbar-brand,
+        .navbar-text a,
+        .list-group-item,
+        .list-group-item-action,
+        .carousel-control-prev,
+        .carousel-control-next
+    ),
+:is(
+        .alert-link,
+        .nav-link,
+        .navbar-brand,
+        .navbar-text a,
+        .list-group-item,
+        .list-group-item-action,
+        .carousel-control-prev,
+        .carousel-control-next
+    ):is(:hover, :focus, :active) {
+    color: revert-layer;
+}
+
 code,
 pre {
     color: var(--code-color);
