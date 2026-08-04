@@ -5,6 +5,7 @@ import bootstrap from 'bootstrap/dist/js/bootstrap.bundle';
 import Mark from 'mark.js/src/vanilla';
 import Autocomplete from './autocomplete';
 import { sanitizeUrl, toggleVisibilityClasses } from './helpers';
+import { initTabs } from './tabs';
 
 // Provide Bootstrap variable globally to allow custom backend pages to use it
 window.bootstrap = bootstrap;
@@ -34,6 +35,7 @@ class App {
         this.#contentWidthLocalStorageKey = 'ea/content/width';
 
         this.#removeHashFormUrl();
+        initTabs();
         this.#createMainMenu();
         this.#createLayoutResizeControls();
         this.#createNavigationToggler();

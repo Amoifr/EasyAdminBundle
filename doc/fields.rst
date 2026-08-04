@@ -316,6 +316,13 @@ The arguments of the ``addTab()`` method are:
     so you don't need to take any additional steps to use FontAwesome icons. Alternatively,
     you can :ref:`use your own icon sets <icon-customization>` instead of FontAwesome.
 
+.. tip::
+
+    The selected tab is stored in the URL hash (e.g. ``#tab-contact-information``),
+    so you can reload or bookmark the page and see the same tab selected. The tab
+    is also kept when going from the ``detail`` page to the ``edit`` page of the
+    same entity (and vice versa).
+
 Tabs can display a small badge next to their label (e.g. to show the number of
 related items in a tab) with the ``setBadge()`` method::
 
