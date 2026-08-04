@@ -704,6 +704,9 @@ abstract class AbstractCrudController extends AbstractController implements Crud
         return $responseParameters;
     }
 
+    /**
+     * @return AdminContext<TEntity>|null
+     */
     protected function getContext(): ?AdminContext
     {
         return $this->container->get(AdminContextProviderInterface::class)->getContext();
