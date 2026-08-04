@@ -526,13 +526,6 @@ form .invalid-feedback > .d-block + .d-block {
     font-size: var(--font-size-base);
     padding: var(--ea-sp-2) var(--ea-sp-5) var(--ea-sp-2);
 }
-.input-group button,
-.input-group button:hover,
-.input-group button:active,
-.input-group button:focus {
-    block-size: 28px;
-    margin-block-start: 1px;
-}
 
 /* Input addons created with the field prepend()/append() methods:
    a single border around the whole group, a borderless input inside it,
@@ -613,9 +606,45 @@ form .invalid-feedback > .d-block + .d-block {
 .form-widget .ea-input-group.ea-input-group-disabled .ea-input-addon {
     color: var(--form-control-disabled-color);
 }
-/* slug widgets keep their inner Bootstrap .input-group; let it fill the addon group */
-.form-widget .ea-input-group .input-group {
-    flex: 1;
+/* the slug field renders a lock/unlock button as an interactive addon inside the group */
+.form-widget .ea-input-group .ea-input-addon-button {
+    align-self: stretch;
+    background: none;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    font-family: inherit;
+    justify-content: center;
+    line-height: var(--line-height-none);
+    min-inline-size: 28px;
+    padding: 0 var(--ea-sp-3);
+    transition: background-color var(--ea-duration-fast) var(--ea-ease-in), color var(--ea-duration-fast)
+        var(--ea-ease-in);
+}
+/* round the outer corners only when the button is the last element of the group
+   (a field can define append addons rendered after it) */
+.form-widget .ea-input-group .ea-input-addon-button:last-child {
+    border-start-end-radius: calc(var(--border-radius) - var(--border-width));
+    border-end-end-radius: calc(var(--border-radius) - var(--border-width));
+}
+.form-widget .ea-input-group .ea-input-addon-button:not(:disabled):hover {
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+}
+/* the group already shows a ring on ':focus-within'; this makes the focused element
+   itself visible for keyboard users (offset keeps the ring inside the group border) */
+.form-widget .ea-input-group .ea-input-addon-button:not(:disabled):focus-visible {
+    outline: var(--ea-focus-ring-width) solid var(--button-focus-outline-color);
+    outline-offset: -3px;
+}
+.form-widget .ea-input-group .ea-input-addon-button:disabled {
+    color: var(--form-control-disabled-color);
+    cursor: not-allowed;
+}
+/* while the slug is locked, its input is readonly: display the whole group as read-only
+   (the inner input is transparent, so the disabled background must be set on the group) */
+.form-widget .ea-input-group:has(input[data-ea-slug-field][readonly]) {
+    background-color: var(--form-control-disabled-bg);
 }
 
 /* fileupload widgets */

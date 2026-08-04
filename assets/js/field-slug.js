@@ -82,7 +82,10 @@ class Slugger {
      * Append a "lock" button to control slug behaviour (auto or manual)
      */
     appendLockButton() {
-        this.lockButton = this.field.parentNode.querySelector('button');
+        // the fallback keeps working with slug templates overridden before the button got its data attribute
+        this.lockButton =
+            this.field.parentNode.querySelector('[data-ea-slug-lock-button]') ??
+            this.field.parentNode.querySelector('button');
         this.lockButton.addEventListener('click', () => {
             if (this.locked) {
                 const confirmMessage = this.field.dataset.confirmText || null;
@@ -101,6 +104,7 @@ class Slugger {
     unlock() {
         this.locked = false;
         this.lockButton.innerHTML = this.lockButton.getAttribute('data-icon-unlocked');
+        this.lockButton.setAttribute('aria-pressed', 'false');
         this.field.removeAttribute('readonly');
     }
 
@@ -110,6 +114,7 @@ class Slugger {
     lock() {
         this.locked = true;
         this.lockButton.innerHTML = this.lockButton.getAttribute('data-icon-locked');
+        this.lockButton.setAttribute('aria-pressed', 'true');
 
         // Locking it back changes the value either to default value, or recomputes it
         if ('' !== this.currentSlug) {
