@@ -185,6 +185,8 @@ return static function (ContainerConfigurator $container) {
             ->arg(4, service('router'))
             ->arg(5, service('cache.easyadmin'))
             ->arg(6, service(AdminRouteGenerator::class))
+            ->arg(7, new Reference('security.access_map', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(8, new Reference('security.authorization_checker', ContainerInterface::NULL_ON_INVALID_REFERENCE))
             ->tag('kernel.event_subscriber')
 
         ->set(ControllerFactory::class)
